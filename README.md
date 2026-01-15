@@ -1,26 +1,25 @@
- 
 
 ### **Frontend README (`frontend/README.md`)**
 
 ```markdown
 # Student Management System - Frontend
 
-A modern, responsive dashboard built with React and TypeScript, featuring real-time system monitoring and optimized state management.
+A production-style React application built with TypeScript and Tailwind CSS. This frontend provides real-time system monitoring and a responsive interface for student data management.
 
 ## 🚀 Tech Stack
-* **Framework:** React 18+ with Vite (for fast HMR)
-* **Language:** TypeScript (Strict Mode)
-* **Styling:** Tailwind CSS (Utility-first approach)
-* **API Client:** Axios (Centralized instance)
+* **Framework:** React 18 (Vite)
+* **Language:** TypeScript
+* **Styling:** Tailwind CSS
+* **API Client:** Axios
 
-## 🛠️ Setup & Installation
-1. **Navigate to directory:**
+## 🛠️ Installation & Setup
+1. **Navigate to the frontend folder:**
    ```bash
    cd frontend
 
 ```
 
-2. **Install Dependencies:**
+2. **Install dependencies:**
 ```bash
 npm install
 
@@ -28,16 +27,16 @@ npm install
 
 
 3. **Environment Configuration:**
-Verify the API connection in `src/api/axiosInstance.ts`:
+Ensure the API base URL in `src/api/axiosInstance.ts` matches your backend port:
 ```typescript
 const api = axios.create({
-  baseURL: 'http://localhost:3000', // Matches backend PORT
+  baseURL: 'http://localhost:3000',
 });
 
 ```
 
 
-4. **Start Development Server:**
+4. **Run the development server:**
 ```bash
 npm run dev
 
@@ -45,21 +44,21 @@ npm run dev
 
 
 
-## 🏗️ Key Features
+## ✨ Key Features
 
-* **Real-time Health Monitoring:** Displays live status of the API Server and PostgreSQL database.
-* **Performance Optimized:** Uses `useCallback` and `useEffect` cleanup patterns to prevent cascading renders and memory leaks.
-* **Standardized UI:** Bright, professional UI with clear status badges and data cards.
-* **Unified Codebase:** Shares naming conventions and data structures with the backend for seamless integration.
+* **Real-time Monitoring:** A live Dashboard that tracks the connectivity status of the API Server and PostgreSQL Database.
+* **Performance Optimized:** Uses specialized React patterns (isMounted flags) to prevent memory leaks and cascading renders.
+* **Standardized UI:** Features a professional "Bright UI" theme with responsive status badges and data cards.
+* **Unified Codebase:** Uses consistent naming and data structures to ensure seamless integration with the backend.
 
-## 📁 Folder Structure
+## 📁 Project Structure
 
-* `src/api/`: Centralized API service configuration.
-* `src/pages/`: Main view components (e.g., Dashboard).
-* `src/styles/`: Tailwind CSS and global styling configurations.
+* `src/api/` - Centralized Axios instance and service calls.
+* `src/pages/` - Main view components including the System Dashboard.
+* `src/index.css` - Tailwind CSS directives and global styles.
 
 ```
- 
+
  
 
 ```
