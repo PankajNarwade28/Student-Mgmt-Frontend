@@ -1,15 +1,8 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import api from '../api/axiosInstance';
+import type { SystemStatus } from '../models/systemStatus';
 import './Dashboard.css';
 
-// Standardized status interface
-interface SystemStatus {
-  backend: boolean;
-  database: boolean;
-  totalStudents: number;
-  loading: boolean;
-  message: string;
-}
 
 export const Dashboard: React.FC = () => {
   const [status, setStatus] = useState<SystemStatus>({
@@ -21,11 +14,12 @@ export const Dashboard: React.FC = () => {
   });
 
   // Memoize fetch logic to maintain stable dependencies
+  // useCallback Use...?
   const checkSystems = useCallback(async (isMounted: boolean) => {
     try {
       const response = await api.get('/health');
       // Only update state if the component is still in the DOM
-      if (isMounted) {
+      if (isMounted) {   //check this pattern
         setStatus({
           backend: true,
           database: response.data.database,
@@ -46,7 +40,7 @@ export const Dashboard: React.FC = () => {
         });
       }
     }
-  }, []);
+   }, []); // Empty dependency array to run only once  and without dependency
 
   // Safe Effect pattern to avoid cascading renders
   useEffect(() => {
@@ -58,9 +52,9 @@ export const Dashboard: React.FC = () => {
 
     // Cleanup function: Essential for production-style discipline
     return () => {
-      isMounted = false;
+      isMounted = false;  // studyy.. 
     };
-  }, [checkSystems]);
+  }, [checkSystems]);  // use effect dependency arryay?
 
   if (status.loading) {
     return (
