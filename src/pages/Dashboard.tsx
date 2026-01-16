@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import api from '../api/axiosInstance';
-import type { SystemStatus } from '../models/systemStatus';
+import type { SystemStatus } from '../../../backend/src/models/systemStatus';
 import './Dashboard.css';
 
 
