@@ -57,33 +57,75 @@ export const Test: React.FC = () => {
   //   }, [checkSystems]);  // use effect dependency arryay?
 
   useEffect(() => {
-  console.log("I only run once on mount");
-}, []);
+    console.log("I only run once on mount");
+  }, []);
 
   useEffect(() => {
     let isMounted = true;
 
-    // We define the logic inside useEffect so we don't strictly need useCallback
+    // const fetchData = async () => {
+    //   try {
+    //     const response = await api.get("/health");
+
+    //     if (isMounted) {
+    //       // Check if the database specifically failed in the backend response
+    //       if (response.data.database === false) {
+    //         setStatus({
+    //           backend: true, // Server is responding
+    //           database: false, // But DB query failed
+    //           totalStudents: 0,
+    //           loading: false,
+    //           message: `Database Error: ${response.data.message}`, // Show the SQL error here
+    //         });
+    //       } else {
+    //         setStatus({
+    //           backend: true,
+    //           database: true,
+    //           totalStudents: response.data.totalStudents,
+    //           loading: false,
+    //           message: "All systems operational",
+    //         });
+    //       }
+    //     }
+    //   } catch (error) {
+    //     console.error("Health check failed:", error);
+    //     if (isMounted) {
+    //       setStatus((prev) => ({
+    //         ...prev,
+    //         backend: false,
+    //         loading: false,
+    //         message: "Critical: Backend Server Unreachable",
+    //       }));
+    //     }
+    //   }
+    // };
     const fetchData = async () => {
       try {
+        // Inside your useEffect fetchData function
         const response = await api.get("/health");
         if (isMounted) {
           setStatus({
-            backend: true,
-            database: response.data.database, // Manually picking
-            totalStudents: response.data.totalStudents, // Manually picking
+            backend: response.data.backend,
+            database: response.data.database,
+            totalStudents: response.data.totalStudents,
             loading: false,
-            message: "All systems operational",
+            // This will now show the specific database name error
+            message: response.data.message,
           });
         }
       } catch (error) {
         console.error("Health check failed:", error);
         if (isMounted) {
-          setStatus((prev) => ({ ...prev, backend: false, loading: false }));
+          setStatus(() => ({
+            backend: false, // API is down
+            database: false, // Assume DB is unreachable
+            totalStudents: "N/A", // Show N/A on the blue card
+            loading: false,
+            message: "Network Error: API Server is unreachable",
+          }));
         }
       }
     };
-
     fetchData();
 
     return () => {
