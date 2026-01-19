@@ -13,125 +13,81 @@ export const Test: React.FC = () => {
     message: "Initializing...",
   });
 
-  // Memoize fetch logic to maintain stable dependencies
-  // useCallback Use...?
-  //   const checkSystems = useCallback(async (isMounted: boolean) => {
-  //     try {
-  //       const response = await api.get('/health');
-  //       // Only update state if the component is still in the DOM
-  //       if (isMounted) {   //check this pattern
-  //         setStatus({
-  //           backend: true,
-  //           database: response.data.database,
-  //           totalStudents: response.data.totalStudents,
-  //           loading: false,
-  //           message: 'All systems operational',
-  //         });
-  //       }
-  //     } catch (error) {
-  //       console.error('Health check failed:', error);
-  //       if (isMounted) {
-  //         setStatus({
-  //           backend: false,
-  //           database: false,
-  //           totalStudents: 0,
-  //           loading: false,
-  //           message: 'System check failed. Ensure backend is running.',
-  //         });
-  //       }
-  //     }
-  //    }, []); // Empty dependency array to run only once  and without dependency
-
-  //   // Safe Effect pattern to avoid cascading renders
-  //   useEffect(() => {
-  //     let isMounted = true;
-  //     const init = async () => {
-  //       await checkSystems(isMounted);
-  //     };
-  //     init();
-
-  //     // Cleanup function: Essential for production-style discipline
-  //     return () => {
-  //       isMounted = false;  // studyy..
-  //     };
-  //   }, [checkSystems]);  // use effect dependency arryay?
-
-  useEffect(() => {
+ useEffect(() => {
     console.log("I only run once on mount");
   }, []);
 
+  // useEffect(() => {
+  //   let isMounted = true;
+
+  //   const fetchData = async () => {  // to refactor
+  //     try {
+  //       // Inside your useEffect fetchData function
+  //       const response = await api.get("/health");
+  //       if (isMounted) {
+  //         setStatus({
+  //           backend: response.data.backend,
+  //           database: response.data.database,
+  //           totalStudents: response.data.totalStudents,
+  //           loading: false,
+  //           // This will now show the specific database name error
+  //           message: response.data.message,
+  //         });
+  //       }
+  //     } catch (error) {
+  //       console.error("Health check failed:", error);
+  //       if (isMounted) {
+  //         setStatus(() => ({
+  //           backend: false, // API is down
+  //           database: false, // Assume DB is unreachable
+  //           totalStudents: "N/A", // Show N/A on the blue card
+  //           loading: false,
+  //           message: "Network Error: API Server is unreachable",
+  //         }));
+  //       }
+  //     }
+  //   };
+  //   fetchData();
+
+  //   return () => {
+  //     isMounted = false;
+  //   }; // The "Kill Switch"
+  // }, []); // Empty array means "Run once on mount"
+
   useEffect(() => {
-    let isMounted = true;
+  const fetchData = async () => {
+    try {
+      const response = await api.get("/health");
+      setStatus({
+        backend: response.data.backend,
+        database: response.data.database,
+        totalStudents: response.data.totalStudents,
+        loading: false,
+        message: response.data.message,
+      });
+    }  catch (error) {
+  console.error("Health check failed:", error);
 
-    // const fetchData = async () => {
-    //   try {
-    //     const response = await api.get("/health");
+  const axiosError = error as { response?: { status?: number; statusText?: string } };
+  const hasStatusCode = !!axiosError.response?.status;
 
-    //     if (isMounted) {
-    //       // Check if the database specifically failed in the backend response
-    //       if (response.data.database === false) {
-    //         setStatus({
-    //           backend: true, // Server is responding
-    //           database: false, // But DB query failed
-    //           totalStudents: 0,
-    //           loading: false,
-    //           message: `Database Error: ${response.data.message}`, // Show the SQL error here
-    //         });
-    //       } else {
-    //         setStatus({
-    //           backend: true,
-    //           database: true,
-    //           totalStudents: response.data.totalStudents,
-    //           loading: false,
-    //           message: "All systems operational",
-    //         });
-    //       }
-    //     }
-    //   } catch (error) {
-    //     console.error("Health check failed:", error);
-    //     if (isMounted) {
-    //       setStatus((prev) => ({
-    //         ...prev,
-    //         backend: false,
-    //         loading: false,
-    //         message: "Critical: Backend Server Unreachable",
-    //       }));
-    //     }
-    //   }
-    // };
-    const fetchData = async () => {
-      try {
-        // Inside your useEffect fetchData function
-        const response = await api.get("/health");
-        if (isMounted) {
-          setStatus({
-            backend: response.data.backend,
-            database: response.data.database,
-            totalStudents: response.data.totalStudents,
-            loading: false,
-            // This will now show the specific database name error
-            message: response.data.message,
-          });
-        }
-      } catch (error) {
-        console.error("Health check failed:", error);
-        if (isMounted) {
-          setStatus(() => ({
-            backend: false, // API is down
-            database: false, // Assume DB is unreachable
-            totalStudents: "N/A", // Show N/A on the blue card
-            loading: false,
-            message: "Network Error: API Server is unreachable",
-          }));
-        }
-      }
-    };
-    fetchData();
+  setStatus({
+    backend: hasStatusCode,        // true if status code exists, false otherwise
+    database: false,
+    totalStudents: "N/A",
+    loading: false,
+    message: ` ${
+      hasStatusCode
+        ? `Status Code ${axiosError.response?.status} ${axiosError.response?.statusText || ""}`  // just for Testing Use.
+        : "API Server is unreachable"
+    }`,
+  });
+}
+  };
 
-    return () => {
-      isMounted = false;
-    }; // The "Kill Switch"
-  }, []); // Empty array means "Run once on mount"
+  fetchData();
+}, []); // runs once on mount
+
   if (status.loading) {
     return (
       <div className="loading-container">
