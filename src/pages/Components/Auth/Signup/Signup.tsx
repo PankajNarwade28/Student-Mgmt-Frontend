@@ -1,15 +1,21 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import "../Auth.css"
+import React, { useEffect, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom'; 
+import "../Auth.css" 
 
 const Signup: React.FC = () => {
   const [formData, setFormData] = useState({ username: '', email: '', password: '' });
   const navigate = useNavigate();
 
+    useEffect(() => {
+      if (localStorage.getItem('token')) {
+        navigate('/');
+      }
+    }, [navigate]);
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    alert("Signup clicked"); 
     try {
-      const response = await fetch('http://localhost:5000/api/auth/signup', {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/signup`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
@@ -47,7 +53,7 @@ const Signup: React.FC = () => {
           required 
         />
         <button type="submit">Sign Up</button>
-        <p>Already have an account? <Link to="/auth/login">Login</Link></p>
+        <p>Already have an account? <Link to="/api/auth/login">Login</Link></p>
       </form>
     </div>
   );

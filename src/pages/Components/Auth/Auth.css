@@ -2,9 +2,9 @@
 .auth-container {
   display: flex;
   justify-content: center;
-  align-items: center;
-  min-height: 80vh; /* Adjust based on navbar height */
+  align-items: center; 
   background-color: #f8f9fa;
+  height: 100vh;
   padding: 20px;
 }
 

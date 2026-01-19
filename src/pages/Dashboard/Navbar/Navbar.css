@@ -5,10 +5,10 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 24px;
-  position: sticky;
-  top: 0;
-  z-index: 900;
+  padding: 0 24px; 
+  top: 0; 
+  position: fixed; /* or sticky */ 
+  z-index: 100 !important; /* Keep this relatively low */
 }
 
 .nav-left, .nav-right { display: flex; align-items: center; gap: 15px; }
@@ -60,4 +60,34 @@
 
 .btn-signup:hover {
   background-color: #0056b3;
+}
+
+.user-section {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.logout-btn {
+  background: none;
+  border: none;
+  color: #ff4d4f; /* Red for logout */
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  padding: 5px;
+  transition: transform 0.2s;
+}
+
+.logout-btn:hover {
+  transform: scale(1.1);
+}
+
+.profile-pill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #f0f2f5;
+  padding: 4px 12px;
+  border-radius: 20px;
 }

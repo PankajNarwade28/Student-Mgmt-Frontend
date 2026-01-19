@@ -1,11 +1,11 @@
- @import "tailwindcss";
+ /* @import "tailwindcss"; */
 .sidebar {
   width: 260px;
   background: #ffffff;
   border-right: 1px solid #e2e8f0;
   height: 100vh;
   position: fixed;
-  z-index: 1000;
+  z-index: 100;
   display: flex;
   flex-direction: column;
   transition: transform 0.3s ease;
@@ -38,6 +38,24 @@
   background: #f1f5f9;
   color: #6366f1;
 }
+
+
+.logout-btn-sidebar {
+  width: 80%;
+  background-color: #e53e3e; /* Red */
+  margin: 0 auto;
+  color: white;
+  border: none;
+  padding: 12px;
+  border-radius: 8px;
+  display: flex;
+  margin-bottom: 1rem;
+  align-items: center;
+  gap: 8px;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.2s; 
+} 
 
 .close-btn { display: none; background: none; border: none; cursor: pointer; }
 

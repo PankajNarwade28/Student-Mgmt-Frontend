@@ -1,0 +1,61 @@
+/* src/components/ConfirmationModal.css */
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  
+  /* Use a high z-index to stay above Navbar and Sidebar */
+  z-index: 9999; 
+  
+  /* The background color and blur */
+  background-color: rgba(255, 255, 255, 0.3); /* Light semi-transparent */
+  backdrop-filter: blur(8px); /* Stronger blur */
+  -webkit-backdrop-filter: blur(8px); /* Support for Safari */
+  
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  
+  /* Smooth transition for the blur effect */
+  transition: all 0.3s ease-in-out;
+}
+
+
+.modal-content {
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+.modal-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: 24px;
+}
+
+.btn-cancel {
+  padding: 8px 16px;
+  border: 1px solid #e2e8f0;
+  background: white;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.btn-confirm {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  color: white;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.btn-primary { background-color: #3182ce; }
+.btn-danger { background-color: #e53e3e; }

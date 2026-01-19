@@ -1,15 +1,22 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import "../Auth.css"
+const API_URL = import.meta.env.VITE_API_URL; 
 
 const Login: React.FC = () => {
   const [formData, setFormData] = useState({ email: '', password: '' });
   const navigate = useNavigate();
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  useEffect(() => {
+    if (localStorage.getItem('token')) {
+      navigate('/');
+    }
+  }, [navigate]);
+
+const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const response = await fetch('http://localhost:5000/api/auth/login', {
+     const response = await fetch(`${API_URL}/api/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
@@ -17,10 +24,16 @@ const Login: React.FC = () => {
 
       if (response.ok) {
         const data = await response.json();
-        localStorage.setItem('token', data.token); // Store JWT
-        navigate('/dashboard');
+        
+        // Store the items in LocalStorage
+        localStorage.setItem('token', data.token); 
+        localStorage.setItem('userId', data.user.id);   // Storing the UUID
+        localStorage.setItem('userRole', data.user.role); // Storing the Role (Admin/Teacher/Student)
+        
+        navigate('/');
       } else {
-        alert('Invalid credentials');
+        const errorData = await response.json();
+        alert(errorData.message || 'Invalid credentials');
       }
     } catch (error) {
       console.error('Login error:', error);

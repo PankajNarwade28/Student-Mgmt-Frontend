@@ -6,13 +6,16 @@ import Reports from './pages/Components/Reports/Reports';
 import Settings from './pages/Components/Settings/Settings';
 import Users from './pages/Components/Users/Users';
 import Login from './pages/Components/Auth/Login/Login';
+import ProtectedRoute from './pages/Components/Auth/protectedRoute';
 import Signup from './pages/Components/Auth/Signup/Signup'; 
 
 function App() {
   return (
     <BrowserRouter>
-      <Routes>
-      {/* Routes that use Layout */}
+  <Routes>
+    {/* AUTH PROTECTED GROUP */}
+    <Route element={<ProtectedRoute />}>
+      {/* Routes that use Layout - only accessible if logged in */}
       <Route path="/" element={<Layout />}>
         <Route index element={<Main />} />
         <Route path="users" element={<Users />} />
@@ -20,13 +23,13 @@ function App() {
         <Route path="settings" element={<Settings />} />
         <Route path="test" element={<Test />} />
       </Route>
+    </Route>
 
-      {/* Standalone route (no Layout) */}
-      <Route path="/auth/login" element={<Login />} />
-      <Route path="/auth/signup" element={<Signup />} />
-    </Routes>
-
-    </BrowserRouter>
+    {/* PUBLIC ROUTES */}
+    <Route path="/auth/login" element={<Login />} />
+    <Route path="/auth/signup" element={<Signup />} />
+  </Routes>
+</BrowserRouter>
   );
 }
 
