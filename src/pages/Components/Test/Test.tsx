@@ -1,7 +1,7 @@
 // import React, { useEffect, useState, useCallback } from 'react';
 import React, { useEffect, useState } from "react";
-import api from "../../api/axiosInstance";
-import type { SystemStatus } from "../../models/systemStatus";
+import api from "../../../api/axiosInstance";
+import type { SystemStatus } from "../../../models/systemStatus";
 import "./Test.css";
 
 export const Test: React.FC = () => {

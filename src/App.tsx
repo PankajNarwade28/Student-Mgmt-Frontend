@@ -1,27 +1,31 @@
-import React from 'react'; 
-import Dashboard from './pages//Dashboard';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'; 
-import './App.css';
-import Test from './pages/Test/Test';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import Layout from './pages/Dashboard/layout';
+// import Test from './pages/Test/Test';
+import { Test } from './pages/Components/Test/Test';
+import Main from './pages/Components/Dashboard/Dashboard';
+import Reports from './pages/Components/Reports/Reports';
+import Settings from './pages/Components/Settings/Settings';
+import Users from './pages/Components/Users/Users';
+// import Layout from './components/Layout';
+// import Main from './components/Main';
+// import Users from './components/Users';
+// import Reports from './components/Reports';
+// import Settings from './components/Settings';
 
-const App: React.FC = () => {
+function App() {
   return (
-    <Router>
-      <div className="App">
-        <h1>Welcome to the Dashboard Testing Purpose Only</h1>
-        
-        <Routes>
-          {/* This renders the Dashboard only at the root (/) path */}
-          <Route path="/" element={<Dashboard />} />
-
-          {/* This renders the Test page ONLY at the (/test) path */}
-          <Route path="/test" element={<Test />} />
-        </Routes>
-      </div>
-    </Router>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Layout />}>
+          <Route index element={<Main />} />
+          <Route path="users" element={<Users />} />
+          <Route path="reports" element={<Reports />} />
+          <Route path="settings" element={<Settings />} />
+        <Route path='/test' element={<Test />} />
+        </Route>
+      </Routes>
+    </BrowserRouter>
   );
-};
+}
 
 export default App;
-
- 
