@@ -7,7 +7,8 @@ import Settings from './pages/Components/Settings/Settings';
 import Users from './pages/Components/Users/Users';
 import Login from './pages/Components/Auth/Login/Login';
 import ProtectedRoute from './pages/Components/Auth/protectedRoute';
-import Signup from './pages/Components/Auth/Signup/Signup'; 
+import Signup from './pages/Components/Auth/Signup/Signup';  
+import Home from './pages/Dashboard/Home/Home';
 
 function App() {
   return (
@@ -16,12 +17,12 @@ function App() {
     {/* AUTH PROTECTED GROUP */}
     <Route element={<ProtectedRoute />}>
       {/* Routes that use Layout - only accessible if logged in */}
-      <Route path="/" element={<Layout />}>
+      <Route path="/dashboard" element={<Layout />}>
         <Route index element={<Main />} />
         <Route path="users" element={<Users />} />
         <Route path="reports" element={<Reports />} />
         <Route path="settings" element={<Settings />} />
-        {/* <Route path="test" element={<Test />} /> */}
+        <Route path="test" element={<Test />} />
       </Route>
     </Route>
 
@@ -29,10 +30,11 @@ function App() {
     <Route path="/auth/login" element={<Login />} />
     <Route path="/auth/signup" element={<Signup />} />
     <Route path="/test" element={<Test />} />
-
+    <Route path="/" element={<Home />} />
   </Routes>
 </BrowserRouter>
   );
 }
+
 
 export default App;

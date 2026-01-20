@@ -8,7 +8,7 @@ export const loginSchema = z.object({
 
 // Schema for Signup (Extends login or adds more fields)
 export const signupSchema = z.object({
-  username: z.string().min(3, "Username must be at least 3 characters"),
+  username: z.string().min(5, "Username must be at least 5 characters"),
   email: z.string().email("Invalid email format"),
   password: z
     .string()

@@ -34,9 +34,11 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
   return (
     <aside className={`sidebar ${isOpen ? "open" : ""}`}>
       <div className="sidebar-header">
-        <div className="logo">
-          <LayoutDashboard size={24} /> <span>ERP System</span>
-        </div>
+        
+          <NavLink to="/" className="logo">
+          <LayoutDashboard size={24} /> <span>ERP System</span> 
+          </NavLink>
+         
         <button className="close-btn" onClick={toggleSidebar}>
           <X size={24} />
         </button>
@@ -45,7 +47,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
       <nav className="menu">
         {/* Always visible to logged in users */}
         <NavLink
-          to="/"
+          to="/dashboard"
           className={({ isActive }) =>
             isActive ? "menu-item active" : "menu-item"
           }
@@ -56,7 +58,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
         {/* ADMIN ONLY: Users Management */}
         {canAccess(userRole, [ROLES.ADMIN]) && (
           <NavLink
-            to="/users"
+            to="/dashboard/users"
             className={({ isActive }) =>
               isActive ? "menu-item active" : "menu-item"
             }
@@ -68,7 +70,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
         {/* ADMIN & TEACHER: Reports */}
         {canAccess(userRole, [ROLES.ADMIN, ROLES.TEACHER]) && (
           <NavLink
-            to="/reports"
+            to="/dashboard/reports"
             className={({ isActive }) =>
               isActive ? "menu-item active" : "menu-item"
             }
@@ -80,7 +82,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
         {/* SAMPLE: Only Teacher can see Test section */}
         {canAccess(userRole, [ROLES.TEACHER]) && (
           <NavLink
-            to="/test"
+            to="/dashboard/test"
             className={({ isActive }) =>
               isActive ? "menu-item active" : "menu-item"
             }
@@ -91,7 +93,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
 
         {/* Settings: Visible to everyone authenticated */}
         <NavLink
-          to="/settings"
+          to="/dashboard/settings"
           className={({ isActive }) =>
             isActive ? "menu-item active" : "menu-item"
           }

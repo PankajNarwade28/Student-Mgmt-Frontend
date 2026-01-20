@@ -43,7 +43,7 @@ const Signup: React.FC = () => {
     try {
       // const response = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/signup`, {
       const API_URL = import.meta.env.VITE_API_URL;
-      const response = await fetch(`${API_URL}/api/auth/signup`, {
+      const response = await fetch(`${API_URL}/api/auth/signup`, { // axios
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),

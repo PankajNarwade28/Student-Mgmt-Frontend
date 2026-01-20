@@ -3,6 +3,8 @@ import React, { useEffect, useState } from "react";
 import api from "../../../api/axiosInstance";
 import type { SystemStatus } from "../../../models/systemStatus";
 import "./Test.css";
+import { LayoutDashboard } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 export const Test: React.FC = () => {
   const [status, setStatus] = useState<SystemStatus>({
@@ -12,7 +14,7 @@ export const Test: React.FC = () => {
     loading: true,
     message: "Initializing...",
   });
-
+const navigate = useNavigate();
  useEffect(() => {
     console.log("I only run once on mount");
   }, []);
@@ -99,7 +101,13 @@ export const Test: React.FC = () => {
     );
   }
 
+  // Static data representing your ERP modules
+  
+  const handleRedirect = () => {
+    navigate("/"); // Change this path to match your actual dashboard route
+  };
   return (
+    
     <div className="dashboard-container">
       <div className="dashboard-wrapper">
         {/* Header */}
@@ -230,6 +238,14 @@ export const Test: React.FC = () => {
             </svg>
             <span>Refresh Status</span>
           </button>
+          <button
+          onClick={handleRedirect}
+          className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4.5  py-3  ml-4 rounded-xl font-medium transition-all shadow-md"
+        >
+          <LayoutDashboard size={18} />{" "}
+          {/* Changed icon to Dashboard for better context */}
+          Go to Dashboard
+        </button>
         </div>
         {/* // Inside your component: */}
       </div>

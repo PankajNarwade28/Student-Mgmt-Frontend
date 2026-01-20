@@ -11,7 +11,7 @@ const Login: React.FC = () => {
 
   useEffect(() => {
     if (localStorage.getItem('token')) {
-      navigate('/');
+      navigate('/dashboard');
     }
   }, [navigate]);
 
@@ -36,7 +36,7 @@ const handleSubmit = async (e: React.FormEvent) => {
         }
 
     try {
-     const response = await fetch(`${API_URL}/api/auth/login`, {
+     const response = await fetch(`${API_URL}/api/auth/login`, { //axios use!
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
@@ -50,7 +50,7 @@ const handleSubmit = async (e: React.FormEvent) => {
         localStorage.setItem('userId', data.user.id);   // Storing the UUID
         localStorage.setItem('userRole', data.user.role); // Storing the Role (Admin/Teacher/Student)
         
-        navigate('/');
+        navigate('/dashboard');
       } else {
         const errorData = await response.json();
         alert(errorData.message || 'Invalid credentials');
