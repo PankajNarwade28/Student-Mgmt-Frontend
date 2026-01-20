@@ -21,13 +21,15 @@ function App() {
         <Route path="users" element={<Users />} />
         <Route path="reports" element={<Reports />} />
         <Route path="settings" element={<Settings />} />
-        <Route path="test" element={<Test />} />
+        {/* <Route path="test" element={<Test />} /> */}
       </Route>
     </Route>
 
     {/* PUBLIC ROUTES */}
     <Route path="/auth/login" element={<Login />} />
     <Route path="/auth/signup" element={<Signup />} />
+    <Route path="/test" element={<Test />} />
+
   </Routes>
 </BrowserRouter>
   );

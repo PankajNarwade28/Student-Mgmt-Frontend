@@ -12,9 +12,13 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
   cancelText = 'Cancel',
   type = 'primary'
 }) => {
+
+  
   if (!isOpen) return null;
 
   return (
+
+    
     <div className="modal-overlay" onClick={onCancel}>
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
         <h3>{title}</h3>
@@ -32,6 +36,7 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
         </div>
       </div>
     </div>
+    
   );
 };
 
