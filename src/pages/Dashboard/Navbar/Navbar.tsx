@@ -46,7 +46,7 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
               <Bell size={20} />
             </button>
             
-            <div className="profile-pill">
+            <div className="profile-pill font-bold text-blue-600">
               <img src={`https://ui-avatars.com/api/?name=${userRole}`} alt="user" />
               <span>{userRole}</span>
             </div>
