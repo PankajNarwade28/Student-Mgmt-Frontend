@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "../Auth.css";
-import { signupSchema } from "../../../../utils/validationSchema";
+import { signupSchema } from "../../../../validations/authSchema";
 import { Eye, EyeOff } from "lucide-react";
+const API_URL = import.meta.env.VITE_API_URL;
+import axios from "axios";
 
 const Signup: React.FC = () => {
   const navigate = useNavigate();
@@ -42,14 +44,15 @@ const Signup: React.FC = () => {
     }
     try {
       // const response = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/signup`, {
-      const API_URL = import.meta.env.VITE_API_URL;
-      const response = await fetch(`${API_URL}/api/auth/signup`, { // axios
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
+      // const API_URL = import.meta.env.VITE_API_URL;
+      // const response = await fetch(`${API_URL}/api/auth/signup`, { // axios
+      //   method: "POST",
+      //   headers: { "Content-Type": "application/json" },
+      //   body: JSON.stringify(formData),
+      // });
+      const response= await axios.post(`${API_URL}/api/auth/signup`, formData)
 
-      if (response.ok) {
+      if (response.status === 200) {
         alert("Account created successfully!");
         navigate("/auth/login");
       }
