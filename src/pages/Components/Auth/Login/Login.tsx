@@ -4,9 +4,11 @@ import "../Auth.css";
 const API_URL = import.meta.env.VITE_API_URL;
 import { loginSchema } from "../../../../validations/authSchema";
 import axios from "axios";
+import toast from "react-hot-toast";
 
 const Login: React.FC = () => {
   const [formData, setFormData] = useState({ email: "", password: "" });
+  const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const navigate = useNavigate();
 
@@ -16,6 +18,11 @@ const Login: React.FC = () => {
     }
   }, [navigate]);
 
+  useEffect(() => {
+    if (loading) {
+      toast.loading("Logging in...", { id: "loginToast" });
+    }
+  }, [loading]);
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -37,33 +44,38 @@ const Login: React.FC = () => {
     }
 
     try {
-      //  const response = await fetch(`${API_URL}/api/auth/login`, { //axios use!
-      //     method: 'POST',
-      //     headers: { 'Content-Type': 'application/json' },
-      //     body: JSON.stringify(formData),
-      //   });
-
+      setLoading(true);
       const response = await axios.post(`${API_URL}/api/auth/login`, formData);
 
-      // if (response.ok) {
-      //   const data = await response.json();
-      
       if (response.status === 200) {
         const data = response.data;
-
-        // Store the items in LocalStorage
+        toast.success("Login successful!");
         localStorage.setItem("token", data.token);
-        localStorage.setItem("userId", data.user.id); // Storing the UUID
-        localStorage.setItem("userRole", data.user.role); // Storing the Role (Admin/Teacher/Student)
-
+        localStorage.setItem("userId", data.user.id);
+        localStorage.setItem("userRole", data.user.role);
         navigate("/dashboard");
-      } else {
-        // const errorData = await response.json();
-        const errorData = response.data;
-        alert(errorData.message || "Invalid credentials");
       }
-    } catch (error) {
-      console.error("Login error:", error);
+    } catch (error: unknown) {
+      // 1. Check if the error is from the server (Axios response)
+      if (axios.isAxiosError(error) && error.response) {
+        // This matches the 'data' object seen in your console image
+        const serverMessage = error.response.data.message;
+        toast.error(serverMessage || "Invalid credentials");
+      }
+      // 2. Handle network errors (no response from server)
+      else if (axios.isAxiosError(error) && error.request) {
+        toast.error("No response from server. Check your connection.");
+      }
+      // 3. Handle other setup errors
+      else {
+        toast.error("An unexpected error occurred.");
+      }
+
+      console.error("Login Error:", error);
+    } finally {
+      setLoading(false);
+      setErrors({});
+      toast.dismiss("loginToast");
     }
   };
 

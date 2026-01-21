@@ -5,6 +5,7 @@ import { signupSchema } from "../../../../validations/authSchema";
 import { Eye, EyeOff } from "lucide-react";
 const API_URL = import.meta.env.VITE_API_URL;
 import axios from "axios";
+import toast from "react-hot-toast";
 
 const Signup: React.FC = () => {
   const navigate = useNavigate();
@@ -50,14 +51,29 @@ const Signup: React.FC = () => {
       //   headers: { "Content-Type": "application/json" },
       //   body: JSON.stringify(formData),
       // });
-      const response= await axios.post(`${API_URL}/api/auth/signup`, formData)
+      const response = await axios.post(`${API_URL}/api/auth/signup`, formData);
 
-      if (response.status === 200) {
-        alert("Account created successfully!");
+      if (response.status === 201) {
+        // alert("Account created successfully!");
+        toast.success("Account created successfully!");
         navigate("/auth/login");
       }
     } catch (error) {
-      console.error("Signup error:", error);
+      if (axios.isAxiosError(error) && error.response) {
+        // This matches the 'data' object seen in your console image
+        const serverMessage = error.response.data.message;
+        toast.error(serverMessage || "Signup failed. Please try again.");
+      }
+      // 2. Handle network errors (no response from server)
+      else if (axios.isAxiosError(error) && error.request) {
+        toast.error("No response from server. Check your connection.");
+      }
+      // 3. Handle other setup errors
+      else {
+        toast.error("An unexpected error occurred.");
+      }
+
+      console.error("Signup Error:", error);
     }
   };
 
@@ -149,7 +165,7 @@ const Signup: React.FC = () => {
           Sign Up
         </button>
         <p>
-          Already have an account? <Link to="/api/auth/login">Login</Link>
+          Already have an account? <Link to="/auth/login">Login</Link>
         </p>
       </form>
     </div>

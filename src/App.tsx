@@ -1,5 +1,5 @@
 // import { BrowserRouter, Routes, Route } from 'react-router-dom';
-// import Layout from './pages/Dashboard/layout'; 
+// import Layout from './pages/Dashboard/layout';
 // import { Test } from './pages/Components/Test/Test';
 // import Main from './pages/Components/Dashboard/Dashboard';
 // import Reports from './pages/Components/Reports/Reports';
@@ -7,7 +7,7 @@
 // import Users from './pages/Components/Users/Users';
 // import Login from './pages/Components/Auth/Login/Login';
 // import ProtectedRoute from './pages/Components/Auth/protectedRoute';
-// import Signup from './pages/Components/Auth/Signup/Signup';  
+// import Signup from './pages/Components/Auth/Signup/Signup';
 // import Home from './pages/Dashboard/Home/Home';
 
 // function App() {
@@ -36,7 +36,6 @@
 //   );
 // }
 
-
 // export default App;
 
 import { BrowserRouter, Routes, Route } from "react-router-dom";
@@ -50,6 +49,8 @@ import Login from "./pages/Components/Auth/Login/Login";
 import Signup from "./pages/Components/Auth/Signup/Signup";
 import ProtectedRoute from "./pages/Components/Auth/protectedRoute";
 import Home from "./pages/Dashboard/Home/Home";
+import AddUser from "./pages/Components/Dashboard/Admin/AddUser/AddUser";
+import SystemLogs from "./pages/Components/Dashboard/Admin/SystemLogs/SystemLogs";
 
 function App() {
   return (
@@ -65,10 +66,10 @@ function App() {
             <Route index element={<Main />} />
 
             {/* ADMIN ONLY */}
-            <Route
-              element={<ProtectedRoute allowedRoles={["Admin"]} />}
-            >
+            <Route element={<ProtectedRoute allowedRoles={["Admin"]} />}>
               <Route path="users" element={<Users />} />
+              <Route path="admin/adduser" element={<AddUser />} />
+              <Route path="admin/logs" element={<SystemLogs />} />
             </Route>
 
             {/* ADMIN + TEACHER */}
@@ -82,6 +83,8 @@ function App() {
             <Route path="settings" element={<Settings />} />
             <Route path="test" element={<Test />} />
           </Route>
+
+           
         </Route>
 
         {/* PUBLIC ROUTES */}
