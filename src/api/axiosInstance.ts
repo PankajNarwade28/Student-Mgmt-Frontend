@@ -4,13 +4,22 @@ const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL || 'http://localhost:3000',
 });
 
-// Token Injection Middleware (Interceptors)
-api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token');
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
+api.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('token');
+    
+    if (token && config.headers) {
+      // Use standard Bearer token format
+      config.headers.Authorization = `Bearer ${token}`;
+      
+      // Optional: Helpful for debugging (remove in production)
+      console.log("Interceptor attaching token:", token);
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
   }
-  return config;
-});
+);
 
 export default api;

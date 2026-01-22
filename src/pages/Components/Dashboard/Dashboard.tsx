@@ -26,7 +26,7 @@ const Dashboard: React.FC = () => {
   <div className="admin-tools">
     <h3>Admin Panel Quick Links</h3>
 
-    <button onClick={() => navigate('/dashboard/admin/adduser')}>
+    <button onClick={() => navigate('/dashboard/admin')}>
       Manage Users
     </button>
 

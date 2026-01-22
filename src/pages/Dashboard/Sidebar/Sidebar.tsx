@@ -51,6 +51,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
           className={({ isActive }) =>
             isActive ? "menu-item active" : "menu-item"
           }
+           onClick={toggleSidebar}
         >
           <LayoutDashboard size={20} /> Dashboard
         </NavLink>
@@ -62,6 +63,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
             className={({ isActive }) =>
               isActive ? "menu-item active" : "menu-item"
             }
+            onClick={toggleSidebar}
           >
             <Users size={20} /> Users
           </NavLink>
@@ -74,6 +76,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
             className={({ isActive }) =>
               isActive ? "menu-item active" : "menu-item"
             }
+            onClick={toggleSidebar}
           >
             <BarChart3 size={20} /> Reports
           </NavLink>
@@ -86,6 +89,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
             className={({ isActive }) =>
               isActive ? "menu-item active" : "menu-item"
             }
+            onClick={toggleSidebar}
           >
             <Database size={20} /> Teacher Logs
           </NavLink>
@@ -97,6 +101,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
           className={({ isActive }) =>
             isActive ? "menu-item active" : "menu-item"
           }
+          onClick={toggleSidebar}
         >
           <Settings size={20} /> Settings
         </NavLink>
@@ -107,7 +112,9 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
         <div className="sidebar-footer">
           <button
             className="logout-btn-sidebar"
-            onClick={() => setIsLogoutModalOpen(true)}
+            onClick={() => {
+              setIsLogoutModalOpen(true); 
+            }}
           >
             Logout{" "}
           </button>

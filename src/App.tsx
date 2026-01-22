@@ -1,42 +1,3 @@
-// import { BrowserRouter, Routes, Route } from 'react-router-dom';
-// import Layout from './pages/Dashboard/layout';
-// import { Test } from './pages/Components/Test/Test';
-// import Main from './pages/Components/Dashboard/Dashboard';
-// import Reports from './pages/Components/Reports/Reports';
-// import Settings from './pages/Components/Settings/Settings';
-// import Users from './pages/Components/Users/Users';
-// import Login from './pages/Components/Auth/Login/Login';
-// import ProtectedRoute from './pages/Components/Auth/protectedRoute';
-// import Signup from './pages/Components/Auth/Signup/Signup';
-// import Home from './pages/Dashboard/Home/Home';
-
-// function App() {
-//   return (
-//     <BrowserRouter>
-//   <Routes>
-//     {/* AUTH PROTECTED GROUP */}
-//     <Route element={<ProtectedRoute />}>
-//       {/* Routes that use Layout - only accessible if logged in */}
-//       <Route path="/dashboard" element={<Layout />}>
-//         <Route index element={<Main />} />
-//         <Route path="users" element={<Users />} />
-//         <Route path="reports" element={<Reports />} />
-//         <Route path="settings" element={<Settings />} />
-//         <Route path="test" element={<Test />} />
-//       </Route>
-//     </Route>
-
-//     {/* PUBLIC ROUTES */}
-//     <Route path="/auth/login" element={<Login />} />
-//     <Route path="/auth/signup" element={<Signup />} />
-//     <Route path="/test" element={<Test />} />
-//     <Route path="/" element={<Home />} />
-//   </Routes>
-// </BrowserRouter>
-//   );
-// }
-
-// export default App;
 
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Layout from "./pages/Dashboard/layout";
@@ -51,6 +12,9 @@ import ProtectedRoute from "./pages/Components/Auth/protectedRoute";
 import Home from "./pages/Dashboard/Home/Home";
 import AddUser from "./pages/Components/Dashboard/Admin/AddUser/AddUser";
 import SystemLogs from "./pages/Components/Dashboard/Admin/SystemLogs/SystemLogs";
+import { Navigate } from "react-router-dom";
+import { Admin } from "./pages/Components/Dashboard/Admin/Admin";
+import ViewUsers from "./pages/Components/Dashboard/Admin/ViewUser/ViewUser";
 
 function App() {
   return (
@@ -68,8 +32,10 @@ function App() {
             {/* ADMIN ONLY */}
             <Route element={<ProtectedRoute allowedRoles={["Admin"]} />}>
               <Route path="users" element={<Users />} />
+              <Route path="admin" element={<Admin />} />
               <Route path="admin/adduser" element={<AddUser />} />
               <Route path="admin/logs" element={<SystemLogs />} />
+              <Route path="admin/viewuser" element={<ViewUsers />} />
             </Route>
 
             {/* ADMIN + TEACHER */}
@@ -92,6 +58,8 @@ function App() {
         <Route path="/auth/signup" element={<Signup />} />
         <Route path="/" element={<Home />} />
         <Route path="/test" element={<Test />} />
+        {/* To redirect immediately to Home  for unknown routes */}
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
   );
