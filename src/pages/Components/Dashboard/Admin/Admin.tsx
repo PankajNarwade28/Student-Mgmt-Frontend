@@ -8,7 +8,7 @@ export const Admin = () => {
     <h3>Admin Panel Quick Links</h3>
 
     <button onClick={() => navigate('/dashboard/admin/adduser')}>
-      Add New Student.
+      Add New User.
     </button>
 
     <button onClick={() => navigate('/dashboard/admin/viewuser')}>

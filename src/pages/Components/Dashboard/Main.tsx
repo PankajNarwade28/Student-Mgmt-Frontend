@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import "./Dashboard.css";
+import "./Main.css";
 import { useNavigate } from "react-router-dom";
 
-const Dashboard: React.FC = () => {
+const Main: React.FC = () => {
   const navigate = useNavigate();
   // Retrieve the role we stored during login
   const [role] = useState<string | null>(() =>
@@ -48,4 +48,4 @@ const Dashboard: React.FC = () => {
   );
 };
 
-export default Dashboard;
+export default Main;

@@ -3,7 +3,7 @@ import {
   LayoutDashboard,
   Users,
   BarChart3,
-  Settings, 
+  Settings,
   X,
   Database,
 } from "lucide-react";
@@ -34,11 +34,10 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
   return (
     <aside className={`sidebar ${isOpen ? "open" : ""}`}>
       <div className="sidebar-header">
-        
-          <NavLink to="/" className="logo">
-          <LayoutDashboard size={24} /> <span>ERP System</span> 
-          </NavLink>
-         
+        <NavLink to="/" className="logo">
+          <LayoutDashboard size={24} /> <span>ERP System</span>
+        </NavLink>
+
         <button className="close-btn" onClick={toggleSidebar}>
           <X size={24} />
         </button>
@@ -51,11 +50,11 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
           className={({ isActive }) =>
             isActive ? "menu-item active" : "menu-item"
           }
-           onClick={toggleSidebar}
+          onClick={toggleSidebar}
         >
           <LayoutDashboard size={20} /> Dashboard
         </NavLink>
-
+ 
         {/* ADMIN ONLY: Users Management */}
         {canAccess(userRole, [ROLES.ADMIN]) && (
           <NavLink
@@ -113,7 +112,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
           <button
             className="logout-btn-sidebar"
             onClick={() => {
-              setIsLogoutModalOpen(true); 
+              setIsLogoutModalOpen(true);
             }}
           >
             Logout{" "}

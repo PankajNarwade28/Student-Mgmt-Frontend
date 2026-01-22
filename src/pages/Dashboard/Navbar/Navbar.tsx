@@ -52,12 +52,55 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
               <Bell size={20} />
             </button>
 
-            <div className="profile-pill font-bold text-blue-600">
+            {/* <div className="profile-pill font-bold text-blue-600">
               <img
                 src={`https://ui-avatars.com/api/?name=${userRole}`}
                 alt="user"
               />
               <span>{userRole}</span>
+            </div> */}
+
+            <div className="flex items-center hover:cursor-pointer">
+              <button
+                onClick={() => navigate("/dashboard/profile")}
+                className="group flex items-center gap-3 p-1 pr-4 bg-white border border-gray-200 rounded-full hover:border-blue-300 hover:bg-blue-50/50 hover:cursor-pointer transition-all duration-200 shadow-sm hover:shadow-md"
+              >
+                {/* Avatar with Ring */}
+                <div className="relative">
+                  <img
+                    src={`https://ui-avatars.com/api/?name=${userRole}&background=0D8ABC&color=fff&bold=true`}
+                    alt="user"
+                    className="w-9 h-9 rounded-full border-2 border-white shadow-sm transition-transform group-hover:scale-105"
+                  />
+                  {/* Small Active Status Indicator */}
+                  <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 border-2 border-white rounded-full"></span>
+                </div>
+
+                {/* Text Label */}
+                <div className="flex flex-col items-start leading-tight">
+                  <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                    Account
+                  </span>
+                  <span className="text-sm font-bold text-blue-600 group-hover:text-blue-700">
+                    {userRole}
+                  </span>
+                </div>
+
+                {/* Small Chevron to indicate interactivity */}
+                <svg
+                  className="w-4 h-4 text-gray-400 group-hover:text-blue-500 transition-colors ml-1"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M9 5l7 7-7 7"
+                  />
+                </svg>
+              </button>
             </div>
 
             {/* <button className="logout-btn" onClick={() => setIsLogoutModalOpen(true)} title="Logout">
