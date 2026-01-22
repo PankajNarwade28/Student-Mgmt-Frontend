@@ -4,8 +4,8 @@ export interface ConfirmationModalProps {
   message: string;
   onConfirm: () => void;
   onCancel: () => void;
-  confirmText?: string;
+  confirmText?: string; 
   cancelText?: string;
-  type?: 'danger' | 'primary'; // To change button colors
+  type?: 'danger' | 'warning' | 'info';
 }
  

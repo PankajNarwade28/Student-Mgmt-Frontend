@@ -2,12 +2,12 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Layout from "./pages/Dashboard/layout";
 import { Test } from "./pages/Components/Test/Test";
-import Main from "./pages/Components/Dashboard/Dashboard";
+import Main from "./pages/Components/Dashboard/Main";
 import Reports from "./pages/Components/Reports/Reports";
 import Settings from "./pages/Components/Settings/Settings";
 import Users from "./pages/Components/Users/Users";
 import Login from "./pages/Components/Auth/Login/Login";
-import Signup from "./pages/Components/Auth/Signup/Signup";
+// import Signup from "./pages/Components/Auth/Signup/Signup";
 import ProtectedRoute from "./pages/Components/Auth/protectedRoute";
 import Home from "./pages/Dashboard/Home/Home";
 import AddUser from "./pages/Components/Dashboard/Admin/AddUser/AddUser";
@@ -15,6 +15,7 @@ import SystemLogs from "./pages/Components/Dashboard/Admin/SystemLogs/SystemLogs
 import { Navigate } from "react-router-dom";
 import { Admin } from "./pages/Components/Dashboard/Admin/Admin";
 import ViewUsers from "./pages/Components/Dashboard/Admin/ViewUser/ViewUser";
+import Profile from "./pages/Components/Dashboard/Profile/Profile";
 
 function App() {
   return (
@@ -47,6 +48,7 @@ function App() {
 
             {/* ALL LOGGED-IN USERS */}
             <Route path="settings" element={<Settings />} />
+            <Route path="profile" element={<Profile />} />
             <Route path="test" element={<Test />} />
           </Route>
 
@@ -55,7 +57,8 @@ function App() {
 
         {/* PUBLIC ROUTES */}
         <Route path="/auth/login" element={<Login />} />
-        <Route path="/auth/signup" element={<Signup />} />
+        {/* No signup for now */}
+        {/* <Route path="/auth/signup" element={<Signup />} /> */}
         <Route path="/" element={<Home />} />
         <Route path="/test" element={<Test />} />
         {/* To redirect immediately to Home  for unknown routes */}
