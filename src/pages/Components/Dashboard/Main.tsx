@@ -135,7 +135,7 @@ const Main: React.FC = () => {
                     </button>
 
                     <button
-                      onClick={() => navigate("/dashboard/admin/courses")}
+                      onClick={() => navigate("/dashboard/admin/addcourse")}
                       className="flex hover:cursor-pointer items-center justify-between p-4 bg-white border border-gray-200 rounded-xl hover:border-slate-800 hover:shadow-md transition-all group"
                     >
                       <div className="flex items-center gap-4">

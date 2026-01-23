@@ -24,7 +24,7 @@ const ViewUsers: React.FC = () => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editingUser, setEditingUser] = useState<User | null>(null);
 
-  useEffect(() => {
+  useEffect(() => { 
     fetchUsers();
   }, []);
 
@@ -33,6 +33,7 @@ const ViewUsers: React.FC = () => {
       setLoading(true);
       const response = await api.get("/api/admin/users");
       // Log this to see exactly what is inside the response
+      toast.success("Users fetched successfully");
       console.log("Full Response Data:", response.data);
       const data = response.data.users || response.data;
       if (Array.isArray(data)) setUsers(data);
@@ -78,7 +79,7 @@ const ViewUsers: React.FC = () => {
         email: editingUser.email.toLowerCase().trim(),
         role: editingUser.role,
       });
-      toast.success("User updated");
+      toast.success("User updated successfully");
       setUsers(users.map((u) => (u.id === editingUser.id ? editingUser : u)));
       setIsEditModalOpen(false);
     } catch (error) {

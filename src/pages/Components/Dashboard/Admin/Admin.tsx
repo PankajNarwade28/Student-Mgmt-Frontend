@@ -3,6 +3,7 @@ import {
   HiOutlineUserAdd,
   HiOutlineUsers,
   HiOutlineChartBar,
+  HiOutlineDocumentText,
 } from "react-icons/hi";
 
 const Admin = () => {
@@ -56,6 +57,13 @@ const Admin = () => {
         >
           <HiOutlineUsers className="text-xl" />
           View All Users
+        </button>
+        <button
+          onClick={() => navigate("addcourse")}
+          className={`${getTabStyle("addcourse")} hover:cursor-pointer`}
+        >
+          <HiOutlineDocumentText className="text-xl" />
+          Add New Course
         </button>
       </div>
 

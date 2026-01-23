@@ -17,6 +17,7 @@ import ViewUsers from "./pages/Components/Dashboard/Admin/ViewUser/ViewUser";
 import Profile from "./pages/Components/Dashboard/Profile/Profile";
 import ViewUser from "./pages/Components/Dashboard/Admin/ViewUser/ViewUser";
 import AdminPage from "./pages/Components/Dashboard/Admin/AdminPage";
+import AddCourse from "./pages/Components/Dashboard/Admin/AddCourse/AddCourse";
 
 function App() {
   return (
@@ -44,6 +45,7 @@ function App() {
                 <Route index element={<AdminPage />} />
                 <Route path="adduser" element={<AddUser />} />
                 <Route path="viewuser" element={<ViewUser />} />
+                <Route path="addcourse" element={<AddCourse />} />
               </Route>
               <Route path="admin/logs" element={<SystemLogs />} />
               <Route path="admin/viewuser" element={<ViewUsers />} />
