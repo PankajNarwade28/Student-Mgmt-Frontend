@@ -65,6 +65,13 @@ const Admin = () => {
           <HiOutlineDocumentText className="text-xl" />
           Add New Course
         </button>
+        <button
+          onClick={() => navigate("courses")}
+          className={`${getTabStyle("courses")} hover:cursor-pointer`}
+        >
+          <HiOutlineDocumentText className="text-xl" />
+          View All Courses
+        </button>
       </div>
 
       {/* 2. Bottom Content Area */}

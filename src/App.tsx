@@ -18,6 +18,7 @@ import Profile from "./pages/Components/Dashboard/Profile/Profile";
 import ViewUser from "./pages/Components/Dashboard/Admin/ViewUser/ViewUser";
 import AdminPage from "./pages/Components/Dashboard/Admin/AdminPage";
 import AddCourse from "./pages/Components/Dashboard/Admin/AddCourse/AddCourse";
+import ViewCourses from "./pages/Components/Dashboard/Admin/ViewCourse/ViewCourse";
 
 function App() {
   return (
@@ -46,6 +47,7 @@ function App() {
                 <Route path="adduser" element={<AddUser />} />
                 <Route path="viewuser" element={<ViewUser />} />
                 <Route path="addcourse" element={<AddCourse />} />
+                <Route path="courses" element={<ViewCourses />} />
               </Route>
               <Route path="admin/logs" element={<SystemLogs />} />
               <Route path="admin/viewuser" element={<ViewUsers />} />
