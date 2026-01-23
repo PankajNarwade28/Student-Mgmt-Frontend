@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from "react";
 import api from "../../../../../api/axiosInstance";
 import { FaEdit, FaTrash } from "react-icons/fa";
+import {
+  HiOutlineUsers,
+  HiOutlineSearch, 
+} from "react-icons/hi";
 import { toast } from "react-hot-toast";
 import axios from "axios";
 import ConfirmationModal from "../../../Modal/confirmationModal";
-import { useNavigate } from "react-router-dom";
 
 interface User {
   id: string;
@@ -16,9 +19,9 @@ interface User {
 }
 
 const ViewUsers: React.FC = () => {
-  const navigate = useNavigate();
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [userToDelete, setUserToDelete] = useState<string | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -32,212 +35,254 @@ const ViewUsers: React.FC = () => {
     try {
       setLoading(true);
       const response = await api.get("/api/admin/users");
-
-      if (response.data && Array.isArray(response.data.users)) {
-        setUsers(response.data.users);
-      } else if (Array.isArray(response.data)) {
-        setUsers(response.data);
-      }
-      toast.success("Users fetched successfully");
+      const data = response.data.users || response.data;
+      if (Array.isArray(data)) setUsers(data);
     } catch (error) {
-      toast.error("Failed to fetch users");
-      console.error("Fetch Error:", error);
+       if (axios.isAxiosError(error) && error.response) {
+        toast.error(error.response.data.message || "Fetch failed");
+        return;
+      } else {
+        toast.error("An unexpected error occurred.");
+      }
     } finally {
       setLoading(false);
     }
   };
 
-  const handleDeleteClick = (id: string) => {
-    setUserToDelete(id);
-    setIsDeleteModalOpen(true);
-  };
+  const filteredUsers = users.filter((user) =>
+    user.email.toLowerCase().includes(searchTerm.toLowerCase()),
+  );
 
   const handleDeleteConfirm = async () => {
     if (!userToDelete) return;
-
     try {
-      const response = await api.delete(`/api/admin/users/${userToDelete}`);
-      if (response.status === 200) {
-        toast.success("User deleted successfully");
-        setUsers(users.filter((user) => user.id !== userToDelete));
+      await api.delete(`/api/admin/users/${userToDelete}`);
+      toast.success("User deleted successfully");
+      setUsers(users.filter((u) => u.id !== userToDelete));
+    } catch (error) {
+       if (axios.isAxiosError(error) && error.response) {
+        toast.error(error.response.data.message || "Delete failed");
+        return;
+      } else {
+        toast.error("An unexpected error occurred.");
       }
-    } catch (error: unknown) {
-      let msg = "Delete failed";
-      if (axios.isAxiosError(error)) {
-        msg = error.response?.data?.message || msg;
-      } else if (error instanceof Error) {
-        msg = error.message;
-      }
-      toast.error(msg);
     } finally {
       setIsDeleteModalOpen(false);
-      setUserToDelete(null);
     }
-  };
-
-  const handleEditClick = (user: User) => {
-    setEditingUser({ ...user }); // Create a copy to avoid direct state mutation
-    setIsEditModalOpen(true);
   };
 
   const handleUpdateUser = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!editingUser) return;
-
     try {
-      const response = await api.put(`/api/admin/users/${editingUser.id}`, {
+      await api.put(`/api/admin/users/${editingUser.id}`, {
         email: editingUser.email.toLowerCase().trim(),
         role: editingUser.role,
       });
-
-      if (response.status === 200) {
-        toast.success("User updated successfully");
-        setUsers(users.map((u) => (u.id === editingUser.id ? editingUser : u)));
-        setIsEditModalOpen(false);
+      toast.success("User updated");
+      setUsers(users.map((u) => (u.id === editingUser.id ? editingUser : u)));
+      setIsEditModalOpen(false);
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response) {
+        toast.error(error.response.data.message || "Update failed");
+        return;
+      } else {
+        toast.error("An unexpected error occurred.");
       }
-    } catch (error: unknown) {
-      let msg = "Update failed";
-      if (axios.isAxiosError(error)) {
-        msg = error.response?.data?.message || msg;
-      } else if (error instanceof Error) {
-        msg = error.message;
-      }
-      toast.error(msg);
     }
   };
 
   if (loading)
     return (
-      <div className="p-6 text-center font-semibold">Loading users...</div>
+      <div className="flex flex-col items-center justify-center min-h-[400px] space-y-4">
+        <div className="w-10 h-10 border-4 border-slate-200 border-t-slate-800 rounded-full animate-spin" />
+        <p className="text-gray-500 font-medium">Syncing user database...</p>
+      </div>
     );
 
   return (
-    <div className="p-6 bg-white rounded-xl shadow-md">
-      
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-2xl font-bold text-gray-800">
-          Total Users ({users.length})
-        </h2>
-
-        <button
-          onClick={() => navigate("/dashboard/admin")}
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-        >
-          Back to Admin
-        </button>
-      </div>
-
-      <div className="overflow-x-auto rounded-lg border border-gray-100 shadow-sm">
-  <table className="min-w-full divide-y divide-gray-200">
-    <thead className="bg-gray-50">
-      <tr>
-        {["Email", "Role", "Status", "Created At", "Updated At", "Actions"].map((header) => (
-          <th key={header} className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
-            {header}
-          </th>
-        ))}
-      </tr>
-    </thead>
-    <tbody className="bg-white divide-y divide-gray-100">
-      {users.map((user) => (
-        <tr key={user.id} className="hover:bg-blue-50/30 transition-colors duration-150">
-          <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{user.email}</td>
-          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-            <span className="bg-gray-100 px-2.5 py-0.5 rounded-full text-xs font-semibold uppercase">
-              {user.role}
-            </span>
-          </td>
-          <td className="px-6 py-4 whitespace-nowrap">
-            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold ${
-              user.is_active ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
-            }`}>
-              <span className={`w-1.5 h-1.5 rounded-full mr-1.5 ${user.is_active ? "bg-green-500" : "bg-red-500"}`}></span>
-              {user.is_active ? "Active" : "Inactive"}
-            </span>
-          </td>
-          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-            {new Date(user.created_at).toLocaleDateString(undefined, { dateStyle: 'medium' })}
-          </td>
-          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 italic">
-            {user.updated_at ? new Date(user.updated_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '—'}
-          </td>
-          <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-            <div className="flex items-center space-x-3">
-              <button onClick={() => handleEditClick(user)} className="p-2 text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-600 hover:text-white transition-all">
-                <FaEdit size={16} />
-              </button>
-              <button onClick={() => handleDeleteClick(user.id)} className="p-2 text-red-600 bg-red-50 rounded-lg hover:bg-red-600 hover:text-white transition-all">
-                <FaTrash size={16} />
-              </button>
-            </div>
-          </td>
-        </tr>
-      ))}
-    </tbody>
-  </table>
-</div>
-{isEditModalOpen && editingUser && (
-  <div className="fixed inset-0 z-100 flex items-center justify-center overflow-y-auto outline-none focus:outline-none">
-    {/* Overlay */}
-    <div className="fixed inset-0 bg-gray-900/60 backdrop-blur-sm transition-opacity" onClick={() => setIsEditModalOpen(false)}></div>
-    
-    {/* Modal Card */}
-    <div className="relative w-full max-w-md mx-auto bg-white rounded-2xl shadow-2xl p-8 transform transition-all">
-      <div className="flex items-center justify-between mb-6">
-        <h3 className="text-2xl font-bold text-gray-900">Edit User Details</h3>
-        <button onClick={() => setIsEditModalOpen(false)} className="text-gray-400 hover:text-gray-600">✕</button>
-      </div>
-      
-      <form onSubmit={handleUpdateUser} className="space-y-5">
+    <div className="animate-in fade-in duration-500 space-y-6">
+      {/* Header & Search */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <label className="block text-sm font-semibold text-gray-700 mb-2">Primary Email</label>
+          <h2 className="text-2xl font-bold text-slate-800 flex items-center gap-2">
+            <HiOutlineUsers className="text-slate-400" />
+            User Directory
+            <span className="ml-2 text-xs font-bold bg-slate-100 text-slate-500 px-2 py-1 rounded-md">
+              {users.length} Total
+            </span>
+          </h2>
+        </div>
+
+        <div className="relative w-full md:w-72">
+          <HiOutlineSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
           <input
-            type="email"
-            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-50 transition-all outline-none"
-            value={editingUser.email}
-            onChange={(e) => setEditingUser({ ...editingUser, email: e.target.value })}
-            required
+            type="text"
+            placeholder="Search by email..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 ring-slate-800/5 outline-none transition-all"
           />
         </div>
-        
-        <div>
-          <label className="block text-sm font-semibold text-gray-700 mb-2">Institutional Role</label>
-          <div className="relative">
-            <select
-              className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-50 transition-all outline-none appearance-none"
-              value={editingUser.role}
-              onChange={(e) => setEditingUser({ ...editingUser, role: e.target.value })}
-            >
-              <option value="Student">Student</option>
-              <option value="Teacher">Teacher</option>
-              <option value="Admin">Admin</option>
-            </select>
-            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-gray-500">
-              ▼
+      </div>
+
+      {/* Table Container */}
+      <div className="bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full text-left border-collapse">
+            <thead>
+              <tr className="bg-gray-50/50 border-b border-gray-100">
+                {["Member", "Role", "Status", "Joined", "Actions"].map((h) => (
+                  <th
+                    key={h}
+                    className="px-6 py-4 text-[11px] font-bold text-gray-400 uppercase tracking-widest"
+                  >
+                    {h}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-50">
+              {filteredUsers.map((user) => (
+                <tr
+                  key={user.id}
+                  className="hover:bg-slate-50/50 transition-colors"
+                >
+                  <td className="px-6 py-4">
+                    <p className="text-sm font-semibold text-slate-800">
+                      {user.email}
+                    </p>
+                    <p className="text-[10px] text-gray-400 font-mono">
+                      {user.id.slice(0, 8)}...
+                    </p>
+                  </td>
+                  <td className="px-6 py-4">
+                    <span
+                      className={`px-3 py-1 rounded-lg text-[10px] font-bold uppercase ${
+                        user.role === "Admin"
+                          ? "bg-purple-50 text-purple-600"
+                          : "bg-blue-50 text-blue-600"
+                      }`}
+                    >
+                      {user.role}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="flex items-center gap-2">
+                      <div
+                        className={`w-1.5 h-1.5 rounded-full ${user.is_active ? "bg-emerald-500" : "bg-red-500"}`}
+                      />
+                      <span className="text-xs font-medium text-gray-600">
+                        {user.is_active ? "Active" : "Inactive"}
+                      </span>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 text-xs text-gray-500 font-medium">
+                    {new Date(user.created_at).toLocaleDateString()}
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => {
+                          setEditingUser({ ...user });
+                          setIsEditModalOpen(true);
+                        }}
+                        className="p-2 hover:cursor-pointer text-blue-400 hover:text-blue-800 hover:bg-blue-100 rounded-lg transition-all"
+                      >
+                        <FaEdit size={18} />
+                      </button>
+                      <button
+                        onClick={() => {
+                          setUserToDelete(user.id);
+                          setIsDeleteModalOpen(true);
+                        }}
+                        className="p-2 hover:cursor-pointer text-red-300 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"
+                      >
+                        <FaTrash size={18} />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          {filteredUsers.length === 0 && (
+            <div className="p-12 text-center text-gray-400">
+              No users found matching your search.
             </div>
+          )}
+        </div>
+      </div>
+
+      {/* Edit Modal */}
+      {isEditModalOpen && editingUser && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          <div
+            className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm"
+            onClick={() => setIsEditModalOpen(false)}
+          />
+          <div className="relative w-full max-w-md bg-white rounded-3xl shadow-2xl p-8 animate-in zoom-in-95 duration-200">
+            <h3 className="text-xl font-bold text-slate-800 mb-6">
+              Modify Member
+            </h3>
+            <form onSubmit={handleUpdateUser} className="space-y-5">
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-gray-400 uppercase tracking-wider">
+                  Email Address
+                </label>
+                <input
+                  type="email"
+                  className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 ring-slate-800/5 outline-none"
+                  value={editingUser.email}
+                  onChange={(e) =>
+                    setEditingUser({ ...editingUser, email: e.target.value })
+                  }
+                  required
+                />
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-gray-400 uppercase tracking-wider">
+                  System Role
+                </label>
+                <select
+                  className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl outline-none"
+                  value={editingUser.role}
+                  onChange={(e) =>
+                    setEditingUser({ ...editingUser, role: e.target.value })
+                  }
+                >
+                  <option value="Student">Student</option>
+                  <option value="Teacher">Teacher</option>
+                  <option value="Admin">Admin</option>
+                </select>
+              </div>
+              <div className="flex gap-3 pt-4">
+                <button
+                  type="button"
+                  onClick={() => setIsEditModalOpen(false)}
+                  className="flex-1 py-3 text-sm font-bold text-gray-500 hover:bg-gray-50 rounded-xl transition-all"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="flex-1 py-3 text-sm font-bold text-white bg-slate-800 hover:bg-slate-900 rounded-xl shadow-lg shadow-slate-200 transition-all"
+                >
+                  Update Member
+                </button>
+              </div>
+            </form>
           </div>
         </div>
+      )}
 
-        <div className="flex items-center space-x-4 pt-4">
-          <button type="button" onClick={() => setIsEditModalOpen(false)} className="flex-1 px-6 py-3 font-bold text-gray-700 bg-gray-100 rounded-xl hover:bg-gray-200 transition">
-            Dismiss
-          </button>
-          <button type="submit" className="flex-1 px-6 py-3 font-bold text-white bg-blue-600 rounded-xl hover:bg-blue-700 shadow-lg shadow-blue-200 transition active:scale-95">
-            Save Profile
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
-)}
       <ConfirmationModal
         isOpen={isDeleteModalOpen}
         title="Confirm Deletion"
-        message="Are you sure you want to delete this user? This action cannot be undone."
+        message="Are you sure you want to remove this member? This action cannot be reversed."
         onConfirm={handleDeleteConfirm}
         onCancel={() => setIsDeleteModalOpen(false)}
-        confirmText="Delete"
-        cancelText="Cancel"
+        confirmText="Remove User"
         type="danger"
       />
     </div>

@@ -3,28 +3,19 @@ import React, { useState } from "react";
 import { toast } from "react-hot-toast";
 import { createUserSchema } from "../../../../../validations/adminSchema";
 import api from "../../../../../api/axiosInstance";
-import { useNavigate } from "react-router-dom";
+import { HiOutlineMail,  HiOutlineUserAdd } from "react-icons/hi";
+
 const AddUser: React.FC = () => {
-  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [role, setRole] = useState("Student");
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [formData, setFormData] = useState({
-    email: "",
-    role: "Student",
-  });
- 
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    // Create the data object directly to ensure validation uses current values
     const currentData = { email, role };
-    setFormData(currentData);
 
-    // 1. Validate using the fresh object, not the state variable
     const validation = createUserSchema.safeParse(currentData);
-
     if (!validation.success) {
       const newErrors: Record<string, string> = {};
       validation.error.issues.forEach((issue) => {
@@ -32,135 +23,84 @@ const AddUser: React.FC = () => {
         if (path) newErrors[path.toString()] = issue.message;
       });
       setErrors(newErrors);
-      return; // Stop here if validation fails
+      return;
     }
 
-    // Clear previous errors before starting the API call
     setErrors({});
-
     setLoading(true);
 
-    // 2. API Request
     try {
-      console.log("Form Data being sent:", formData, loading);
       const response = await api.post("/api/admin/adduser", currentData);
-
       if (response.status === 201) {
         toast.success(response.data.message || "User added successfully!");
-        // Reset local inputs
         setEmail("");
         setRole("Student");
-        setFormData({ email: "", role: "Student" });
       }
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
-        const serverMessage = error.response.data.message;
-        toast.error(serverMessage || "Creation failed.");
+        toast.error(error.response.data.message || "Creation failed.");
       } else {
         toast.error("An unexpected error occurred.");
       }
-      console.error("User Creation Error:", error);
     } finally {
-      // Only turn off loading when the request is actually finished
-      setFormData({ email: "", role: "Student" });
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-[80vh] bg-gray-50 flex flex-col items-center justify-center px-4 py-12">
-      {/* Header Section: Now properly aligned above the card */}
-      <div className="w-full max-w-md flex items-center justify-between mb-8">
-        <div>
-          <h2 className="text-3xl font-extrabold text-gray-900 tracking-tight">
-            User Management
-          </h2>
-          <p className="text-sm text-gray-500 mt-1">
-            Add a new student or teacher account
-          </p>
-        </div>
-        <button
-          onClick={() => navigate("/dashboard/admin")}
-          className="inline-flex items-center px-4 py-2 text-sm font-medium text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors duration-200"
-        >
-          <svg
-            className="w-4 h-4 mr-2"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M10 19l-7-7m0 0l7-7m-7 7h18"
-            />
-          </svg>
-          Back
-        </button>
-      </div>
-
-      {/* Main Form Card */}
-      <div className="bg-white shadow-xl rounded-2xl w-full max-w-md p-8 border border-gray-100">
-        <div className="mb-8 text-center">
-          <div className="mx-auto w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center mb-4 shadow-lg shadow-blue-200">
-            <svg
-              className="w-6 h-6 text-white"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"
-              />
-            </svg>
+    /* h-[calc(100vh-200px)] handles the "remaining height" 
+       by subtracting the approximate height of the Header and Tabs 
+    */
+    <div className="flex flex-col items-center justify-center min-h-[calc(100vh-250px)] animate-in fade-in duration-500">
+      
+      <div className="w-full max-w-md bg-white border border-gray-100 rounded-3xl p-8 shadow-2xl shadow-slate-200/50">
+        
+        {/* Header Icon Section */}
+        <div className="flex flex-col items-center mb-8">
+          <div className="w-16 h-16 bg-slate-800 text-white rounded-2xl flex items-center justify-center shadow-xl shadow-slate-200 mb-4">
+            <HiOutlineUserAdd className="text-3xl" />
           </div>
-          <h3 className="text-xl font-bold text-gray-800">Account Details</h3>
+          <h2 className="text-2xl font-bold text-slate-800">New Membership</h2>
+          <p className="text-gray-400 text-sm">Onboard a new user to the platform</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6" noValidate>
-          {/* Email Input Group */}
-          <div className="relative">
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
+          
+          {/* Email Input */}
+          <div className="space-y-1.5">
+            <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">
               Email Address
             </label>
-            <div className="relative">
+            <div className="relative group">
+              <HiOutlineMail className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-slate-800 transition-colors" />
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                required
-                className={`w-full pl-4 pr-4 py-3 border-2 rounded-xl focus:outline-none transition-all duration-200 ${
-                  errors.email
-                    ? "border-red-300 focus:border-red-500"
-                    : "border-gray-100 focus:border-blue-500 focus:ring-4 focus:ring-blue-50 shadow-sm"
-                }`}
                 placeholder="example@college.edu"
+                className={`w-full pl-11 pr-4 py-3.5 rounded-2xl border-2 transition-all outline-none ${
+                  errors.email 
+                    ? "border-red-200 bg-red-50 focus:border-red-400" 
+                    : "border-gray-50 bg-gray-50 focus:border-slate-800 focus:bg-white"
+                }`}
               />
             </div>
-            {errors.email && (
-              <p className="mt-2 text-xs font-medium text-red-500 flex items-center">
-                <span className="mr-1">⚠️</span> {errors.email}
-              </p>
-            )}
+            {errors.email && <p className="text-[11px] text-red-500 font-bold mt-1 ml-1">{errors.email}</p>}
           </div>
 
-          {/* Role Select Group */}
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
+          {/* Role Toggle */}
+          <div className="space-y-1.5">
+            <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">
               Assign Role
             </label>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="flex p-1.5 bg-gray-50 rounded-2xl border border-gray-100">
               <button
                 type="button"
                 onClick={() => setRole("Student")}
-                className={`py-3 px-4 rounded-xl border-2 font-medium transition-all ${
+                className={`flex-1 py-3 rounded-xl font-bold transition-all ${
                   role === "Student"
-                    ? "border-blue-600 bg-blue-50 text-blue-700"
-                    : "border-gray-100 text-gray-500 hover:border-gray-200"
+                    ? "bg-white text-slate-800 shadow-sm"
+                    : "text-gray-400 hover:text-gray-600"
                 }`}
               >
                 Student
@@ -168,58 +108,28 @@ const AddUser: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setRole("Teacher")}
-                className={`py-3 px-4 rounded-xl border-2 font-medium transition-all ${
+                className={`flex-1 py-3 rounded-xl font-bold transition-all ${
                   role === "Teacher"
-                    ? "border-blue-600 bg-blue-50 text-blue-700"
-                    : "border-gray-100 text-gray-500 hover:border-gray-200"
+                    ? "bg-white text-slate-800 shadow-sm"
+                    : "text-gray-400 hover:text-gray-600"
                 }`}
               >
                 Teacher
               </button>
             </div>
-            {errors.role && (
-              <p className="mt-2 text-xs font-medium text-red-500">
-                {errors.role}
-              </p>
-            )}
           </div>
 
-          {/* Submit Button */}
-          <div className="pt-2">
+          {/* Submit Action */}
+          <div className="pt-4">
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white py-4 rounded-xl font-bold text-lg shadow-lg shadow-blue-100 active:scale-[0.98] transition-all disabled:bg-blue-300 disabled:shadow-none"
+              className="w-full bg-slate-800 hover:bg-slate-900 text-white py-4 rounded-2xl font-bold text-lg transition-all active:scale-[0.98] disabled:opacity-50 shadow-lg shadow-slate-200"
             >
-              {loading ? (
-                <span className="flex items-center justify-center">
-                  <svg
-                    className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                  >
-                    <circle
-                      className="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      strokeWidth="4"
-                    ></circle>
-                    <path
-                      className="opacity-75"
-                      fill="currentColor"
-                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                    ></path>
-                  </svg>
-                  Processing...
-                </span>
-              ) : (
-                "Register User"
-              )}
+              {loading ? "Registering..." : "Create Account"}
             </button>
-            <p className="text-center text-xs text-gray-400 mt-4 uppercase tracking-widest font-semibold">
-              Secure Admin Portal
+            <p className="text-center text-[10px] text-gray-400 mt-6 uppercase tracking-[0.2em] font-bold">
+              Secure System Authorization
             </p>
           </div>
         </form>
