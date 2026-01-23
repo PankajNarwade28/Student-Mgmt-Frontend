@@ -56,7 +56,7 @@ const ViewUsers: React.FC = () => {
   const handleDeleteConfirm = async () => {
     if (!userToDelete) return;
     try {
-      await api.delete(`/api/admin/users/${userToDelete}`);
+      await api.delete(`/api/admin/users/${userToDelete}`, { data: { id: userToDelete } });
       toast.success("User deleted successfully");
       setUsers(users.filter((u) => u.id !== userToDelete));
     } catch (error) {
@@ -75,7 +75,8 @@ const ViewUsers: React.FC = () => {
     e.preventDefault();
     if (!editingUser) return;
     try {
-      await api.put(`/api/admin/users/${editingUser.id}`, {
+      await api.put(`/api/admin/users/${editingUser.id}`, 
+        { id: editingUser.id,  //for checkCourseAssignments middleware
         email: editingUser.email.toLowerCase().trim(),
         role: editingUser.role,
       });

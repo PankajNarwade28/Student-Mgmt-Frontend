@@ -115,12 +115,21 @@ useEffect(() => {
         setFormData({ name: "", code: "", description: "", teacher_id: "" });
       }
     } catch (error) {
-      if (axios.isAxiosError(error) && error.response?.status === 400) {
-        toast.error("Course code already exists. Please use a different code.");
-      } else {
-        console.error("Course creation failed", error);
-        toast.error("Failed to create course");
-      }
+      if (axios.isAxiosError(error) && error.response) {
+    // Access the 'message' property sent from your backend middleware or controller
+    const apiMessage = error.response.data.message;
+    const apiStatus = error.response.status;
+
+    if (apiStatus === 400 && apiMessage?.includes("code already exists")) {
+      toast.error("Course code already exists. Please use a different code.");
+    } else {
+      // Fallback to the API message, or a default string if it's missing
+      toast.error(apiMessage || "Creation failed.");
+    }
+  } else {
+    console.error("Course creation failed", error);
+    toast.error("An unexpected error occurred.");
+  }
     } finally {
       // 4. Always turn off loading when the API call finishes
       setLoading(false);
