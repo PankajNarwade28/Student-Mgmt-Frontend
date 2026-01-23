@@ -1,10 +1,7 @@
 import React, { useEffect, useState } from "react";
 import api from "../../../../../api/axiosInstance";
 import { FaEdit, FaTrash } from "react-icons/fa";
-import {
-  HiOutlineUsers,
-  HiOutlineSearch, 
-} from "react-icons/hi";
+import { HiOutlineUsers, HiOutlineSearch } from "react-icons/hi";
 import { toast } from "react-hot-toast";
 import axios from "axios";
 import ConfirmationModal from "../../../Modal/confirmationModal";
@@ -35,10 +32,12 @@ const ViewUsers: React.FC = () => {
     try {
       setLoading(true);
       const response = await api.get("/api/admin/users");
+      // Log this to see exactly what is inside the response
+      console.log("Full Response Data:", response.data);
       const data = response.data.users || response.data;
       if (Array.isArray(data)) setUsers(data);
     } catch (error) {
-       if (axios.isAxiosError(error) && error.response) {
+      if (axios.isAxiosError(error) && error.response) {
         toast.error(error.response.data.message || "Fetch failed");
         return;
       } else {
@@ -60,7 +59,7 @@ const ViewUsers: React.FC = () => {
       toast.success("User deleted successfully");
       setUsers(users.filter((u) => u.id !== userToDelete));
     } catch (error) {
-       if (axios.isAxiosError(error) && error.response) {
+      if (axios.isAxiosError(error) && error.response) {
         toast.error(error.response.data.message || "Delete failed");
         return;
       } else {
