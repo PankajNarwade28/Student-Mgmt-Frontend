@@ -31,7 +31,7 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
             {cancelText}
           </button>
           <button 
-            className={`px-4 py-2 rounded transition ${colorClass}`} 
+            className={`px-4 py-2 rounded hover:cursor-pointer transition ${colorClass}`} 
             onClick={onConfirm}
           >
             {confirmText}
