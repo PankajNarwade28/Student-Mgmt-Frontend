@@ -12,6 +12,7 @@ import { createCourseSchema } from "../../../../../validations/courseSchema";
 
 interface Teacher {
   id: string;
+  teacher_name: string;
   email: string;
 }
 
@@ -210,7 +211,7 @@ useEffect(() => {
                 <option value="">Select a Teacher</option>
                 {teachers.map((t) => (
                   <option key={t.id} value={t.id}>
-                    {t.email}
+                    {t.teacher_name || t.id}
                   </option>
                 ))}
               </select>
