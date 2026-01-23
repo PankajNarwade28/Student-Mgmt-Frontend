@@ -1,4 +1,3 @@
-
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Layout from "./pages/Dashboard/layout";
 import { Test } from "./pages/Components/Test/Test";
@@ -12,10 +11,12 @@ import ProtectedRoute from "./pages/Components/Auth/protectedRoute";
 import Home from "./pages/Dashboard/Home/Home";
 import AddUser from "./pages/Components/Dashboard/Admin/AddUser/AddUser";
 import SystemLogs from "./pages/Components/Dashboard/Admin/SystemLogs/SystemLogs";
+import Admin from "./pages/Components/Dashboard/Admin/Admin";
 import { Navigate } from "react-router-dom";
-import { Admin } from "./pages/Components/Dashboard/Admin/Admin";
 import ViewUsers from "./pages/Components/Dashboard/Admin/ViewUser/ViewUser";
 import Profile from "./pages/Components/Dashboard/Profile/Profile";
+import ViewUser from "./pages/Components/Dashboard/Admin/ViewUser/ViewUser";
+import AdminPage from "./pages/Components/Dashboard/Admin/AdminPage";
 
 function App() {
   return (
@@ -33,8 +34,17 @@ function App() {
             {/* ADMIN ONLY */}
             <Route element={<ProtectedRoute allowedRoles={["Admin"]} />}>
               <Route path="users" element={<Users />} />
-              <Route path="admin" element={<Admin />} />
-              <Route path="admin/adduser" element={<AddUser />} />
+              {/* <Route path="admin" element={<Admin />} /> */}
+              {/* <Route path="admin/adduser" element={<AddUser />} /> */}
+
+              <Route path="admin" element={<Admin />}>
+                {/* These will render inside the Admin's <Outlet /> */}
+                {/* This is the default page that shows at /admin */}
+                {/* The default dashboard page */}
+                <Route index element={<AdminPage />} />
+                <Route path="adduser" element={<AddUser />} />
+                <Route path="viewuser" element={<ViewUser />} />
+              </Route>
               <Route path="admin/logs" element={<SystemLogs />} />
               <Route path="admin/viewuser" element={<ViewUsers />} />
             </Route>
@@ -51,8 +61,6 @@ function App() {
             <Route path="profile" element={<Profile />} />
             <Route path="test" element={<Test />} />
           </Route>
-
-           
         </Route>
 
         {/* PUBLIC ROUTES */}
