@@ -19,6 +19,8 @@ import ViewUser from "./pages/Components/Dashboard/Admin/ViewUser/ViewUser";
 import AdminPage from "./pages/Components/Dashboard/Admin/AdminPage";
 import AddCourse from "./pages/Components/Dashboard/Admin/AddCourse/AddCourse";
 import ViewCourses from "./pages/Components/Dashboard/Admin/ViewCourse/ViewCourse";
+import MyCourses from "./pages/Components/Dashboard/Courses/Courses";
+import TeacherLogs from "./pages/Components/Dashboard/TeacherLogs/TeacherLogs";
 
 function App() {
   return (
@@ -60,10 +62,19 @@ function App() {
               <Route path="reports" element={<Reports />} />
             </Route>
 
+            {/* Student ONLY */}
+            <Route
+              element={<ProtectedRoute allowedRoles={["Student","Teacher"]} />}
+            >
+              {/* Add student-specific routes here */}
+              <Route path="mycourses" element={<MyCourses />} />
+            </Route>
+
+
             {/* ALL LOGGED-IN USERS */}
             <Route path="settings" element={<Settings />} />
             <Route path="profile" element={<Profile />} />
-            <Route path="test" element={<Test />} />
+            <Route path="schedule" element={<TeacherLogs />} />
           </Route>
         </Route>
 
