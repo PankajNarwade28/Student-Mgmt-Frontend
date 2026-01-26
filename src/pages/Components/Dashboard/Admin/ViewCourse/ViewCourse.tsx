@@ -158,52 +158,65 @@ const ViewCourses: React.FC = () => {
 
   return (
     <div className="p-6 min-h-[calc(100vh-250px)] animate-in fade-in duration-500">
-      <div className="flex justify-between items-center mb-8">
-        <div>
-          <h2 className="text-2xl font-bold text-slate-800">
-            Academic Courses
-          </h2>
-          <p className="text-gray-400 text-sm">
-            Manage all registered courses and assignments
-          </p>
-        </div>
-        <div className="relative w-full md:w-72">
-          <HiOutlineSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-          <input
-            type="text"
-            placeholder="Search name, code, or email..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 ring-slate-800/5 outline-none transition-all"
-          />
-        </div>
-        {/* NEW TOGGLE BUTTON */}
-        <div className="flex items-center gap-2">
-          {/* NEW TOGGLE BUTTON */}
-          <button
-            onClick={() => setShowDeleted(!showDeleted)}
-            className={`flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold transition-all border ${
-              showDeleted
-                ? "bg-red-50 text-red-600 border-red-100"
-                : "bg-slate-50 text-slate-600 border-slate-100 hover:bg-slate-100"
-            }`}
-          >
-            {showDeleted ? "Hide Archived" : "Show Archived"}
-            <div
-              className={`w-2 h-2 rounded-full ${showDeleted ? "bg-red-500" : "bg-gray-300"}`}
-            ></div>
-          </button>
+      <div className="flex flex-col gap-6 mb-8 md:flex-row md:items-center md:justify-between">
+  {/* TEXT SECTION */}
+  <div className="space-y-1">
+    <h2 className="text-xl font-bold text-slate-800 md:text-2xl">
+      Academic Courses
+    </h2>
+    <p className="text-gray-400 text-xs md:text-sm">
+      Manage all registered courses and assignments
+    </p>
+  </div>
 
-          <button
-            onClick={fetchCourses}
-            className="p-2 hover:bg-gray-100 rounded-full transition-colors text-slate-600"
-          >
-            <HiOutlineRefresh
-              className={`text-xl ${loading ? "animate-spin" : ""}`}
-            />
-          </button>
-        </div>
-      </div>
+  {/* ACTIONS SECTION (Search + Buttons) */}
+  <div className="flex flex-col gap-4 sm:flex-row sm:items-center w-full md:w-auto">
+    
+    {/* SEARCH BAR */}
+    <div className="relative w-full md:w-72">
+      <HiOutlineSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+      <input
+        type="text"
+        placeholder="Search name, code..."
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+        className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 ring-slate-800/5 outline-none transition-all text-sm"
+      />
+    </div>
+
+    {/* BUTTON GROUP */}
+    <div className="flex items-center justify-between gap-2 sm:justify-end">
+      {/* ARCHIVE TOGGLE */}
+      <button
+        onClick={() => setShowDeleted(!showDeleted)}
+        className={`flex flex-1 sm:flex-none items-center justify-center gap-2 px-4 py-2 rounded-full text-[10px] md:text-xs font-bold transition-all border ${
+          showDeleted
+            ? "bg-red-50 text-red-600 border-red-100"
+            : "bg-slate-50 text-slate-600 border-slate-100 hover:bg-slate-100"
+        }`}
+      >
+        <span className="whitespace-nowrap">
+          {showDeleted ? "Hide Archived" : "Show Archived"}
+        </span>
+        <div
+          className={`w-2 h-2 rounded-full shrink-0 ${
+            showDeleted ? "bg-red-500" : "bg-gray-300"
+          }`}
+        ></div>
+      </button>
+
+      {/* REFRESH BUTTON */}
+      <button
+        onClick={fetchCourses}
+        className="p-2.5 bg-gray-50 border border-gray-100 sm:border-none sm:bg-transparent hover:bg-gray-100 rounded-full transition-colors text-slate-600"
+      >
+        <HiOutlineRefresh
+          className={`text-xl ${loading ? "animate-spin" : ""}`}
+        />
+      </button>
+    </div>
+  </div>
+</div>
 
       {loading ? (
         <div className="flex justify-center items-center h-64">
