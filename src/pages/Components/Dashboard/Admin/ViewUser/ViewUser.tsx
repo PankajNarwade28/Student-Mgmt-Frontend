@@ -103,117 +103,165 @@ const ViewUsers: React.FC = () => {
 
   return (
     <div className="animate-in fade-in duration-500 space-y-6">
-      {/* Header & Search */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h2 className="text-2xl font-bold text-slate-800 flex items-center gap-2">
-            <HiOutlineUsers className="text-slate-400" />
-            User Directory
-            <span className="ml-2 text-xs font-bold bg-slate-100 text-slate-500 px-2 py-1 rounded-md">
-              {users.length} Total
-            </span>
-          </h2>
-        </div>
+      <div className="space-y-6">
+  {/* Header & Search */}
+  <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <div className="flex items-center justify-between w-full md:w-auto">
+      <h2 className="text-xl md:text-2xl font-bold text-slate-800 flex items-center gap-2">
+        <HiOutlineUsers className="text-slate-400" />
+        User Directory
+      </h2>
+      <span className="text-xs font-bold bg-slate-100 text-slate-500 px-2 py-1 rounded-md md:static">
+        {users.length} Total
+      </span>
+    </div>
 
-        <div className="relative w-full md:w-72">
-          <HiOutlineSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-          <input
-            type="text"
-            placeholder="Search by email..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 ring-slate-800/5 outline-none transition-all"
-          />
-        </div>
-      </div>
+    <div className="relative w-full md:w-72">
+      <HiOutlineSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+      <input
+        type="text"
+        placeholder="Search by email..."
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+        className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 ring-slate-800/5 outline-none transition-all text-sm"
+      />
+    </div>
+  </div>
 
-      {/* Table Container */}
-      <div className="bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
-            <thead>
-              <tr className="bg-gray-50/50 border-b border-gray-100">
-                {["Member", "Role", "Status", "Joined", "Actions"].map((h) => (
-                  <th
-                    key={h}
-                    className="px-6 py-4 text-[11px] font-bold text-gray-400 uppercase tracking-widest"
-                  >
-                    {h}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-50">
-              {filteredUsers.map((user) => (
-                <tr
-                  key={user.id}
-                  className="hover:bg-slate-50/50 transition-colors"
-                >
-                  <td className="px-6 py-4">
-                    <p className="text-sm font-semibold text-slate-800">
-                      {user.email}
-                    </p>
-                    <p className="text-[10px] text-gray-400 font-mono">
-                      {user.id.slice(0, 8)}...
-                    </p>
-                  </td>
-                  <td className="px-6 py-4">
-                    <span
-                      className={`px-3 py-1 rounded-lg text-[10px] font-bold uppercase ${
-                        user.role === "Admin"
-                          ? "bg-purple-50 text-purple-600"
-                          : "bg-blue-50 text-blue-600"
-                      }`}
-                    >
-                      {user.role}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-2">
-                      <div
-                        className={`w-1.5 h-1.5 rounded-full ${user.is_active ? "bg-emerald-500" : "bg-red-500"}`}
-                      />
-                      <span className="text-xs font-medium text-gray-600">
-                        {user.is_active ? "Active" : "Inactive"}
-                      </span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 text-xs text-gray-500 font-medium">
-                    {new Date(user.created_at).toLocaleDateString()}
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-2">
-                      <button
-                        onClick={() => {
-                          setEditingUser({ ...user });
-                          setIsEditModalOpen(true);
-                        }}
-                        className="p-2 hover:cursor-pointer text-blue-400 hover:text-blue-800 hover:bg-blue-100 rounded-lg transition-all"
-                      >
-                        <FaEdit size={18} />
-                      </button>
-                      <button
-                        onClick={() => {
-                          setUserToDelete(user.id);
-                          setIsDeleteModalOpen(true);
-                        }}
-                        className="p-2 hover:cursor-pointer text-red-300 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"
-                      >
-                        <FaTrash size={18} />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          {filteredUsers.length === 0 && (
-            <div className="p-12 text-center text-gray-400">
-              No users found matching your search.
+  {/* Table Container */}
+  <div className="bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden">
+    
+    {/* MOBILE VIEW (Cards) - Visible only on small screens */}
+    <div className="md:hidden divide-y divide-gray-100">
+      {filteredUsers.map((user) => (
+        <div key={user.id} className="p-4 space-y-4">
+          <div className="flex justify-between items-start">
+            <div className="flex flex-col">
+              <span className="text-sm font-semibold text-slate-800 break-all">
+                {user.email}
+              </span>
+              <span className="text-[10px] text-gray-400 font-mono uppercase">
+                ID: {user.id.slice(0, 8)}...
+              </span>
             </div>
-          )}
+            <span className={`px-2 py-1 rounded-lg text-[10px] font-bold uppercase shrink-0 ${
+                user.role === "Admin" ? "bg-purple-50 text-purple-600" : "bg-blue-50 text-blue-600"
+              }`}>
+              {user.role}
+            </span>
+          </div>
+
+          <div className="flex items-center justify-between pt-2">
+            <div className="flex flex-col gap-1">
+              <div className="flex items-center gap-2">
+                <div className={`w-1.5 h-1.5 rounded-full ${user.is_active ? "bg-emerald-500" : "bg-red-500"}`} />
+                <span className="text-xs font-medium text-gray-600">
+                  {user.is_active ? "Active" : "Inactive"}
+                </span>
+              </div>
+              <span className="text-[10px] text-gray-400">
+                Joined: {new Date(user.created_at).toLocaleDateString()}
+              </span>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => {
+                  setEditingUser({ ...user });
+                  setIsEditModalOpen(true);
+                }}
+                className="p-2 text-blue-400 bg-blue-50 rounded-lg"
+              >
+                <FaEdit size={16} />
+              </button>
+              <button
+                onClick={() => {
+                  setUserToDelete(user.id);
+                  setIsDeleteModalOpen(true);
+                }}
+                className="p-2 text-red-300 bg-red-50 rounded-lg"
+              >
+                <FaTrash size={16} />
+              </button>
+            </div>
+          </div>
         </div>
+      ))}
+    </div>
+
+    {/* DESKTOP VIEW (Table) - Hidden on small screens */}
+    <div className="hidden md:block overflow-x-auto">
+      <table className="w-full text-left border-collapse">
+        <thead>
+          <tr className="bg-gray-50/50 border-b border-gray-100">
+            {["Member", "Role", "Status", "Joined", "Actions"].map((h) => (
+              <th
+                key={h}
+                className="px-6 py-4 text-[11px] font-bold text-gray-400 uppercase tracking-widest"
+              >
+                {h}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody className="divide-y divide-gray-50">
+          {filteredUsers.map((user) => (
+            <tr key={user.id} className="hover:bg-slate-50/50 transition-colors">
+              <td className="px-6 py-4">
+                <p className="text-sm font-semibold text-slate-800">{user.email}</p>
+                <p className="text-[10px] text-gray-400 font-mono">{user.id.slice(0, 8)}...</p>
+              </td>
+              <td className="px-6 py-4">
+                <span className={`px-3 py-1 rounded-lg text-[10px] font-bold uppercase ${
+                    user.role === "Admin" ? "bg-purple-50 text-purple-600" : "bg-blue-50 text-blue-600"
+                  }`}>
+                  {user.role}
+                </span>
+              </td>
+              <td className="px-6 py-4">
+                <div className="flex items-center gap-2">
+                  <div className={`w-1.5 h-1.5 rounded-full ${user.is_active ? "bg-emerald-500" : "bg-red-500"}`} />
+                  <span className="text-xs font-medium text-gray-600">{user.is_active ? "Active" : "Inactive"}</span>
+                </div>
+              </td>
+              <td className="px-6 py-4 text-xs text-gray-500 font-medium whitespace-nowrap">
+                {new Date(user.created_at).toLocaleDateString()}
+              </td>
+              <td className="px-6 py-4">
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => {
+                      setEditingUser({ ...user });
+                      setIsEditModalOpen(true);
+                    }}
+                    className="p-2 hover:cursor-pointer text-blue-400 hover:text-blue-800 hover:bg-blue-100 rounded-lg transition-all"
+                  >
+                    <FaEdit size={18} />
+                  </button>
+                  <button
+                    onClick={() => {
+                      setUserToDelete(user.id);
+                      setIsDeleteModalOpen(true);
+                    }}
+                    className="p-2 hover:cursor-pointer text-red-300 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"
+                  >
+                    <FaTrash size={18} />
+                  </button>
+                </div>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+
+    {filteredUsers.length === 0 && (
+      <div className="p-12 text-center text-gray-400 text-sm">
+        No users found matching your search.
       </div>
+    )}
+  </div>
+</div>
 
       {/* Edit Modal */}
       {isEditModalOpen && editingUser && (
