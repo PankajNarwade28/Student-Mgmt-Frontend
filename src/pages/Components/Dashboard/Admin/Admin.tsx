@@ -34,45 +34,45 @@ const Admin = () => {
   return (
     <div className="w-full bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
       {/* 1. Top Navigation Tabs */}
-      <div className="flex items-center border-b border-gray-200 px-4 bg-white">
-        {/* Default Overview Tab */}
+     <div className="border-b border-gray-200 bg-white">
+  <div className="flex flex-col min-[786px]:flex-row min-[786px]:items-center px-2 min-[786px]:px-4">
+    {/* - grid-cols-2: Shows 2 tabs per row on mobile/small screens.
+      - min-[786px]:flex: Switches to a single row for tablet/desktop.
+    */}
+    <div className="grid grid-cols-2 gap-2 w-full py-3 min-[786px]:flex min-[786px]:flex-row min-[786px]:overflow-x-auto min-[786px]:gap-1 min-[786px]:py-0">
+      
+      {[
+        { id: "overview", label: "Overview", icon: <HiOutlineChartBar /> },
+        { id: "adduser", label: "Add New User", icon: <HiOutlineUserAdd /> },
+        { id: "viewuser", label: "View All Users", icon: <HiOutlineUsers /> },
+        { id: "addcourse", label: "Add New Course", icon: <HiOutlineDocumentText /> },
+        { id: "courses", label: "View All Courses", icon: <HiOutlineDocumentText /> },
+      ].map((tab) => (
         <button
-          onClick={() => navigate("")}
-          className={`${getTabStyle("overview")} hover:cursor-pointer`}
+          key={tab.id}
+          onClick={() => navigate(tab.id === "overview" ? "" : tab.id)}
+          className={`${getTabStyle(tab.id)} 
+            flex items-center justify-center min-[786px]:justify-start transition-all whitespace-nowrap hover:cursor-pointer
+            
+            /* Mobile/Small Screen: 2 per row blocks */
+            rounded-lg min-[786px]:rounded-none min-[786px]:border-b-2
+            
+            /* 1181px Responsiveness: Font & Spacing */
+            gap-2 min-[1181px]:gap-3 
+            px-3 min-[1181px]:px-4 
+            py-3 min-[786px]:py-4
+            text-xs min-[1181px]:text-sm font-medium
+            
+            hover:bg-gray-50 min-[786px]:hover:bg-transparent shrink-0`}
         >
-          <HiOutlineChartBar className="text-xl" />
-          Overview
+          <span className="text-lg min-[1181px]:text-xl shrink-0">{tab.icon}</span>
+          <span className="truncate">{tab.label}</span>
         </button>
-
-        <button
-          onClick={() => navigate("adduser")}
-          className={`${getTabStyle("adduser")} hover:cursor-pointer`}
-        >
-          <HiOutlineUserAdd className="text-xl" />
-          Add New User
-        </button>
-        <button
-          onClick={() => navigate("viewuser")}
-          className={`${getTabStyle("viewuser")} hover:cursor-pointer`}
-        >
-          <HiOutlineUsers className="text-xl" />
-          View All Users
-        </button>
-        <button
-          onClick={() => navigate("addcourse")}
-          className={`${getTabStyle("addcourse")} hover:cursor-pointer`}
-        >
-          <HiOutlineDocumentText className="text-xl" />
-          Add New Course
-        </button>
-        <button
-          onClick={() => navigate("courses")}
-          className={`${getTabStyle("courses")} hover:cursor-pointer`}
-        >
-          <HiOutlineDocumentText className="text-xl" />
-          View All Courses
-        </button>
-      </div>
+      ))}
+      
+    </div>
+  </div>
+</div>
 
       {/* 2. Bottom Content Area */}
       <div className="p-6 bg-gray-50/30">
