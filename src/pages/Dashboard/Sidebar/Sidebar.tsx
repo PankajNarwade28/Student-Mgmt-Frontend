@@ -4,14 +4,18 @@ import {
   Users,
   BarChart3,
   Settings,
-  X,
-  Database,
+  X, 
 } from "lucide-react";
 import "./Sidebar.css";
 import { NavLink, useNavigate } from "react-router-dom";
 import { canAccess, ROLES } from "../../Components/Utils/rbac"; // Import utility
 import ConfirmationModal from "../../Components/Modal/confirmationModal";
 import { useState } from "react";
+import {
+  HiOutlineClipboardList,
+  HiOutlineHome,
+  HiOutlineLibrary,
+} from "react-icons/hi";
 
 interface SidebarProps {
   isOpen: boolean;
@@ -52,9 +56,9 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
           }
           onClick={toggleSidebar}
         >
-          <LayoutDashboard size={20} /> Dashboard
+          <HiOutlineHome size={20} /> Dashboard
         </NavLink>
- 
+
         {/* ADMIN ONLY: Users Management */}
         {canAccess(userRole, [ROLES.ADMIN]) && (
           <NavLink
@@ -81,16 +85,28 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
           </NavLink>
         )}
 
-        {/* SAMPLE: Only Teacher can see Test section */}
-        {canAccess(userRole, [ROLES.TEACHER]) && (
+        {/* My Courses only for teacher and student */}
+        {canAccess(userRole, [ROLES.TEACHER, ROLES.STUDENT]) && (
           <NavLink
-            to="/dashboard/test"
+            to="/dashboard/mycourses"
             className={({ isActive }) =>
               isActive ? "menu-item active" : "menu-item"
             }
             onClick={toggleSidebar}
           >
-            <Database size={20} /> Teacher Logs
+            <HiOutlineLibrary size={20} /> My Courses
+          </NavLink>
+        )}
+        {/* My Courses only for teacher and student */}
+        {canAccess(userRole, [ROLES.TEACHER, ROLES.STUDENT]) && (
+          <NavLink
+            to="/dashboard/schedule"
+            className={({ isActive }) =>
+              isActive ? "menu-item active" : "menu-item"
+            }
+            onClick={toggleSidebar}
+          >
+            <HiOutlineClipboardList size={20} /> Schedule
           </NavLink>
         )}
 

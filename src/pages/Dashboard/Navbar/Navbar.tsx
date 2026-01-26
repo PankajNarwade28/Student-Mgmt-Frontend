@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { Menu, Bell, Search, LogOut } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import ConfirmationModal from "../../Components/Modal/confirmationModal";
-import "./Navbar.css";
 
 interface NavbarProps {
   toggleSidebar: () => void;
@@ -10,122 +9,113 @@ interface NavbarProps {
 
 const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
   const navigate = useNavigate();
-
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
 
-  // Check if token exists to determine if user is logged in
   const isAuthenticated = !!localStorage.getItem("token");
   const userRole = localStorage.getItem("userRole") || "User";
 
   const handleLogout = () => {
-    localStorage.clear(); // Removes token, userId, and userRole
+    localStorage.clear();
     navigate("/auth/login");
   };
 
   return (
-    <nav className="navbar">
-      <div className="nav-left">
-        <button className="hamburger" onClick={toggleSidebar}>
+    <nav className="sticky top-0 z-50 flex h-16 w-full items-center justify-between bg-white px-4 shadow-sm md:px-6">
+      {/* LEFT SECTION */}
+      <div className="flex items-center gap-2 md:gap-4">
+        <button 
+          className="rounded-lg p-2 text-gray-600 hover:bg-gray-100 lg:hidden" 
+          onClick={toggleSidebar}
+        >
           <Menu size={24} />
         </button>
-        <div className="search-box">
-          <Search size={18} />
-          <input type="text" placeholder="Search..." />
+        
+        {/* Search Bar - Hidden on small mobile, expands on md */}
+        <div className="relative hidden items-center sm:flex">
+          <Search className="absolute left-3 text-gray-400" size={18} />
+          <input
+            type="text"
+            placeholder="Search..."
+            className="w-48 rounded-full border border-gray-200 py-1.5 pl-10 pr-4 text-sm outline-none transition-all focus:w-64 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 md:w-64"
+          />
         </div>
+        
+        {/* Mobile Search Icon Only */}
+        <button className="rounded-full p-2 text-gray-600 hover:bg-gray-100 sm:hidden">
+          <Search size={20} />
+        </button>
       </div>
 
-      <div className="nav-right">
-        {/* Conditional Rendering: Show Login/Signup ONLY if NOT authenticated */}
+      {/* RIGHT SECTION */}
+      <div className="flex items-center gap-3">
         {!isAuthenticated ? (
-          <div className="auth-buttons">
-            <Link to="/auth/login" className="btn-login">
+          <div className="flex items-center gap-2">
+            <Link 
+              to="/auth/login" 
+              className="px-4 py-2 text-sm font-medium text-gray-600 hover:text-blue-600"
+            >
               Login
             </Link>
-            <Link to="/auth/signup" className="btn-signup">
+            <Link 
+              to="/auth/signup" 
+              className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700"
+            >
               Sign Up
             </Link>
           </div>
         ) : (
-          /* Show Profile and Logout ONLY if authenticated */
-          <div className="user-section">
-            <button className="icon-btn">
+          <div className="flex items-center gap-2 md:gap-4">
+            <button className="relative rounded-full p-2 text-gray-500 hover:bg-gray-100">
               <Bell size={20} />
+              <span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-red-500 border-2 border-white"></span>
             </button>
 
-            {/* <div className="profile-pill font-bold text-blue-600">
-              <img
-                src={`https://ui-avatars.com/api/?name=${userRole}`}
-                alt="user"
-              />
-              <span>{userRole}</span>
-            </div> */}
-
-            <div className="flex items-center hover:cursor-pointer">
-              <button
-                onClick={() => navigate("/dashboard/profile")}
-                className="group flex items-center gap-3 p-1 pr-4 bg-white border border-gray-200 rounded-full hover:border-blue-300 hover:bg-blue-50/50 hover:cursor-pointer transition-all duration-200 shadow-sm hover:shadow-md"
-              >
-                {/* Avatar with Ring */}
-                <div className="relative">
-                  <img
-                    src={`https://ui-avatars.com/api/?name=${userRole}&background=0D8ABC&color=fff&bold=true`}
-                    alt="user"
-                    className="w-9 h-9 rounded-full border-2 border-white shadow-sm transition-transform group-hover:scale-105"
-                  />
-                  {/* Small Active Status Indicator */}
-                  <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 border-2 border-white rounded-full"></span>
-                </div>
-
-                {/* Text Label */}
-                <div className="flex flex-col items-start leading-tight">
-                  <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                    Account
-                  </span>
-                  <span className="text-sm font-bold text-blue-600 group-hover:text-blue-700">
-                    {userRole}
-                  </span>
-                </div>
-
-                {/* Small Chevron to indicate interactivity */}
-                <svg
-                  className="w-4 h-4 text-gray-400 group-hover:text-blue-500 transition-colors ml-1"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M9 5l7 7-7 7"
-                  />
-                </svg>
-              </button>
-            </div>
-
-            {/* <button className="logout-btn" onClick={() => setIsLogoutModalOpen(true)} title="Logout">
-              <LogOut size={20} />
-            </button> */}
+            {/* Profile Button */}
             <button
-              className="fixed bottom-6 left-6 z-[9999] bg-red-600 text-white p-3 rounded-full shadow-2xl hover:bg-red-700 transition-all active:scale-95"
+              onClick={() => navigate("/dashboard/profile")}
+              className="group flex items-center gap-2 rounded-full border border-gray-200 bg-white p-1 pr-3 transition-all hover:border-blue-300 hover:bg-blue-50/50 sm:pr-4"
+            >
+              <div className="relative">
+                <img
+                  src={`https://ui-avatars.com/api/?name=${userRole}&background=0D8ABC&color=fff&bold=true`}
+                  alt="user"
+                  className="h-8 w-8 rounded-full border border-white shadow-sm sm:h-9 sm:w-9"
+                />
+                <span className="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full border-2 border-white bg-green-500"></span>
+              </div>
+
+              {/* Text - Hidden on very small screens */}
+              <div className="hidden flex-col items-start leading-tight sm:flex">
+                <span className="text-[10px] font-semibold uppercase tracking-wider text-gray-400">
+                  Account
+                </span>
+                <span className="text-sm font-bold text-blue-600 group-hover:text-blue-700">
+                  {userRole}
+                </span>
+              </div>
+            </button>
+
+            {/* Logout Button */}
+            <button
+              className="flex items-center justify-center rounded-full bg-red-50 p-2 text-red-600 transition-colors hover:bg-red-100"
               onClick={() => setIsLogoutModalOpen(true)}
               title="Logout"
             >
               <LogOut size={20} />
             </button>
-
-            <ConfirmationModal
-              isOpen={isLogoutModalOpen}
-              title="Confirm Logout"
-              message="Are you sure you want to end your session?"
-              onConfirm={handleLogout}
-              onCancel={() => setIsLogoutModalOpen(false)}
-              confirmText="Yes, Logout"
-              type="danger"
-            />
           </div>
         )}
       </div>
+
+      <ConfirmationModal
+        isOpen={isLogoutModalOpen}
+        title="Confirm Logout"
+        message="Are you sure you want to end your session?"
+        onConfirm={handleLogout}
+        onCancel={() => setIsLogoutModalOpen(false)}
+        confirmText="Yes, Logout"
+        type="danger"
+      />
     </nav>
   );
 };
