@@ -16,6 +16,7 @@ import {
   HiOutlineHome,
   HiOutlineLibrary,
 } from "react-icons/hi";
+import { FaUserGraduate } from "react-icons/fa";
 
 interface SidebarProps {
   isOpen: boolean;
@@ -61,6 +62,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
 
         {/* ADMIN ONLY: Users Management */}
         {canAccess(userRole, [ROLES.ADMIN]) && (
+          <>
           <NavLink
             to="/dashboard/users"
             className={({ isActive }) =>
@@ -70,6 +72,17 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
           >
             <Users size={20} /> Users
           </NavLink>
+          <NavLink
+            to="/dashboard/admin/students"
+            className={({ isActive }) =>
+              isActive ? "menu-item active" : "menu-item" 
+            }
+            onClick={toggleSidebar}
+          >
+            <FaUserGraduate size={20} /> Students
+
+          </NavLink></>
+
         )}
 
         {/* ADMIN & TEACHER: Reports */}

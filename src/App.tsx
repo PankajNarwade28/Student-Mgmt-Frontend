@@ -22,6 +22,8 @@ import ViewCourses from "./pages/Components/Dashboard/Admin/ViewCourse/ViewCours
 import MyCourses from "./pages/Components/Dashboard/Courses/Courses";
 import TeacherLogs from "./pages/Components/Dashboard/TeacherLogs/TeacherLogs";
 import Instructor from "./pages/Components/Dashboard/Admin/Instructor/Instructor";
+import Students from "./pages/Components/Dashboard/Admin/Students/Students"; 
+import StudentList from "./pages/Components/Dashboard/Admin/StudentList/StudentList";
 
 function App() {
   return (
@@ -52,6 +54,21 @@ function App() {
                 <Route path="addcourse" element={<AddCourse />} />
                 <Route path="courses" element={<ViewCourses />} />
               </Route>
+              <Route path="admin/students" element={<Students />}>
+                {/* The 'index' route renders automatically at /admin/students */}
+                <Route index element={<StudentList />} />
+
+                {/* Sub-paths for your tabs */}
+                {/* <Route path="list" element={<Students />} /> */}
+                <Route
+                  path="enroll"
+                  element={<div className="p-4">Enrollment View</div>}
+                />
+                <Route
+                  path="grades"
+                  element={<div className="p-4">Grades View</div>}
+                /> 
+              </Route>
               <Route path="admin/logs" element={<SystemLogs />} />
               <Route path="admin/instructors" element={<Instructor />} />
               <Route path="admin/viewuser" element={<ViewUsers />} />
@@ -66,12 +83,11 @@ function App() {
 
             {/* Student ONLY */}
             <Route
-              element={<ProtectedRoute allowedRoles={["Student","Teacher"]} />}
+              element={<ProtectedRoute allowedRoles={["Student", "Teacher"]} />}
             >
               {/* Add student-specific routes here */}
               <Route path="mycourses" element={<MyCourses />} />
             </Route>
-
 
             {/* ALL LOGGED-IN USERS */}
             <Route path="settings" element={<Settings />} />
