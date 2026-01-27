@@ -24,6 +24,8 @@ import TeacherLogs from "./pages/Components/Dashboard/TeacherLogs/TeacherLogs";
 import Instructor from "./pages/Components/Dashboard/Admin/Instructor/Instructor";
 import Students from "./pages/Components/Dashboard/Admin/Students/Students"; 
 import StudentList from "./pages/Components/Dashboard/Admin/StudentList/StudentList";
+import Enrollments from "./pages/Components/Dashboard/Admin/Enrollments/Enrollments";
+import Grades from "./pages/Components/Dashboard/Admin/Grades/Grades";
 
 function App() {
   return (
@@ -62,11 +64,11 @@ function App() {
                 {/* <Route path="list" element={<Students />} /> */}
                 <Route
                   path="enroll"
-                  element={<div className="p-4">Enrollment View</div>}
+                  element={<Enrollments />}
                 />
                 <Route
                   path="grades"
-                  element={<div className="p-4">Grades View</div>}
+                  element={<Grades />}
                 /> 
               </Route>
               <Route path="admin/logs" element={<SystemLogs />} />
