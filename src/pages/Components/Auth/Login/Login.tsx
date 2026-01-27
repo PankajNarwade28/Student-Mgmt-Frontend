@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
-import {  useNavigate } from "react-router-dom";
-import "../Auth.css"; 
+import { useNavigate } from "react-router-dom";
+import "../Auth.css";
 import { loginSchema } from "../../../../validations/authSchema";
-import axios from "axios";
 import toast from "react-hot-toast";
-import api from "../../../../api/axiosInstance";
+// import api from "../../../../api/axiosInstance";
+import axios from "axios";
+const API_URL = import.meta.env.VITE_API_URL;
 
 const Login: React.FC = () => {
   const [formData, setFormData] = useState({ email: "", password: "" });
@@ -16,6 +17,7 @@ const Login: React.FC = () => {
     if (localStorage.getItem("token")) {
       navigate("/dashboard");
     }
+    // DO NOT add an 'else' that navigates to /login here
   }, [navigate]);
 
   useEffect(() => {
@@ -24,9 +26,9 @@ const Login: React.FC = () => {
     }
   }, [loading]);
 
-
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log("Form Submission prevented.");
 
     const validation = loginSchema.safeParse(formData);
 
@@ -46,39 +48,40 @@ const Login: React.FC = () => {
     }
 
     try {
-  setLoading(true);
-  const response = await api.post("/api/auth/login", formData); // Using api instance
+      setLoading(true);
+      // Used axios directly here to avoid interceptor issues during login
+      const response = await axios.post(`${API_URL}/api/auth/login`, formData, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (response.status === 200) {
+        const data = response.data;
+        toast.success(`Welcome back! ${data.user.email}`);
 
-  if (response.status === 200) {
-    const data = response.data;
-    toast.success("Login successful!");
-    
-    localStorage.setItem("token", data.token);
-    localStorage.setItem("userId", data.user.id);
-    localStorage.setItem("userRole", data.user.role);
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("userId", data.user.id);
+        localStorage.setItem("userRole", data.user.role);
 
-    navigate("/dashboard");
-  }
-} catch (error: unknown) {
-      // 1. Check if the error is from the server (Axios response)
-      if (axios.isAxiosError(error) && error.response) {
-        // This matches the 'data' object seen in your console image
-        const serverMessage = error.response.data.message;
-        toast.error(serverMessage || "Invalid credentials");
+        navigate("/dashboard");
       }
-      // 2. Handle network errors (no response from server)
-      else if (axios.isAxiosError(error) && error.request) {
-        toast.error("No response from server. Check your connection.");
+    } catch (error) {
+      if(axios.isAxiosError(error)) { 
+      if (
+        error.response &&
+        error.response.data &&
+        error.response.data.message
+      ) {
+        toast.error(error.response.data.message); // backend-provided message
+      } else {
+        toast.error(error.message || "Something went wrong"); // fallback
       }
-      // 3. Handle other setup errors
-      else {
-        toast.error("An unexpected error occurred.");
       }
+      // Log the full error for debugging
 
-      console.error("Login Error:", error);
+      
     } finally {
       setLoading(false);
-      setErrors({});
       toast.dismiss("loginToast");
     }
   };

@@ -1,4 +1,4 @@
-import { Navigate, Outlet } from "react-router-dom";
+import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { useEffect, useRef } from "react";
 import { toast } from "react-hot-toast";
 
@@ -31,9 +31,11 @@ const ProtectedRoute = ({ allowedRoles }: ProtectedRouteProps) => {
     }
   }, [allowedRoles, role, token]);
 
-  // No token → login
+  const location = useLocation();
+
   if (!token) {
-    return <Navigate to="/auth/login" replace />;
+    // Redirect to login, but save the current location they were trying to access
+    return <Navigate to="/auth/login" state={{ from: location }} replace />;
   }
 
   // Role not allowed → redirect
