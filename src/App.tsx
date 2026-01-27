@@ -21,6 +21,7 @@ import AddCourse from "./pages/Components/Dashboard/Admin/AddCourse/AddCourse";
 import ViewCourses from "./pages/Components/Dashboard/Admin/ViewCourse/ViewCourse";
 import MyCourses from "./pages/Components/Dashboard/Courses/Courses";
 import TeacherLogs from "./pages/Components/Dashboard/TeacherLogs/TeacherLogs";
+import Instructor from "./pages/Components/Dashboard/Admin/Instructor/Instructor";
 
 function App() {
   return (
@@ -52,6 +53,7 @@ function App() {
                 <Route path="courses" element={<ViewCourses />} />
               </Route>
               <Route path="admin/logs" element={<SystemLogs />} />
+              <Route path="admin/instructors" element={<Instructor />} />
               <Route path="admin/viewuser" element={<ViewUsers />} />
             </Route>
 
