@@ -26,6 +26,7 @@ import Students from "./pages/Components/Dashboard/Admin/Students/Students";
 import StudentList from "./pages/Components/Dashboard/Admin/StudentList/StudentList";
 import Enrollments from "./pages/Components/Dashboard/Admin/Enrollments/Enrollments";
 import Grades from "./pages/Components/Dashboard/Admin/Grades/Grades";
+import TeacherGrade from "./pages/Components/Teacher/TeacherGrade";
 
 function App() {
   return (
@@ -81,6 +82,10 @@ function App() {
               element={<ProtectedRoute allowedRoles={["Admin", "Teacher"]} />}
             >
               <Route path="reports" element={<Reports />} />
+            </Route>
+
+            <Route element={<ProtectedRoute allowedRoles={["Teacher"]} />}>
+              <Route path="mycourses/grades/:courseId" element={<TeacherGrade />} />
             </Route>
 
             {/* Student ONLY */}
