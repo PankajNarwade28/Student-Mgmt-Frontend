@@ -21,11 +21,11 @@ import AddCourse from "./pages/Components/Dashboard/Admin/AddCourse/AddCourse";
 import ViewCourses from "./pages/Components/Dashboard/Admin/ViewCourse/ViewCourse";
 import MyCourses from "./pages/Components/Dashboard/Courses/Courses";
 import TeacherLogs from "./pages/Components/Dashboard/TeacherLogs/TeacherLogs";
-import Instructor from "./pages/Components/Dashboard/Admin/Instructor/Instructor";
-import Students from "./pages/Components/Dashboard/Admin/Students/Students"; 
-import StudentList from "./pages/Components/Dashboard/Admin/StudentList/StudentList";
-import Enrollments from "./pages/Components/Dashboard/Admin/Enrollments/Enrollments";
-import Grades from "./pages/Components/Dashboard/Admin/Grades/Grades";
+import Instructor from "./pages/Components/Dashboard/Admin/Instructor/Instructor"; 
+import Students from "./pages/Components/Dashboard/Admin/Students/Students";
+import StudentList from "./pages/Components/Dashboard/Admin/Students/StudentList/StudentList";
+import Enrollments from "./pages/Components/Dashboard/Admin/Students/Enrollments/Enrollments";
+import Grades from "./pages/Components/Dashboard/Admin/Students/Grades/Grades";
 import TeacherGrade from "./pages/Components/Teacher/TeacherGrade";
 
 function App() {

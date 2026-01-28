@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from "react";
 import toast from "react-hot-toast";
-import api from "../../../../../api/axiosInstance";
+import api from "../../../../../../api/axiosInstance";
 import {
   HiOutlineUserAdd,
   HiOutlineTrash,
