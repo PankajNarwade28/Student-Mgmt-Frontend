@@ -35,7 +35,7 @@ const Students: React.FC = () => {
 
   const tabs = [ 
     { id: "list", label: "Students", icon: <HiOutlineUsers /> },
-    { id: "enroll", label: "Enroll", icon: <HiOutlineClipboardCheck /> },
+    { id: "enroll", label: "Enrollments", icon: <HiOutlineClipboardCheck /> },
     { id: "grades", label: "Grades", icon: <HiOutlineAcademicCap /> },
   ];
 

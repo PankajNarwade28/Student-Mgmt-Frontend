@@ -24,8 +24,9 @@ const StudentList: React.FC = () => {
   const fetchStudents = async () => {
     setLoading(true);
     try {
-      const response = await api.get("/api/admin/students");
-      toast.success("Students fetched successfully");
+      const response = await api.get("/api/admin/students"); 
+
+      toast.success(`${response.data.length} students loaded`);
       setStudents(response.data);
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
