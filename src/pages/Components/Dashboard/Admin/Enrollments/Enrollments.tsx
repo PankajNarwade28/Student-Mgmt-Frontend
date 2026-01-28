@@ -62,11 +62,11 @@ const Enrollments: React.FC = () => {
 
       if (isCurrentlyEnrolled) {
         toast.error(`Removed ${studentName} from ${courseName}`, {
-          icon: "🗑️", // Optional: Custom trash icon
+          icon: "⚠️",
           style: {
-            borderRadius: "10px",
-            background: "#fff5f5",
-            color: "#c53030",
+            background: "#FFFBEB", // Light yellow/orange
+            color: "#92400E", // Dark brown/orange
+            border: "1px solid #FCD34D",
           },
         });
       } else {

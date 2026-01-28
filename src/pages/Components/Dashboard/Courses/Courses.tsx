@@ -10,6 +10,7 @@ import {
   HiOutlinePlusCircle,
 } from "react-icons/hi";
 import api from "../../../../api/axiosInstance";
+import { useNavigate } from "react-router-dom";
 
 interface Course {
   id: string;
@@ -59,6 +60,17 @@ const MyCourses: React.FC = () => {
         c.code.toLowerCase().includes(searchTerm.toLowerCase()),
     );
 
+  const navigate = useNavigate();
+
+  const handleAction = (course: Course, isEnrolled: boolean) => {
+  if (isEnrolled) {
+    // Navigate to the specific course grades page
+    navigate(`/dashboard/mycourses/grades/${course.id}`);
+  } else {
+    // Enrollment logic for students
+    toast.success(`Requesting enrollment for ${course.name}`);
+  }
+};
   const renderGrid = (title: string, list: Course[], isEnrolled: boolean) => (
     <div className="space-y-6">
       <h2 className="text-xl font-bold text-slate-800 border-l-4 border-indigo-600 pl-4 uppercase">
@@ -90,24 +102,6 @@ const MyCourses: React.FC = () => {
               <p className="text-sm text-slate-500 line-clamp-2 italic">
                 {course.description}
               </p>
-
-              {/* <div className="pt-4 border-t border-slate-50 space-y-3 text-xs text-slate-600">
-                <div className="flex items-center gap-2">
-                  <HiOutlineAcademicCap className="text-slate-400" />
-                  <span>Instructor: <span className="font-semibold">{course.teacher_name || "N/A"}</span></span>
-                </div>
-                {isEnrolled && userRole === "Student" && (
-                  <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden">
-                    <div className="h-full bg-indigo-500" style={{ width: `${course.progress || 0}%` }} />
-                  </div>
-                )}
-                {userRole !== "Student" && (
-                  <div className="flex items-center gap-2 font-bold text-slate-900">
-                    <HiOutlineUserGroup className="text-slate-400" />
-                    <span>Enrolled: {course.student_count || 0}</span>
-                  </div>
-                )}
-              </div> */}
 
               <div className="pt-4 border-t border-slate-50 space-y-3 text-xs text-slate-600">
                 {/* 1. Only show Instructor name if the user is NOT a teacher */}
@@ -150,6 +144,7 @@ const MyCourses: React.FC = () => {
             </div>
             <div className="p-6 pt-0">
               <button
+               onClick={() => handleAction(course, isEnrolled)}
                 className={`w-full py-3 text-sm font-bold rounded-2xl transition-all flex items-center justify-center gap-2 ${
                   isEnrolled
                     ? "bg-slate-50 text-slate-600 hover:bg-indigo-600 hover:text-white"
