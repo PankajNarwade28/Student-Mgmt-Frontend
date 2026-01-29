@@ -1,64 +1,65 @@
+# MINI Production-Level ERP – Student Management System
 
-### **Frontend README (`frontend/README.md`)**
+## Project Overview
 
-```markdown
-# Student Management System - Frontend
+A mini production-level ERP Student Management System built using the PERN stack with TypeScript, implementing Role-Based Access Control (RBAC) for **Admin**, **Teacher**, and **Student** roles. The system follows clean architecture principles with proper separation of concerns, centralized error handling, secure APIs, and a fully responsive UI using Tailwind CSS.
 
-A production-style React application built with TypeScript and Tailwind CSS. This frontend provides real-time system monitoring and a responsive interface for student data management.
+---
 
-## 🚀 Tech Stack
-* **Framework:** React 18 (Vite)
-* **Language:** TypeScript
-* **Styling:** Tailwind CSS
-* **API Client:** Axios
+# 📁 FRONTEND REPOSITORY README
 
-## 🛠️ Installation & Setup
-1. **Navigate to the frontend folder:**
-   ```bash
-   cd frontend
+## Description
 
-```
+This repository contains the **Frontend application** of the ERP Student Management System. It provides a modern, fully responsive user interface with protected routes and role-based views for Admin, Teacher, and Student users. The frontend ensures strong data validation, secure API handling, and smooth user experience across devices.
 
-2. **Install dependencies:**
-```bash
-npm install
+## Key Features
 
-```
+* Role-based UI (Admin / Teacher / Student)
+* Secure authentication & protected routes
+* Course listing, enrollment & management
+* Student enrollment requests and status tracking
+* Teacher announcements (notes & notices)
+* Admin dashboard for approvals and recent activities
+* Advanced filtering & responsive layouts
+* Centralized API handling
 
+## Tech Stack
 
-3. **Environment Configuration:**
-Ensure the API base URL in `src/api/axiosInstance.ts` matches your backend port:
-```typescript
-const api = axios.create({
-  baseURL: 'http://localhost:3000',
-});
+* React.js
+* TypeScript
+* Tailwind CSS
+* Axios (API handling)
+* Zod (Frontend data validation)
+* React Router (Protected routes)
+* Context API / State Management
 
-```
-
-
-4. **Run the development server:**
-```bash
-npm run dev
+## Folder Structure (High-Level)
 
 ```
-
-
-
-## ✨ Key Features
-
-* **Real-time Monitoring:** A live Dashboard that tracks the connectivity status of the API Server and PostgreSQL Database.
-* **Performance Optimized:** Uses specialized React patterns (isMounted flags) to prevent memory leaks and cascading renders.
-* **Standardized UI:** Features a professional "Bright UI" theme with responsive status badges and data cards.
-* **Unified Codebase:** Uses consistent naming and data structures to ensure seamless integration with the backend.
-
-## 📁 Project Structure
-
-* `src/api/` - Centralized Axios instance and service calls.
-* `src/pages/` - Main view components including the System Dashboard.
-* `src/index.css` - Tailwind CSS directives and global styles.
-
+src/
+ ├─ components/
+ ├─ pages/
+ ├─ routes/
+ ├─ services/        # Axios API layer
+ ├─ validations/     # Zod schemas
+ ├─ hooks/
+ ├─ utils/
+ └─ styles/
 ```
 
- 
+## Security & Architecture
 
-```
+* Protected routes based on user role
+* Centralized API error handling
+* Clean separation between UI, logic, and API layers
+
+## Frontend Skills Demonstrated
+
+* Role-Based Access Control (RBAC)
+* Secure frontend routing
+* Scalable UI architecture
+* Strong TypeScript usage
+* Production-ready validation patterns
+* Responsive design using Tailwind CSS
+
+---
