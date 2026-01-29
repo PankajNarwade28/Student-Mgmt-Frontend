@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { Menu, Bell, Search, LogOut, X, Clock } from "lucide-react";
+import { Menu, Bell, Search, X, Clock } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import api from "../../../api/axiosInstance";
 import ConfirmationModal from "../../Components/Modal/confirmationModal";
@@ -175,12 +175,12 @@ useEffect(() => {
               </div>
             </button>
 
-            <button
+            {/* <button
               className="flex h-9 w-9 items-center justify-center rounded-full bg-rose-50 text-rose-600 transition-all hover:bg-rose-100"
               onClick={() => setIsLogoutModalOpen(true)}
             >
               <LogOut size={18} />
-            </button>
+            </button> */}
           </div>
         )}
       </div>
