@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
-import ConfirmationModal from "../../../Modal/confirmationModal";
-import { HiOutlineSearch } from "react-icons/hi";
+import ConfirmationModal from "../../../Modal/confirmationModal"; 
 import api from "../../../../../api/axiosInstance";
 import type { Course } from "../../../../../models/course";
 import {
   HiOutlineBookOpen,
   HiOutlineUser,
   HiOutlineRefresh,
+  HiOutlineSearch
 } from "react-icons/hi";
 import axios from "axios";
 

@@ -276,10 +276,11 @@ const ViewUsers: React.FC = () => {
             </h3>
             <form onSubmit={handleUpdateUser} className="space-y-5">
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-gray-400 uppercase tracking-wider">
+                <label htmlFor="email" className="text-xs font-bold text-gray-400 uppercase tracking-wider">
                   Email Address
                 </label>
                 <input
+                  id="email"
                   type="email"
                   className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 ring-slate-800/5 outline-none"
                   value={editingUser.email}
@@ -290,10 +291,11 @@ const ViewUsers: React.FC = () => {
                 />
               </div>
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-gray-400 uppercase tracking-wider">
+                <label htmlFor="role" className="text-xs font-bold text-gray-400 uppercase tracking-wider">
                   System Role
                 </label>
                 <select
+                  id="role"
                   className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl outline-none"
                   value={editingUser.role}
                   onChange={(e) =>
