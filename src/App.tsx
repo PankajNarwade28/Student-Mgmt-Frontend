@@ -1,21 +1,18 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route , Navigate } from "react-router-dom";
 import Layout from "./pages/Dashboard/layout";
 import { Test } from "./pages/Components/Test/Test";
 import Main from "./pages/Components/Dashboard/Main";
 import Reports from "./pages/Components/Reports/Reports";
 import Settings from "./pages/Components/Settings/Settings";
 import Users from "./pages/Components/Users/Users";
-import Login from "./pages/Components/Auth/Login/Login";
-// import Signup from "./pages/Components/Auth/Signup/Signup";
+import Login from "./pages/Components/Auth/Login/Login"; 
 import ProtectedRoute from "./pages/Components/Auth/protectedRoute";
 import Home from "./pages/Dashboard/Home/Home";
 import AddUser from "./pages/Components/Dashboard/Admin/AddUser/AddUser";
 import SystemLogs from "./pages/Components/Dashboard/Admin/SystemLogs/SystemLogs";
-import Admin from "./pages/Components/Dashboard/Admin/Admin";
-import { Navigate } from "react-router-dom";
+import Admin from "./pages/Components/Dashboard/Admin/Admin"; 
 import ViewUsers from "./pages/Components/Dashboard/Admin/ViewUser/ViewUser";
-import Profile from "./pages/Components/Dashboard/Profile/Profile";
-import ViewUser from "./pages/Components/Dashboard/Admin/ViewUser/ViewUser";
+import Profile from "./pages/Components/Dashboard/Profile/Profile"; 
 import AdminPage from "./pages/Components/Dashboard/Admin/AdminPage";
 import AddCourse from "./pages/Components/Dashboard/Admin/AddCourse/AddCourse";
 import ViewCourses from "./pages/Components/Dashboard/Admin/ViewCourse/ViewCourse";
@@ -27,6 +24,8 @@ import StudentList from "./pages/Components/Dashboard/Admin/Students/StudentList
 import Enrollments from "./pages/Components/Dashboard/Admin/Students/Enrollments/Enrollments";
 import Grades from "./pages/Components/Dashboard/Admin/Students/Grades/Grades";
 import TeacherGrade from "./pages/Components/Teacher/TeacherGrade";
+import AccessCourse from "./pages/Components/Dashboard/Courses/AccessCourse/AccessCourse"; 
+import RequestsPage from "./pages/Components/Dashboard/Admin/Students/Requests/Requests";
 
 function App() {
   return (
@@ -53,7 +52,7 @@ function App() {
                 {/* The default dashboard page */}
                 <Route index element={<AdminPage />} />
                 <Route path="adduser" element={<AddUser />} />
-                <Route path="viewuser" element={<ViewUser />} />
+                <Route path="viewuser" element={<ViewUsers />} />
                 <Route path="addcourse" element={<AddCourse />} />
                 <Route path="courses" element={<ViewCourses />} />
               </Route>
@@ -71,10 +70,14 @@ function App() {
                   path="grades"
                   element={<Grades />}
                 /> 
+                <Route
+                  path="requests"
+                  element={<RequestsPage />}
+                /> 
               </Route>
               <Route path="admin/logs" element={<SystemLogs />} />
               <Route path="admin/instructors" element={<Instructor />} />
-              <Route path="admin/viewuser" element={<ViewUsers />} />
+              {/* <Route path="admin/viewuser" element={<ViewUsers />} /> */}
             </Route>
 
             {/* ADMIN + TEACHER */}
@@ -94,6 +97,7 @@ function App() {
             >
               {/* Add student-specific routes here */}
               <Route path="mycourses" element={<MyCourses />} />
+              <Route path="mycourses/access/:courseId" element={<AccessCourse />} />
             </Route>
 
             {/* ALL LOGGED-IN USERS */}
