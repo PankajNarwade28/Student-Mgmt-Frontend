@@ -1,10 +1,16 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import api from "../../../../api/axiosInstance";
-import { FaUserCircle, FaTimes, FaCalendarAlt, FaPhone } from "react-icons/fa";
+import {
+  FaUserCircle,
+  FaTimes,
+  FaCalendarAlt,
+  FaPhone,
+  FaCog,
+} from "react-icons/fa";
 import axios from "axios";
 import { toast } from "react-hot-toast";
 
-// Define the structure of a Profile based on your DB schema
 interface ProfileData {
   first_name: string;
   last_name: string;
@@ -12,17 +18,10 @@ interface ProfileData {
   phone_number: string;
 }
 
-const Profile: React.FC = () => {
-  // Allow the state to hold a ProfileData object or null
+const Profile: React.FC<{ onClose: () => void }> = ({ onClose }) => {
+  const navigate = useNavigate();
   const [profile, setProfile] = useState<ProfileData | null>(null);
-  const [formData, setFormData] = useState<ProfileData>({
-    first_name: "",
-    last_name: "",
-    date_of_birth: "",
-    phone_number: ""
-  });
   const [loading, setLoading] = useState(true);
-  const [isEditing, setIsEditing] = useState(false);
 
   useEffect(() => {
     getProfile();
@@ -33,198 +32,105 @@ const Profile: React.FC = () => {
       const res = await api.get("/api/user/profile");
       if (res.data.profile) {
         setProfile(res.data.profile);
-        // Pre-fill form data for editing mode
-        setFormData(res.data.profile);
-
       }
     } catch (err: unknown) {
-        if (axios.isAxiosError(err)) {
-          if (err.response?.status !== 404) {
-            toast.error("Failed to fetch profile");
-          }
-        } else {
-            toast.error("An unexpected error occurred");
-        }
-      console.error("No profile found or error fetching.");
+      if (axios.isAxiosError(err) && err.response?.status !== 404) {
+        toast.error("Failed to fetch profile");
+      }
     } finally {
       setLoading(false);
     }
   };
 
-  // Handle input changes to sync with state
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+  const handleEditRedirect = () => {
+    onClose(); // Close the tab
+    navigate("/dashboard/settings"); // Redirect to settings
   };
 
-  const handleProfileSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    try {
-      setLoading(true);
-      // api instance automatically handles the Bearer token
-      const response = await api.post("/api/user/profile", formData);
-
-      if (response.status === 201 || response.status === 200) {
-        toast.success("Profile Updated successfully!");
-        setProfile(response.data.profile);
-        setIsEditing(false);
-      }
-    } catch (error: unknown) {
-      let msg = "Failed to save profile";
-      if (axios.isAxiosError(error)) {
-        msg = error.response?.data?.message || msg;
-      }
-      toast.error(msg);
-    } finally {
-      setLoading(false);
-    }
-  };
-
- if (loading) return null; // Keep background clear while loading
+  if (loading) return null;
 
   return (
-    <div className="fixed inset-0 z-100 flex items-center justify-center p-4">
-      {/* Glass-morphism Overlay */}
-      <div 
-        className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm transition-opacity"
-        onClick={() => !isEditing && profile && window.history.back()} 
-      />
+    <div className="fixed top-16 left-2 right-2 w-auto sm:left-auto sm:right-4 sm:w-72 z-50 bg-white rounded-3xl shadow-2xl border border-slate-100 overflow-hidden animate-in slide-in-from-top-4 duration-300">
+      {/* Header */}
+      <div className="bg-gradient-to-r from-indigo-600 to-blue-500 p-4 text-white">
+        <div className="flex justify-between items-center">
+          <div className="flex items-center gap-3">
+            <FaUserCircle size={22} className="text-white/80" />
+            <span className="font-bold tracking-tight text-sm">
+              Personal Identity
+            </span>
+          </div>
+          <button
+            onClick={onClose}
+            className="p-1.5 hover:bg-white/20 rounded-full transition-colors cursor-pointer"
+          >
+            <FaTimes size={14} />
+          </button>
+        </div>
+      </div>
 
-      {/* Modal Container */}
-      <div className="relative bg-white w-full max-w-lg rounded-3xl shadow-2xl overflow-hidden transform transition-all animate-in fade-in zoom-in duration-300">
-        
-        {/* Decorative Header */}
-        <div className="bg-gradient-to-r from-blue-600 to-blue-500 p-8 text-white">
-          <div className="flex justify-between items-start">
-            <div className="flex items-center gap-4">
-              <div className="bg-white/20 p-3 rounded-2xl backdrop-blur-md">
-                <FaUserCircle size={32} />
-              </div>
-              <div>
-                <h2 className="text-2xl font-bold">User Profile</h2>
-                <p className="text-blue-100 text-sm">Manage your personal information</p>
-              </div>
-            </div>
-            <button 
-              onClick={() => window.history.back()}
-              className="hover:bg-white/20 p-2 rounded-full transition-colors hover:cursor-pointer"
+      <div className="p-5">
+        {!profile ? (
+          <div className="text-center py-6">
+            <p className="text-sm text-slate-500 mb-4">
+              No profile details found.
+            </p>
+            <button
+              onClick={handleEditRedirect}
+              className="w-full py-2.5 bg-indigo-600 text-white text-xs font-bold rounded-xl shadow-lg shadow-indigo-100"
             >
-              <FaTimes />
+              Create Profile Now
             </button>
           </div>
-        </div>
-
-        <div className="p-8">
-          {!profile || isEditing ? (
-            /* --- FORM MODE --- */
-            <form onSubmit={handleProfileSubmit} className="space-y-5">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-1">
-                  <label className="text-xs font-bold text-gray-500 uppercase ml-1">First Name</label>
-                  <input
-                    name="first_name"
-                    value={formData.first_name}
-                    onChange={handleChange}
-                    className="w-full p-3 bg-gray-50 border-2 border-transparent focus:border-blue-500 focus:bg-white rounded-xl transition-all outline-none"
-                    required
-                  />
-                </div>
-                <div className="space-y-1">
-                  <label className="text-xs font-bold text-gray-500 uppercase ml-1">Last Name</label>
-                  <input
-                    name="last_name"
-                    value={formData.last_name}
-                    onChange={handleChange}
-                    className="w-full p-3 bg-gray-50 border-2 border-transparent focus:border-blue-500 focus:bg-white rounded-xl transition-all outline-none"
-                    required
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-1">
-                <label className="text-xs font-bold text-gray-500 uppercase ml-1 flex items-center gap-2">
-                  <FaCalendarAlt size={10} /> Date of Birth
-                </label>
-                <input
-                  name="date_of_birth"
-                  type="date"
-                  value={formData.date_of_birth}
-                  onChange={handleChange}
-                  className="w-full p-3 bg-gray-50 border-2 border-transparent focus:border-blue-500 focus:bg-white rounded-xl transition-all outline-none"
-                  required
-                />
-              </div>
-
-              <div className="space-y-1">
-                <label className="text-xs font-bold text-gray-500 uppercase ml-1 flex items-center gap-2">
-                  <FaPhone size={10} /> Phone Number
-                </label>
-                <input
-                  name="phone_number"
-                  value={formData.phone_number}
-                  onChange={handleChange}
-                  maxLength={20}
-                  placeholder="+91 XXXXX XXXXX"
-                  className="w-full p-3 bg-gray-50 border-2 border-transparent focus:border-blue-500 focus:bg-white rounded-xl transition-all outline-none"
-                  required
-                />
-              </div>
-
-              <div className="flex gap-3 pt-4">
-                {profile && (
-                  <button
-                    type="button"
-                    onClick={() => setIsEditing(false)}
-                    className="flex-1 py-4 font-bold text-gray-500 bg-gray-100 rounded-2xl hover:bg-gray-200 transition-all"
-                  >
-                    Cancel
-                  </button>
-                )}
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="flex-1 py-4 font-bold text-white bg-blue-600 rounded-2xl shadow-lg shadow-blue-200 hover:bg-blue-700 active:scale-95 transition-all disabled:bg-blue-300"
-                >
-                  {loading ? "Saving..." : profile ? "Update Profile" : "Save Profile"}
-                </button>
-              </div>
-            </form>
-          ) : (
-            /* --- VIEW MODE --- */
-            <div className="space-y-6">
-              <div className="flex items-center justify-between p-4 bg-blue-50 rounded-2xl border border-blue-100">
-                <div>
-                  <p className="text-xs font-bold text-blue-600 uppercase tracking-widest">Full Name</p>
-                  <p className="text-xl font-bold text-gray-800">{profile.first_name} {profile.last_name}</p>
-                </div>
-                <button
-                  onClick={() => setIsEditing(true)}
-                  className="px-4 hover:cursor-pointer py-2 text-sm font-bold text-blue-600 hover:bg-white rounded-xl transition-all"
-                >
-                  Edit
-                </button>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div className="p-4 bg-gray-50 rounded-2xl">
-                  <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Birth Date</p>
-                  <p className="text-gray-700 font-semibold">{new Date(profile.date_of_birth).toLocaleDateString()}</p>
-                </div>
-                <div className="p-4 bg-gray-50 rounded-2xl">
-                  <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Contact</p>
-                  <p className="text-gray-700 font-semibold">{profile.phone_number}</p>
-                </div>
-              </div>
-
-              <button
-                onClick={() => window.history.back()}
-                className=" hover:cursor-pointer w-full py-4 mt-4 font-bold text-gray-400 border-2 border-gray-100 rounded-2xl hover:bg-gray-50 transition-all"
-              >
-                Close Profile
-              </button>
+        ) : (
+          <div className="space-y-4">
+            {/* User Name Section */}
+            <div className="pb-3 border-b border-slate-50">
+              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">
+                Full Name
+              </p>
+              <p className="text-base font-bold text-slate-800">
+                {profile.first_name} {profile.last_name}
+              </p>
             </div>
-          )}
-        </div>
+
+            {/* Info Grid */}
+            <div className="grid grid-cols-1 gap-2.5">
+              <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-2xl">
+                <FaCalendarAlt className="text-indigo-500 shrink-0" size={14} />
+                <div>
+                  <p className="text-[9px] font-bold text-slate-400 uppercase">
+                    Birth Date
+                  </p>
+                  <p className="text-xs font-bold text-slate-700">
+                    {new Date(profile.date_of_birth).toLocaleDateString()}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-2xl">
+                <FaPhone className="text-indigo-500 shrink-0" size={14} />
+                <div>
+                  <p className="text-[9px] font-bold text-slate-400 uppercase">
+                    Phone
+                  </p>
+                  <p className="text-xs font-bold text-slate-700">
+                    {profile.phone_number}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Action Footer */}
+            <button
+              onClick={handleEditRedirect}
+              className="w-full mt-1 py-3 flex items-center justify-center gap-2 bg-slate-900 text-white text-xs font-bold rounded-2xl hover:bg-indigo-600 transition-all group active:scale-95"
+            >
+              <FaCog className="group-hover:rotate-90 transition-transform duration-500" />
+              Manage Settings
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

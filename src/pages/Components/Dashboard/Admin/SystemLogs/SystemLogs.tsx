@@ -68,7 +68,7 @@ const SystemLogs: React.FC = () => {
             <tr>
               <th className="px-6 py-4">Table</th>
               <th className="px-6 py-4">Operation</th>
-              <th className="px-6 py-4">Changed By</th>
+              {/* <th className="px-6 py-4">Changed By</th> */}
               <th className="px-6 py-4">Time</th>
               <th className="px-6 py-4 text-right">Details</th>
             </tr>
@@ -82,7 +82,7 @@ const SystemLogs: React.FC = () => {
                     {log.operation}
                   </span>
                 </td>
-                <td className="px-6 py-4 text-sm text-slate-600">{log.changed_by}</td>
+                {/* <td className="px-6 py-4 text-sm text-slate-600">{log.changed_by}</td> */}
                 <td className="px-6 py-4 text-xs text-slate-400">{new Date(log.changed_at).toLocaleString()}</td>
                 <td className="px-6 py-4 text-right">
                   <button 
