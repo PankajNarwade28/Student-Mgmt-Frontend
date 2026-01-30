@@ -3,6 +3,7 @@ import { Menu, Bell, Search, X, Clock } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import api from "../../../api/axiosInstance";
 import ConfirmationModal from "../../Components/Modal/confirmationModal";
+import Profile from "../../Components/Dashboard/Profile/Profile";
 
 interface NavbarProps {
   toggleSidebar: () => void;
@@ -11,7 +12,7 @@ interface NavbarProps {
 interface AuditLog {
   id: number;
   table_name: string;
-  operation: 'INSERT' | 'UPDATE' | 'DELETE';
+  operation: "INSERT" | "UPDATE" | "DELETE";
   changed_by: string;
   changed_at: string;
   old_data: Record<string, unknown> | null;
@@ -20,7 +21,8 @@ interface AuditLog {
 const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
   const navigate = useNavigate();
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
-  const [isNotificationOpen, setIsNotificationOpen] = useState(false); 
+  const [isNotificationOpen, setIsNotificationOpen] = useState(false);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
 
   const isAuthenticated = !!localStorage.getItem("token");
   const userRole = localStorage.getItem("userRole") || "User";
@@ -28,34 +30,38 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
     localStorage.removeItem("token");
     localStorage.removeItem("userRole");
     navigate("/login");
+  };
+  const [loading, setLoading] = useState(false);
+
+  // Inside Navbar component
+  const [logs, setLogs] = useState<AuditLog[]>([]);
+  const [hasUnread, setHasUnread] = useState(false);
+
+  const fetchTopLogs = useCallback(async () => {
+    // Only fetch if the user is an Admin
+    if (userRole !== "Admin") return;
+
+    try {
+      setLoading(true);
+      const { data } = await api.get("/api/audit/system/logs");
+
+      // Limit to the most recent 3 logs as requested
+      setLogs(data.slice(0, 3));
+    } catch (err) {
+      console.error("Failed to fetch notification logs:", err);
+    } finally {
+      setLoading(false);
+    }
+  }, [userRole]);
+
+  // Fetch logs once when the component mounts or role changes
+  useEffect(() => {
+    fetchTopLogs();
+  }, [fetchTopLogs]);
+
+  if(loading){
+    return <div>Loading...</div>;
   }
-  const [, setLoading] = useState(false);
-
-// Inside Navbar component
-const [logs, setLogs] = useState<AuditLog[]>([]);
-const [hasUnread, setHasUnread] = useState(false); 
-
-const fetchTopLogs = useCallback(async () => {
-  // Only fetch if the user is an Admin
-  if (userRole !== "Admin") return;
-
-  try {
-    setLoading(true);
-    const { data } = await api.get("/api/audit/system/logs");
-    
-    // Limit to the most recent 3 logs as requested
-    setLogs(data.slice(0, 3));
-  } catch (err) {
-    console.error("Failed to fetch notification logs:", err);
-  } finally {
-    setLoading(false);
-  }
-}, [userRole]);
-
-// Fetch logs once when the component mounts or role changes
-useEffect(() => {
-  fetchTopLogs();
-}, [fetchTopLogs]);
   return (
     <nav className="sticky top-0 z-50 flex h-16 w-full items-center justify-between bg-white px-4 shadow-sm md:px-6 border-b border-slate-100">
       {/* LEFT SECTION */}
@@ -66,6 +72,7 @@ useEffect(() => {
         >
           <Menu size={24} />
         </button>
+        
         <div className="relative hidden items-center sm:flex">
           <Search className="absolute left-3 text-slate-400" size={18} />
           <input
@@ -94,6 +101,7 @@ useEffect(() => {
                   <span className="absolute right-2 top-2 h-2.5 w-2.5 rounded-full border-2 border-white bg-green-500 animate-pulse"></span>
                 )}
               </button>
+              
 
               {/* DROPDOWN */}
               {isNotificationOpen && (
@@ -155,32 +163,37 @@ useEffect(() => {
               )}
             </div>
 
-            {/* PROFILE PILL */}
-            <button
-              onClick={() => navigate("/dashboard/profile")}
-              className="group flex items-center gap-2 rounded-full border border-slate-200 bg-white p-1 pr-3 transition-all hover:border-indigo-300 hover:bg-indigo-50 sm:pr-4"
-            >
-              <img
-                src={`https://ui-avatars.com/api/?name=${userRole}&background=4F46E5&color=fff&bold=true`}
-                alt="user"
-                className="h-8 w-8 rounded-full border border-white shadow-sm"
-              />
-              <div className="hidden flex-col items-start leading-tight sm:flex">
-                <span className="text-[9px] font-black uppercase tracking-wider text-slate-400">
-                  Role
-                </span>
-                <span className="text-xs font-bold text-indigo-600">
-                  {userRole}
-                </span>
-              </div>
-            </button>
-
-            {/* <button
-              className="flex h-9 w-9 items-center justify-center rounded-full bg-rose-50 text-rose-600 transition-all hover:bg-rose-100"
-              onClick={() => setIsLogoutModalOpen(true)}
-            >
-              <LogOut size={18} />
-            </button> */}
+            <div className="relative">
+              {" "}
+              {/* Wrapper for positioning */}
+              {/* NEW PROFILE PILL */}
+              <button
+                onClick={() => setIsProfileOpen(!isProfileOpen)}
+                className={`group flex items-center gap-2 rounded-full border p-1 pr-3 transition-all sm:pr-4 ${
+                  isProfileOpen
+                    ? "border-indigo-500 bg-indigo-50 ring-4 ring-indigo-500/10"
+                    : "border-slate-200 bg-white hover:border-indigo-300 hover:bg-indigo-50"
+                }`}
+              >
+                <img
+                  src={`https://ui-avatars.com/api/?name=${userRole}&background=4F46E5&color=fff&bold=true`}
+                  alt="user"
+                  className="h-8 w-8 rounded-full border border-white shadow-sm"
+                />
+                <div className="hidden flex-col items-start leading-tight sm:flex">
+                  <span className="text-[9px] font-black uppercase tracking-wider text-slate-400">
+                    Account
+                  </span>
+                  <span className="text-xs font-bold text-indigo-600">
+                    {userRole}
+                  </span>
+                </div>
+              </button>
+              {/* RENDER THE PROFILE TAB */}
+              {isProfileOpen && (
+                <Profile onClose={() => setIsProfileOpen(false)} />
+              )}
+            </div>
           </div>
         )}
       </div>
