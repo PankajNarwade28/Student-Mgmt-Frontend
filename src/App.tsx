@@ -106,7 +106,7 @@ function App() {
 
             {/* ALL LOGGED-IN USERS */}
             <Route path="settings" element={<Settings />} />
-            <Route path="profile" element={<Profile />} />
+            <Route path="profile" element={<Profile onClose={() => {}} />} />
             <Route path="schedule" element={<TeacherLogs />} />
           </Route>
         </Route>
