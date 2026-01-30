@@ -38,6 +38,7 @@ const Students: React.FC = () => {
     { id: "enroll", label: "Enrollments", icon: <HiOutlineClipboardCheck /> },
     { id: "grades", label: "Grades", icon: <HiOutlineAcademicCap /> },
     { id: "requests", label: "Requests", icon: <HiOutlineAcademicCap /> },
+    { id: "enrollment-status", label: "Enrollment Status", icon: <HiOutlineAcademicCap /> },
   ];
 
   return (

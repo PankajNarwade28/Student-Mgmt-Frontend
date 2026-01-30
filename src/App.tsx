@@ -26,7 +26,7 @@ import Grades from "./pages/Components/Dashboard/Admin/Students/Grades/Grades";
 import TeacherGrade from "./pages/Components/Teacher/TeacherGrade";
 import AccessCourse from "./pages/Components/Dashboard/Courses/AccessCourse/AccessCourse"; 
 import RequestsPage from "./pages/Components/Dashboard/Admin/Students/Requests/Requests";
-
+import EnrollmentStatus from "./pages/Components/Dashboard/Admin/Students/EnrollmentStatus/EnrollmentStatus";
 function App() {
   return (
     <BrowserRouter>
@@ -74,6 +74,10 @@ function App() {
                   path="requests"
                   element={<RequestsPage />}
                 /> 
+                <Route
+                  path="enrollment-status"
+                  element={<EnrollmentStatus />}
+                />
               </Route>
               <Route path="admin/logs" element={<SystemLogs />} />
               <Route path="admin/instructors" element={<Instructor />} />

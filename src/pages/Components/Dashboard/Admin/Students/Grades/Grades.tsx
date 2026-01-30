@@ -75,7 +75,7 @@ const Grades: React.FC = () => {
     try {
       await api.post(`/api/teacher/grades`, {
         enrollmentId: selectedStudent.enrollment_id,
-        grade: parseFloat(gradeInput),
+        grade: Number.parseFloat(gradeInput),
         remarks: remarksInput
       });
       toast.success("Grade updated successfully");
