@@ -86,7 +86,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
         )}
 
         {/* ADMIN & TEACHER: Reports */}
-        {canAccess(userRole, [ROLES.ADMIN, ROLES.TEACHER]) && (
+        {canAccess(userRole, [ROLES.ADMIN]) && (
           <NavLink
             to="/dashboard/reports"
             className={({ isActive }) =>

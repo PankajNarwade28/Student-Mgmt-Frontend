@@ -155,14 +155,14 @@ const Report: React.FC = () => {
 
                   <div>
                     <p className="text-sm font-semibold text-slate-800">
-                      {log.user}{" "}
+                      <b>Admin </b>
                       <span className="font-normal text-slate-500">
                         performed
                       </span>{" "}
                       {log.type}
                     </p>
                     <p className="text-[10px] text-slate-400 uppercase tracking-tight">
-                      Target Table:{" "}
+                    {" "}  Target Table:{" "}
                       <span className="font-bold">{log.table_name}</span>
                     </p>
                   </div>
