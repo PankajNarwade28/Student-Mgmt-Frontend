@@ -43,6 +43,7 @@ const EnrollmentStatus: React.FC = () => {
   const fetchCourses = useCallback(async () => {
     try {
       const { data } = await api.get("/api/admin/courses/enrollments/data");
+      console.log("Fetched courses for enrollment status:", data);
       setCourses(data.courses || []);
     } catch (err: unknown) {
       console.error(err);
@@ -54,7 +55,9 @@ const EnrollmentStatus: React.FC = () => {
     if (!courseId) return;
     try {
       setLoading(true);
-      const { data } = await api.get(`/api/admin/courses/${courseId}/enrollments`);
+      const { data } = await api.get(
+        `/api/admin/courses/${courseId}/enrollments`,
+      );
       setStudents(data);
     } catch (err: unknown) {
       console.error(err);
@@ -83,9 +86,12 @@ const EnrollmentStatus: React.FC = () => {
       confirmText: "Confirm Change",
       onConfirm: async () => {
         try {
-          await api.patch(`/api/admin/enrollments/${student.enrollment_id}/status`, {
-            status: newStatus,
-          });
+          await api.patch(
+            `/api/admin/enrollments/${student.enrollment_id}/status`,
+            {
+              status: newStatus,
+            },
+          );
           toast.success("Status updated successfully");
           fetchStudents(selectedCourseId);
         } catch (err: unknown) {
@@ -101,7 +107,7 @@ const EnrollmentStatus: React.FC = () => {
 
   // FIX: The filter now checks against the exact DB strings
   const filteredStudents = students.filter((s) =>
-    statusFilter === "ALL" ? true : s.status === statusFilter
+    statusFilter === "ALL" ? true : s.status === statusFilter,
   );
 
   return (
@@ -109,9 +115,12 @@ const EnrollmentStatus: React.FC = () => {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-slate-900 flex items-center gap-2">
-            <HiOutlineShieldCheck className="text-indigo-600" /> Enrollment Status
+            <HiOutlineShieldCheck className="text-indigo-600" /> Enrollment
+            Status
           </h1>
-          <p className="text-sm text-slate-500">Manage student enrollment lifecycle and states.</p>
+          <p className="text-sm text-slate-500">
+            Manage student enrollment lifecycle and states.
+          </p>
         </div>
 
         <div className="flex flex-col sm:flex-row gap-3">
@@ -124,7 +133,10 @@ const EnrollmentStatus: React.FC = () => {
             >
               <option value="">Select Course...</option>
               {courses.map((c) => (
-                <option key={c.id} value={c.id}>{c.code}</option>
+                <option
+                  key={c.id}
+                  value={c.id}
+                >{`${c.code} - ${c.name}`}</option>
               ))}
             </select>
           </div>
@@ -147,7 +159,9 @@ const EnrollmentStatus: React.FC = () => {
 
       {!selectedCourseId ? (
         <div className="text-center py-20 bg-slate-50 rounded-3xl border-2 border-dashed border-slate-200">
-          <p className="text-slate-400 font-medium">Please select a course to manage enrollments.</p>
+          <p className="text-slate-400 font-medium">
+            Please select a course to manage enrollments.
+          </p>
         </div>
       ) : (
         <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
@@ -162,7 +176,10 @@ const EnrollmentStatus: React.FC = () => {
             <tbody className="divide-y divide-slate-50">
               {loading ? (
                 <tr>
-                  <td colSpan={3} className="text-center py-10 animate-pulse text-slate-400">
+                  <td
+                    colSpan={3}
+                    className="text-center py-10 animate-pulse text-slate-400"
+                  >
                     Loading students...
                   </td>
                 </tr>
@@ -174,13 +191,18 @@ const EnrollmentStatus: React.FC = () => {
                 </tr>
               ) : (
                 filteredStudents.map((student) => (
-                  <tr key={student.student_id} className="hover:bg-slate-50/50 transition-colors">
+                  <tr
+                    key={student.student_id}
+                    className="hover:bg-slate-50/50 transition-colors"
+                  >
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
                         <div className="p-2 bg-slate-100 rounded-full text-slate-400">
                           <HiOutlineUserCircle size={20} />
                         </div>
-                        <span className="font-bold text-slate-700">{student.student_name}</span>
+                        <span className="font-bold text-slate-700">
+                          {student.student_name}
+                        </span>
                       </div>
                     </td>
                     <td className="px-6 py-4">
@@ -200,7 +222,9 @@ const EnrollmentStatus: React.FC = () => {
                       <select
                         className="text-xs font-bold bg-slate-100 border-none rounded-lg px-2 py-1 outline-none focus:ring-2 ring-indigo-500 cursor-pointer"
                         value={student.status}
-                        onChange={(e) => handleStatusChange(student, e.target.value)}
+                        onChange={(e) =>
+                          handleStatusChange(student, e.target.value)
+                        }
                       >
                         <option value="Active">Active</option>
                         <option value="Dropped">Dropped</option>
