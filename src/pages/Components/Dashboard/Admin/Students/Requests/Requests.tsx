@@ -12,7 +12,7 @@ interface CourseRequest {
   student_name: string;
   student_email: string;
   requested_at: string;
-  course_name: string; 
+  course_name: string;
 }
 
 interface ModalConfig {
@@ -28,55 +28,80 @@ const RequestsPage = () => {
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalConfig, setModalConfig] = useState<ModalConfig | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
 
   const fetchRequests = async () => {
+    setLoading(true);
     try {
-      const res = await api.get("/api/admin/requests");
-      setRequests(res.data);
-    } catch (err : unknown) {
-      console.error(err);
+      const res = await api.get(
+        `/api/admin/requests?page=${currentPage}&limit=8`,
+      );
+
+      if (res.data.success) {
+        setRequests(res.data.requests);
+        setTotalPages(res.data.pagination.totalPages);
+      }
+    } catch (err) {
+      console.error("Fetch Requests Error:", err);
       toast.error("Failed to load requests");
     } finally {
       setLoading(false);
     }
   };
 
-  const handleActionRequest = (req: CourseRequest, action: 'ACCEPT' | 'REJECT') => {
+  useEffect(() => {
+    fetchRequests();
+  }, [currentPage]);
+
+  const handleActionRequest = (
+    req: CourseRequest,
+    action: "ACCEPT" | "REJECT",
+  ) => {
     setModalConfig({
-      title: action === 'ACCEPT' ? "Accept Enrollment" : "Reject Request",
+      title: action === "ACCEPT" ? "Accept Enrollment" : "Reject Request",
       message: `Are you sure you want to ${action.toLowerCase()} ${req.student_name}'s request for ${req.course_name}?`,
-      type: action === 'ACCEPT' ? "warning" : "danger",
-      confirmText: action === 'ACCEPT' ? "Accept & Enroll" : "Reject & Delete",
+      type: action === "ACCEPT" ? "warning" : "danger",
+      confirmText: action === "ACCEPT" ? "Accept & Enroll" : "Reject & Delete",
       onConfirm: async () => {
         try {
-          await api.post(`/api/admin/requests/${req.id}/decision`, { 
-            action, 
-            student_id: req.student_id, 
-            course_id: req.course_id 
+          await api.post(`/api/admin/requests/${req.id}/decision`, {
+            action,
+            student_id: req.student_id,
+            course_id: req.course_id,
           });
-          setRequests(prev => prev.filter(r => r.id !== req.id));
+          setRequests((prev) => prev.filter((r) => r.id !== req.id));
           toast.success(`Request ${action.toLowerCase()}ed successfully`);
-        } catch (err : unknown) {
+        } catch (err: unknown) {
           console.error(err);
           toast.error("Action failed");
-        } finally { 
-          setIsModalOpen(false); 
+        } finally {
+          setIsModalOpen(false);
         }
-      }
+      },
     });
     setIsModalOpen(true);
   };
 
-  useEffect(() => { fetchRequests(); }, []);
+  useEffect(() => {
+    fetchRequests();
+  }, []);
 
-  if (loading) return <div className="p-10 text-center font-bold">Fetching Requests...</div>;
+  if (loading)
+    return (
+      <div className="p-10 text-center font-bold">Fetching Requests...</div>
+    );
 
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
       <div className="max-w-6xl mx-auto">
         <header className="mb-8">
-          <h1 className="text-2xl font-bold text-gray-800 tracking-tight">Enrollment Approvals</h1>
-          <p className="text-gray-500 text-sm">Review pending student course entries.</p>
+          <h1 className="text-2xl font-bold text-gray-800 tracking-tight">
+            Enrollment Approvals
+          </h1>
+          <p className="text-gray-500 text-sm">
+            Review pending student course entries.
+          </p>
         </header>
 
         <div className="bg-white shadow-sm rounded-2xl overflow-hidden border border-gray-100">
@@ -92,10 +117,17 @@ const RequestsPage = () => {
             <tbody className="divide-y divide-gray-100">
               {requests.length > 0 ? (
                 requests.map((req) => (
-                  <tr key={req.id} className="hover:bg-gray-50/50 transition-all">
+                  <tr
+                    key={req.id}
+                    className="hover:bg-gray-50/50 transition-all"
+                  >
                     <td className="px-6 py-4">
-                      <div className="font-bold text-gray-800 tracking-tight">{req.student_name}</div>
-                      <div className="text-[10px] font-mono text-gray-400">{req.student_email}</div>
+                      <div className="font-bold text-gray-800 tracking-tight">
+                        {req.student_name}
+                      </div>
+                      <div className="text-[10px] font-mono text-gray-400">
+                        {req.student_email}
+                      </div>
                     </td>
                     <td className="px-6 py-4">
                       <div className="text-xs font-bold text-indigo-600 bg-indigo-50 px-3 py-1.5 rounded-xl inline-block">
@@ -126,7 +158,9 @@ const RequestsPage = () => {
                   <td colSpan={4} className="py-24 text-center">
                     <div className="flex flex-col items-center opacity-40">
                       <HiOutlineInbox className="w-12 h-12 mb-2" />
-                      <p className="font-bold text-gray-800">No Pending Requests</p>
+                      <p className="font-bold text-gray-800">
+                        No Pending Requests
+                      </p>
                     </div>
                   </td>
                 </tr>
@@ -134,13 +168,40 @@ const RequestsPage = () => {
             </tbody>
           </table>
         </div>
+        {/* Pagination Navigation */}
+        <div className="mt-6 flex items-center justify-between px-2">
+          <div className="text-sm text-gray-500">
+            Showing{" "}
+            <span className="font-bold text-gray-900">{requests.length}</span>{" "}
+            requests on page{" "}
+            <span className="font-bold text-gray-900">{currentPage}</span>
+          </div>
+
+          <div className="flex gap-2">
+            <button
+              disabled={currentPage === 1 || loading}
+              onClick={() => setCurrentPage((p) => p - 1)}
+              className="px-4 py-2 text-xs font-bold text-gray-600 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 disabled:opacity-50 transition-all shadow-sm"
+            >
+              Previous
+            </button>
+
+            <button
+              disabled={currentPage === totalPages || loading}
+              onClick={() => setCurrentPage((p) => p + 1)}
+              className="px-4 py-2 text-xs font-bold text-white bg-indigo-600 rounded-xl hover:bg-indigo-700 disabled:opacity-50 transition-all shadow-md shadow-indigo-100"
+            >
+              Next
+            </button>
+          </div>
+        </div>
       </div>
 
       {isModalOpen && modalConfig && (
         <ConfirmationModal
           isOpen={isModalOpen}
           title={modalConfig.title}
-          message={modalConfig.message} 
+          message={modalConfig.message}
           type={modalConfig.type}
           confirmText={modalConfig.confirmText}
           onConfirm={modalConfig.onConfirm}
