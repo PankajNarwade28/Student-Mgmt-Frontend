@@ -12,6 +12,7 @@ import {
   HiOutlineTrash,
 } from "react-icons/hi";
 import api from "../../../api/axiosInstance";
+import { announcementSchema,gradeSchema } from "../../../validations/courseSchema"; 
 
 interface EnrolledStudent {
   enrollment_id: number;
@@ -58,6 +59,16 @@ const TeacherGrade: React.FC = () => {
   const [announcementToDelete, setAnnouncementToDelete] = useState<
     number | string | null
   >(null);
+  // Add these to your state declarations
+  const [gradeErrors, setGradeErrors] = useState<{
+    grade?: string;
+    remarks?: string;
+  }>({});
+  const [announceErrors, setAnnounceErrors] = useState<{
+    title?: string;
+    content?: string;
+    type?: string; // <--- Add this line
+  }>({});
 
   const fetchStudents = useCallback(async () => {
     try {
@@ -112,43 +123,72 @@ const TeacherGrade: React.FC = () => {
     }
   };
 
-  const handlePostAnnouncement = async () => {
-    if (!announceTitle || !announceContent)
-      return toast.error("Fill in all fields");
-    try {
-      await api.post(`/api/teacher/announcements`, {
-        courseId,
-        title: announceTitle,
-        content: announceContent,
-        type: announceType,
-      });
-      toast.success("Update posted");
-      setIsAnnounceModalOpen(false);
-      setAnnounceTitle("");
-      setAnnounceContent("");
-      fetchAnnouncements();
-    } catch (err: unknown) {
-      console.error("Error posting update", err);
-      toast.error("Error posting update");
-    }
-  };
-
   const handleSaveGrade = async () => {
     if (!selectedStudent) return;
+
+    // Validate using Zod
+    const result = gradeSchema.safeParse({
+      grade: gradeInput,
+      remarks: remarksInput,
+    });
+
+    if (!result.success) {
+      const formattedErrors = result.error.flatten().fieldErrors;
+      setGradeErrors({
+        grade: formattedErrors.grade?.[0],
+        remarks: formattedErrors.remarks?.[0],
+      });
+      return;
+    }
+
     try {
+      setGradeErrors({}); // Clear errors on success
       await api.post(`/api/teacher/grades`, {
         enrollmentId: selectedStudent.enrollment_id,
-        grade: Number.parseFloat(gradeInput),
-        remarks: remarksInput,
+        grade: result.data.grade,
+        remarks: result.data.remarks,
       });
       toast.success("Grade saved");
       setIsModalOpen(false);
       fetchStudents();
-    } catch (err: unknown) {
+    } catch (err) {
       console.error("Error saving grade", err);
       toast.error("Error saving data");
     }
   };
+
+  const handlePostAnnouncement = async () => {
+  const result = announcementSchema.safeParse({
+    title: announceTitle,
+    content: announceContent,
+    type: announceType,
+  });
+
+  if (!result.success) {
+    const formattedErrors = result.error.flatten().fieldErrors;
+    setAnnounceErrors({
+      title: formattedErrors.title?.[0],
+      content: formattedErrors.content?.[0],
+    });
+    return;
+  }
+
+  try {
+    setAnnounceErrors({});
+    await api.post(`/api/teacher/announcements`, {
+      courseId,
+      ...result.data,
+    });
+    toast.success("Update posted");
+    setIsAnnounceModalOpen(false);
+    setAnnounceTitle("");
+    setAnnounceContent("");
+    fetchAnnouncements();
+  } catch (err) {
+    console.error("Error posting announcement", err);
+    toast.error("Error posting update");
+  }
+};
 
   const handleOpenModal = (student: EnrolledStudent) => {
     setSelectedStudent(student);
@@ -334,6 +374,7 @@ const TeacherGrade: React.FC = () => {
                   value={gradeInput}
                   onChange={(e) => setGradeInput(e.target.value)}
                 />
+                {gradeErrors.grade && <p className="text-[10px] text-red-500 font-bold mt-1 ml-1">{gradeErrors.grade}</p>}
               </div>
 
               <div className="space-y-1">
@@ -351,6 +392,7 @@ const TeacherGrade: React.FC = () => {
                   value={remarksInput}
                   onChange={(e) => setRemarksInput(e.target.value)}
                 />
+                {gradeErrors.remarks && <p className="text-[10px] text-red-500 font-bold mt-1 ml-1">{gradeErrors.remarks}</p>}
               </div>
             </div>
 
@@ -477,6 +519,7 @@ const TeacherGrade: React.FC = () => {
                 value={announceTitle}
                 onChange={(e) => setAnnounceTitle(e.target.value)}
               />
+              {announceErrors.title && <p className="text-[10px] text-red-500 font-bold mt-1 ml-1">{announceErrors.title}</p>}  
               <select
                 className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 ring-indigo-500 text-sm"
                 value={announceType}
@@ -487,6 +530,7 @@ const TeacherGrade: React.FC = () => {
                 <option value="notice">General Notice</option>
                 <option value="tutorial">Tutorial/Material</option>
               </select>
+              {announceErrors.type && <p className="text-[10px] text-red-500 font-bold mt-1 ml-1">{announceErrors.type}</p>}
               <textarea
                 rows={4}
                 className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 ring-indigo-500 text-sm resize-none"
@@ -494,6 +538,7 @@ const TeacherGrade: React.FC = () => {
                 value={announceContent}
                 onChange={(e) => setAnnounceContent(e.target.value)}
               />
+              {announceErrors.content && <p className="text-[10px] text-red-500 font-bold mt-1 ml-1">{announceErrors.content}</p> }
             </div>
             <div className="flex gap-3">
               <button

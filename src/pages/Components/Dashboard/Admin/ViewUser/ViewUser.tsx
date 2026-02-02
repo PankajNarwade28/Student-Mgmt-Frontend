@@ -25,7 +25,7 @@ const ViewUsers: React.FC = () => {
   const [editingUser, setEditingUser] = useState<User | null>(null);
   // Add these states at the top of your component
   const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1); 
+  const [totalPages, setTotalPages] = useState(1);
   const limit = Number.parseInt(import.meta.env.PAGINATION_LIMIT) || 5; // Default to 5 if not set
 
   const fetchUsers = async () => {
@@ -55,31 +55,6 @@ const ViewUsers: React.FC = () => {
   useEffect(() => {
     fetchUsers();
   }, [currentPage]);
-  
-  // useEffect(() => {
-  //   fetchUsers();
-  // }, []);
-
-  // const fetchUsers = async () => {
-  //   try {
-  //     setLoading(true);
-  //     const response = await api.get("/api/admin/users");
-  //     // Log this to see exactly what is inside the response
-  //     toast.success("Users fetched successfully");
-  //     console.log("Full Response Data:", response.data);
-  //     const data = response.data.users || response.data;
-  //     if (Array.isArray(data)) setUsers(data);
-  //   } catch (error) {
-  //     if (axios.isAxiosError(error) && error.response) {
-  //       toast.error(error.response.data.message || "Fetch failed");
-  //       return;
-  //     } else {
-  //       toast.error("An unexpected error occurred.");
-  //     }
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
 
   const filteredUsers = users.filter((user) =>
     user.email.toLowerCase().includes(searchTerm.toLowerCase()),
@@ -204,24 +179,30 @@ const ViewUsers: React.FC = () => {
                   </div>
 
                   <div className="flex items-center gap-2">
-                    <button
-                      onClick={() => {
-                        setEditingUser({ ...user });
-                        setIsEditModalOpen(true);
-                      }}
-                      className="p-2 text-blue-400 bg-blue-50 rounded-lg"
-                    >
-                      <FaEdit size={16} />
-                    </button>
-                    <button
-                      onClick={() => {
-                        setUserToDelete(user.id);
-                        setIsDeleteModalOpen(true);
-                      }}
-                      className="p-2 text-red-300 bg-red-50 rounded-lg"
-                    >
-                      <FaTrash size={16} />
-                    </button>
+                    {/* The condition below now wraps BOTH buttons */}
+                    {user.role !== "Admin" && (
+                      <>
+                        <button
+                          onClick={() => {
+                            setEditingUser({ ...user });
+                            setIsEditModalOpen(true);
+                          }}
+                          className="p-2 text-blue-400 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors"
+                        >
+                          <FaEdit size={16} />
+                        </button>
+
+                        <button
+                          onClick={() => {
+                            setUserToDelete(user.id);
+                            setIsDeleteModalOpen(true);
+                          }}
+                          className="p-2 text-red-300 bg-red-50 rounded-lg hover:text-red-600 hover:bg-red-100 transition-colors"
+                        >
+                          <FaTrash size={16} />
+                        </button>
+                      </>
+                    )}
                   </div>
                 </div>
               </div>
@@ -285,24 +266,30 @@ const ViewUsers: React.FC = () => {
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-2">
-                        <button
-                          onClick={() => {
-                            setEditingUser({ ...user });
-                            setIsEditModalOpen(true);
-                          }}
-                          className="p-2 hover:cursor-pointer text-blue-400 hover:text-blue-800 hover:bg-blue-100 rounded-lg transition-all"
-                        >
-                          <FaEdit size={18} />
-                        </button>
-                        <button
-                          onClick={() => {
-                            setUserToDelete(user.id);
-                            setIsDeleteModalOpen(true);
-                          }}
-                          className="p-2 hover:cursor-pointer text-red-300 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"
-                        >
-                          <FaTrash size={18} />
-                        </button>
+                        {/* The condition below now wraps BOTH buttons */}
+                        {user.role !== "Admin" && (
+                          <>
+                            <button
+                              onClick={() => {
+                                setEditingUser({ ...user });
+                                setIsEditModalOpen(true);
+                              }}
+                              className="p-2 text-blue-400 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors"
+                            >
+                              <FaEdit size={16} />
+                            </button>
+
+                            <button
+                              onClick={() => {
+                                setUserToDelete(user.id);
+                                setIsDeleteModalOpen(true);
+                              }}
+                              className="p-2 text-red-300 bg-red-50 rounded-lg hover:text-red-600 hover:bg-red-100 transition-colors"
+                            >
+                              <FaTrash size={16} />
+                            </button>
+                          </>
+                        )}
                       </div>
                     </td>
                   </tr>
