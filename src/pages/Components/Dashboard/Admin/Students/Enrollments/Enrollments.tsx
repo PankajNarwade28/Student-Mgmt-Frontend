@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import api from "../../../../../../api/axiosInstance";
 import {
@@ -27,7 +27,27 @@ const Enrollments: React.FC = () => {
   );
   const [loading, setLoading] = useState(true);
 
-  const fetchData = useCallback(async () => {
+  // const fetchData = useCallback(async () => {
+  //   try {
+  //     setLoading(true);
+  //     const response = await api.get("/api/admin/courses/enrollment-data");
+  //     setCourses(response.data.courses);
+  //     setAllStudents(response.data.students);
+  //   } catch (err) {
+  //     console.error(err);
+  //     toast.error("Failed to load enrollment data");
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // }, []);
+
+  // useEffect(() => {
+  //   fetchData();
+  // }, [fetchData]);
+
+  useEffect(() => {
+  // Move the function inside so it's not a dependency
+  const fetchData = async () => {
     try {
       setLoading(true);
       const response = await api.get("/api/admin/courses/enrollment-data");
@@ -39,11 +59,10 @@ const Enrollments: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  }, []);
+  };
 
-  useEffect(() => {
-    fetchData();
-  }, [fetchData]);
+  fetchData();
+}, []); // Empty array means this runs only ONCE on mount
 
   const toggleEnrollment = async (
     studentId: string,
@@ -74,7 +93,7 @@ const Enrollments: React.FC = () => {
       }
 
       // 1. Refresh the main background list
-      await fetchData();
+      // await fetchData();
 
       // 2. IMPORTANT: Update the modal state manually so the buttons flip immediately
       if (selectedCourse) {
