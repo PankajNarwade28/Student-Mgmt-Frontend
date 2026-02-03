@@ -14,7 +14,8 @@ const Login: React.FC = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (localStorage.getItem("token")) {
+    toast.success("Please Login First.", { duration: 2000 })
+        if (localStorage.getItem("token")) {
       navigate("/dashboard");
     }
     // DO NOT add an 'else' that navigates to /login here
