@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import api from "../../../api/axiosInstance";
 import { toast } from "react-hot-toast";
@@ -12,6 +12,28 @@ const ResetPass = () => {
     confirmPassword: "",
   });
   const [loading, setLoading] = useState(false);
+  const [validating ,setIsValidating] =useState(false);
+
+  useEffect(() => {
+        const checkToken = async () => {
+            try {
+                // Call a verification endpoint (you need to create this)
+                await api.get(`/api/email/verify-token/${token}`);
+                setIsValidating(false); // Token is good, show the form
+            } catch (error) {
+                // If 401 (invalid/expired/used), redirect to login
+                if(axios.isAxiosError(error) && error.response?.status === 401) {
+                    toast.error("This link is invalid or has expired. Please request a new one.");
+                }
+                toast.error("This link is invalid or has already been used.");
+                navigate("/login"); 
+            }
+        };
+
+        if (token) checkToken();
+    }, [token, navigate]);
+
+    if (validating) return <div className="text-center mt-20">Verifying link...</div>;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -26,9 +48,12 @@ const ResetPass = () => {
         newPassword: passwords.newPassword,
       });
 
-      if (response.status === 200) {
-        toast.success("Password reset successful! Please login.");
-        localStorage.removeItem("token"); 
+      if (response.status === 200) { 
+        const data = response.data;
+        toast.success(data.message);
+        navigate("/auth/login");
+
+        localStorage.removeItem("token");
         localStorage.clear();
         navigate("/login");
       }
