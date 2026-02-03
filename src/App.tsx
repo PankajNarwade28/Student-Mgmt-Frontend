@@ -27,6 +27,7 @@ import TeacherGrade from "./pages/Components/Teacher/TeacherGrade";
 import AccessCourse from "./pages/Components/Dashboard/Courses/AccessCourse/AccessCourse"; 
 import RequestsPage from "./pages/Components/Dashboard/Admin/Students/Requests/Requests";
 import EnrollmentStatus from "./pages/Components/Dashboard/Admin/Students/EnrollmentStatus/EnrollmentStatus";
+import ResetPass from "./pages/Components/ResetPass/ResetPass";
 function App() {
   return (
     <BrowserRouter>
@@ -113,6 +114,7 @@ function App() {
 
         {/* PUBLIC ROUTES */}
         <Route path="/auth/login" element={<Login />} />
+        <Route path="/reset-password/:token" element={<ResetPass />} />
         {/* No signup for now */}
         {/* <Route path="/auth/signup" element={<Signup />} /> */}
         <Route path="/" element={<Home />} />
