@@ -45,6 +45,7 @@ const Settings: React.FC = () => {
     last_name: "",
     date_of_birth: "",
     phone_number: "",
+    email:"",
   });
   // Visibility toggles
   const [showOldPass, setShowOldPass] = useState(false);
@@ -77,6 +78,7 @@ const Settings: React.FC = () => {
     try {
       setLoading(true);
       const res = await api.get("/api/user/profile");
+      console.log(res);
       if (res.data.profile) {
         // Format date for the input field (YYYY-MM-DD)
         const profile = res.data.profile;
@@ -180,7 +182,41 @@ const Settings: React.FC = () => {
     } else if (activeSection === "Security") {
       await handlePasswordUpdate(); // Your existing API call
     }
-  };
+  }; 
+
+  const handleForgotPassword = async () => {
+  try {
+    setLoading(true);
+    // Use user.email if you have a global auth state
+  const emailToSend = formData.email; 
+
+  if (!emailToSend) {
+    toast.error("Please Complete Profile for Password Reset.");
+    return;
+  }
+
+    // DEBUG: Check if email is actually here before sending
+    console.log("Sending email:", formData.email); 
+
+    // Use your 'api' instance
+    const response = await api.post("/api/email/forgot-password", { 
+      email: emailToSend // Make sure 'formData' has the email loaded!
+    });
+
+    if (response.status === 200) {
+      toast.success("Reset link sent!");
+    }
+  } catch (error: unknown) {
+    if (axios.isAxiosError(error)) {
+        // Now TypeScript knows 'error' has 'response'
+        const errorMessage =
+          error.response?.data?.message || "Something went wrong.";
+        toast.error(errorMessage);
+      }
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <div className="p-6 max-w-6xl mx-auto animate-in fade-in duration-500">
@@ -378,6 +414,16 @@ const Settings: React.FC = () => {
                       )}
                     </button>
                   </div>
+                  {/* Forgot Password Trigger */}
+                  <div className="flex justify-start">
+                    <button
+                      type="button"
+                      onClick={handleForgotPassword}
+                      className="text-xs font-medium text-indigo-600 hover:text-indigo-700 hover:underline transition-all"
+                    >
+                      Forgot your current password?
+                    </button>
+                  </div>
                 </div>
               </div>
             )}
@@ -429,7 +475,7 @@ const Settings: React.FC = () => {
                         />
                         <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"></div>
                         <span className="ml-2 text-sm text-slate-700">
-                         {""}
+                          {""}
                         </span>
                       </label>
                     </div>
