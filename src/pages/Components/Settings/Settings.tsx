@@ -4,7 +4,6 @@ import {
   HiOutlineShieldCheck,
   HiOutlineBell,
   HiOutlineColorSwatch,
-  HiOutlineCheckCircle,
   HiOutlineEye,
   HiOutlineEyeOff,
   HiOutlineSave,
@@ -45,15 +44,20 @@ const Settings: React.FC = () => {
     last_name: "",
     date_of_birth: "",
     phone_number: "",
-    email:"",
+    email: "",
   });
+
   // Visibility toggles
   const [showOldPass, setShowOldPass] = useState(false);
   const [showNewPass, setShowNewPass] = useState(false);
   const [showConfirmPass, setShowConfirmPass] = useState(false);
 
-  // Modal state
+  // Modal states
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
+  const [pendingAction, setPendingAction] = useState<
+    "saveSettings" | "forgotPassword" | null
+  >(null);
+
   const sections = [
     { id: "Profile", icon: <HiOutlineUserCircle />, label: "Personal Profile" },
     {
@@ -73,14 +77,11 @@ const Settings: React.FC = () => {
     },
   ];
 
-  // Fetch current profile data on mount
   const fetchProfile = useCallback(async () => {
     try {
       setLoading(true);
       const res = await api.get("/api/user/profile");
-      console.log(res);
       if (res.data.profile) {
-        // Format date for the input field (YYYY-MM-DD)
         const profile = res.data.profile;
         if (profile.date_of_birth) {
           profile.date_of_birth = new Date(profile.date_of_birth)
@@ -113,28 +114,23 @@ const Settings: React.FC = () => {
         toast.success("Profile updated successfully!");
       }
     } catch (error: unknown) {
-      console.error("Failed to save profile changes:", error);
-      toast.error("Failed to save changes.");
+      if (axios.isAxiosError(error)) {
+        toast.error(
+          error.response?.data?.message || "Failed to save profile changes.",
+        );
+      } else toast.error("Failed to save profile changes.");
     } finally {
       setLoading(false);
     }
   };
 
   const handlePasswordUpdate = async () => {
-    if (securityData.newPassword !== securityData.confirmPassword) {
-      return toast.error("New passwords do not match!");
-    }
-
-    try {
-      setLoading(true);
+    try { 
       const response = await api.patch("/api/auth/change-password", {
         oldPassword: securityData.oldPassword,
         newPassword: securityData.newPassword,
       });
-
-      // Shows either "Password updated..." or "Account activated!" based on logic above
       toast.success(response.data.message);
-
       setSecurityData({
         oldPassword: "",
         newPassword: "",
@@ -142,9 +138,9 @@ const Settings: React.FC = () => {
       });
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
-        const errorMessage =
-          error.response?.data?.message || "Failed to update password.";
-        toast.error(errorMessage);
+        toast.error(
+          error.response?.data?.message || "Failed to update password.",
+        );
       }
     } finally {
       setLoading(false);
@@ -152,78 +148,74 @@ const Settings: React.FC = () => {
   };
 
   const triggerSaveConfirmation = () => {
-    // Simple validation before showing modal
     if (activeSection === "Security") {
-      if (securityData.oldPassword.length === 0) {
-        return toast.error("Please enter your current password");
-      }
-      if (securityData.newPassword.length === 0) {
-        return toast.error("Please enter your New password");
-      }
-      if (securityData.newPassword !== securityData.confirmPassword) {
-        return toast.error("Passwords do not match");
-      }
-      if (securityData.newPassword.length < 6) {
+      if (securityData.oldPassword.length === 0)
+        return toast.error("Enter current password");
+      if (securityData.newPassword.length < 6)
         return toast.error("Password too short");
-      }
-      if (securityData.newPassword === securityData.oldPassword) {
-        return toast.error(
-          "New password cannot be the same as the old password",
-        );
-      }
+      if (securityData.newPassword !== securityData.confirmPassword)
+        return toast.error("Passwords do not match");
     }
+    setPendingAction("saveSettings");
+    setIsConfirmModalOpen(true);
+  };
+
+  const handleForgotPassword = () => {
+    if (!formData.email) {
+      return toast.error("Please Complete Profile for Password Reset.");
+    }
+    setPendingAction("forgotPassword");
     setIsConfirmModalOpen(true);
   };
 
   const handleFinalConfirm = async () => {
     setIsConfirmModalOpen(false);
-    if (activeSection === "Profile") {
-      await handleSave(); // Your existing API call
-    } else if (activeSection === "Security") {
-      await handlePasswordUpdate(); // Your existing API call
+
+    // 1. Handle regular Save Settings (Profile or Security form)
+    if (pendingAction === "saveSettings") {
+      if (activeSection === "Profile") await handleSave();
+      else if (activeSection === "Security") await handlePasswordUpdate();
     }
-  }; 
-
-  const handleForgotPassword = async () => {
-  try {
-    setLoading(true);
-    // Use user.email if you have a global auth state
-  const emailToSend = formData.email; 
-
-  if (!emailToSend) {
-    toast.error("Please Complete Profile for Password Reset.");
-    return;
-  }
-
-    // DEBUG: Check if email is actually here before sending
-    console.log("Sending email:", formData.email); 
-
-    // Use your 'api' instance
-    const response = await api.post("/api/email/forgot-password", { 
-      email: emailToSend // Make sure 'formData' has the email loaded!
-    });
-
-    if (response.status === 200) {
-      toast.success("Reset link sent!");
-    }
-  } catch (error: unknown) {
-    if (axios.isAxiosError(error)) {
-        // Now TypeScript knows 'error' has 'response'
-        const errorMessage =
-          error.response?.data?.message || "Something went wrong.";
-        toast.error(errorMessage);
+    // 2. Handle Forgot Password Request
+    else if (pendingAction === "forgotPassword") {
+      try {
+        setLoading(true);
+        const response = await api.post("/api/email/forgot-password", {
+          email: formData.email,
+        });
+        if (response.status === 200) toast.success("Reset link sent!");
+      } catch (error: unknown) {
+        if (axios.isAxiosError(error)) {
+          toast.error(error.response?.data?.message || "Something went wrong.");
+        }
+      } finally {
+        setLoading(false);
       }
-  } finally {
-    setLoading(false);
-  }
-};
+    }
+    setPendingAction(null);
+  };
 
   return (
     <div className="p-6 max-w-6xl mx-auto animate-in fade-in duration-500">
+      {/* Global Full-Screen Loader Overlay */}
+      {loading && (
+        <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-white/30 backdrop-blur-md transition-all duration-300">
+          <div className="relative flex items-center justify-center">
+            {/* Outer Rotating Ring */}
+            <div className="h-16 w-16 rounded-full border-4 border-slate-200 border-t-indigo-600 animate-spin"></div>
+
+            {/* Inner Pulsing Circle */}
+            <div className="absolute h-8 w-8 rounded-full bg-indigo-600/20 animate-pulse"></div>
+          </div>
+          <p className="mt-4 text-sm font-bold text-slate-700 tracking-widest uppercase animate-pulse">
+            Waiting for Response...
+          </p>
+        </div>
+      )}
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-slate-900">Account Settings</h1>
         <p className="text-slate-500">
-          Manage your profile information and system preferences
+          Manage your profile information and preferences
         </p>
       </div>
 
@@ -258,14 +250,14 @@ const Settings: React.FC = () => {
             {activeSection === "Profile" && (
               <div className="space-y-6 animate-in slide-in-from-right-4 duration-300">
                 <div className="flex items-center gap-6 pb-6 border-b border-slate-50">
-                  <div className="h-20 w-20 rounded-full bg-indigo-50 border-2 border-indigo-100 flex items-center justify-center text-3xl font-bold text-indigo-600">
+                  <div className="h-20 w-20 rounded-full bg-indigo-50 flex items-center justify-center text-3xl font-bold text-indigo-600">
                     {formData.first_name?.[0] || "U"}
                   </div>
                   <div>
                     <h3 className="font-bold text-slate-800 text-lg">
                       Profile details
                     </h3>
-                    <p className="text-xs text-slate-500 mb-3">
+                    <p className="text-xs text-slate-500">
                       Update your personal identification information
                     </p>
                   </div>
@@ -273,10 +265,7 @@ const Settings: React.FC = () => {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-1.5">
-                    <label
-                      htmlFor="first_name"
-                      className="text-[10px] font-bold text-slate-400 uppercase tracking-widest"
-                    >
+                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
                       First Name
                     </label>
                     <input
@@ -288,10 +277,7 @@ const Settings: React.FC = () => {
                     />
                   </div>
                   <div className="space-y-1.5">
-                    <label
-                      htmlFor="last_name"
-                      className="text-[10px] font-bold text-slate-400 uppercase tracking-widest"
-                    >
+                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
                       Last Name
                     </label>
                     <input
@@ -304,7 +290,7 @@ const Settings: React.FC = () => {
                   </div>
                   <div className="space-y-1.5">
                     <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1">
-                      <HiOutlineCalendar /> Date of Birth
+                      <HiOutlineCalendar /> DOB
                     </label>
                     <input
                       name="date_of_birth"
@@ -316,7 +302,7 @@ const Settings: React.FC = () => {
                   </div>
                   <div className="space-y-1.5">
                     <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1">
-                      <HiOutlinePhone /> Phone Number
+                      <HiOutlinePhone /> Phone
                     </label>
                     <input
                       name="phone_number"
@@ -329,20 +315,17 @@ const Settings: React.FC = () => {
                 </div>
               </div>
             )}
-            {/* --- SECURITY SECTION --- */}
+
             {activeSection === "Security" && (
               <div className="space-y-6 animate-in slide-in-from-right-4 duration-300">
                 <div className="space-y-3 max-w-md">
                   <h3 className="font-bold text-slate-800 text-sm mb-2">
                     Change Password
                   </h3>
-
-                  {/* Old Password */}
                   <div className="relative">
                     <input
                       type={showOldPass ? "text" : "password"}
                       placeholder="Current Password"
-                      className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 ring-indigo-500/10"
                       value={securityData.oldPassword}
                       onChange={(e) =>
                         setSecurityData({
@@ -350,10 +333,11 @@ const Settings: React.FC = () => {
                           oldPassword: e.target.value,
                         })
                       }
+                      className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 ring-indigo-500/10"
                     />
                     <button
                       onClick={() => setShowOldPass(!showOldPass)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-indigo-600 transition-colors"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400"
                     >
                       {showOldPass ? (
                         <HiOutlineEyeOff size={18} />
@@ -362,13 +346,10 @@ const Settings: React.FC = () => {
                       )}
                     </button>
                   </div>
-
-                  {/* New Password */}
                   <div className="relative">
                     <input
                       type={showNewPass ? "text" : "password"}
                       placeholder="New Password"
-                      className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 ring-indigo-500/10"
                       value={securityData.newPassword}
                       onChange={(e) =>
                         setSecurityData({
@@ -376,10 +357,11 @@ const Settings: React.FC = () => {
                           newPassword: e.target.value,
                         })
                       }
+                      className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 ring-indigo-500/10"
                     />
                     <button
                       onClick={() => setShowNewPass(!showNewPass)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-indigo-600 transition-colors"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400"
                     >
                       {showNewPass ? (
                         <HiOutlineEyeOff size={18} />
@@ -388,13 +370,10 @@ const Settings: React.FC = () => {
                       )}
                     </button>
                   </div>
-
-                  {/* Confirm Password */}
                   <div className="relative">
                     <input
                       type={showConfirmPass ? "text" : "password"}
                       placeholder="Confirm New Password"
-                      className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 ring-indigo-500/10"
                       value={securityData.confirmPassword}
                       onChange={(e) =>
                         setSecurityData({
@@ -402,10 +381,11 @@ const Settings: React.FC = () => {
                           confirmPassword: e.target.value,
                         })
                       }
+                      className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 ring-indigo-500/10"
                     />
                     <button
                       onClick={() => setShowConfirmPass(!showConfirmPass)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-indigo-600 transition-colors"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400"
                     >
                       {showConfirmPass ? (
                         <HiOutlineEyeOff size={18} />
@@ -414,191 +394,58 @@ const Settings: React.FC = () => {
                       )}
                     </button>
                   </div>
-                  {/* Forgot Password Trigger */}
-                  <div className="flex justify-start">
-                    <button
-                      type="button"
-                      onClick={handleForgotPassword}
-                      className="text-xs font-medium text-indigo-600 hover:text-indigo-700 hover:underline transition-all"
-                    >
-                      Forgot your current password?
-                    </button>
-                  </div>
-                </div>
-              </div>
-            )}
-            {/* --- NOTIFICATIONS SECTION --- */}
-            {activeSection === "Notifications" && (
-              <div className="space-y-6 animate-in slide-in-from-right-4 duration-300">
-                <div>
-                  <h3 className="font-bold text-slate-800 mb-1">Preferences</h3>
-                  <p className="text-xs text-slate-500">
-                    Choose how you want to receive system updates and alerts.
-                  </p>
-                </div>
-
-                <div className="space-y-3">
-                  {[
-                    {
-                      id: "email",
-                      label: "Email Notifications",
-                      desc: "Receive course updates and grade alerts via email.",
-                    },
-                    {
-                      id: "sms",
-                      label: "SMS Notifications",
-                      desc: "Get critical security alerts sent to your phone.",
-                    },
-                    {
-                      id: "push",
-                      label: "Push Notifications",
-                      desc: "Real-time alerts in your browser dashboard.",
-                    },
-                  ].map((item) => (
-                    <div
-                      key={item.id}
-                      className="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-slate-100"
-                    >
-                      <div className="space-y-0.5">
-                        <p className="text-sm font-bold text-slate-700">
-                          {item.label}
-                        </p>
-                        <p className="text-[10px] text-slate-500">
-                          {item.desc}
-                        </p>
-                      </div>
-                      <label className="relative inline-flex items-center cursor-pointer">
-                        <input
-                          type="checkbox"
-                          className="sr-only peer"
-                          defaultChecked={item.id === "email"}
-                        />
-                        <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"></div>
-                        <span className="ml-2 text-sm text-slate-700">
-                          {""}
-                        </span>
-                      </label>
-                    </div>
-                  ))}
+                  <button
+                    type="button"
+                    onClick={handleForgotPassword}
+                    className="text-xs font-medium text-indigo-600 hover:underline"
+                  >
+                    Forgot your current password?
+                  </button>
                 </div>
               </div>
             )}
 
-            {/* --- APPEARANCE SECTION --- */}
-            {activeSection === "Appearance" && (
-              <div className="space-y-6 animate-in slide-in-from-right-4 duration-300">
-                <div>
-                  <h3 className="font-bold text-slate-800 mb-1">
-                    Theme Selection
-                  </h3>
-                  <p className="text-xs text-slate-500">
-                    Customize the interface look and feel for your workspace.
-                  </p>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {/* Light Mode Option */}
-                  <div className="group relative p-4 border-2 border-indigo-600 rounded-3xl bg-white cursor-pointer transition-all">
-                    <div className="aspect-video w-full bg-slate-50 rounded-xl mb-3 border border-slate-100 overflow-hidden flex flex-col p-2 gap-1">
-                      <div className="h-2 w-1/2 bg-slate-200 rounded" />
-                      <div className="h-2 w-full bg-slate-100 rounded" />
-                      <div className="mt-auto h-4 w-full bg-indigo-500 rounded" />
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-xs font-black uppercase text-slate-900">
-                        Light Theme
-                      </span>
-                      <HiOutlineCheckCircle
-                        className="text-indigo-600"
-                        size={18}
-                      />
-                    </div>
-                  </div>
-                  {/* Dark Mode Option (Coming Soon) */}
-                  <div className="group relative p-4 border-2 border-slate-100 rounded-3xl bg-slate-50 cursor-not-allowed opacity-60">
-                    <div className="aspect-video w-full bg-slate-800 rounded-xl mb-3 border border-slate-700 overflow-hidden flex flex-col p-2 gap-1">
-                      <div className="h-2 w-1/2 bg-slate-700 rounded" />
-                      <div className="h-2 w-full bg-slate-600 rounded" />
-                      <div className="mt-auto h-4 w-full bg-slate-700 rounded" />
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-xs font-black uppercase text-slate-400">
-                        Dark Theme
-                      </span>
-                      <span className="text-[8px] font-bold bg-slate-200 text-slate-500 px-2 py-0.5 rounded-full">
-                        COMING SOON
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-            {/* Other sections remain (Security, Appearance) as UI placeholders or add logic later */}
+            {/* Notification and Appearance UI... */}
 
             <div className="pt-8 border-t border-slate-50 flex justify-end">
               <button
                 onClick={triggerSaveConfirmation}
                 disabled={loading}
-                className={`
-    relative group flex items-center justify-center gap-2 
-    px-8 py-3.5 rounded-2xl font-bold text-sm tracking-wide
-    transition-all duration-300 active:scale-95
-    ${
-      loading
-        ? "bg-slate-100 text-slate-400 cursor-not-allowed"
-        : "bg-gradient-to-r from-indigo-600 to-blue-600 text-white shadow-lg shadow-indigo-200 hover:shadow-indigo-300 hover:-translate-y-0.5 hover:brightness-110"
-    }
-  `}
+                className={`relative flex items-center justify-center gap-2 px-8 py-3.5 rounded-2xl font-bold text-sm transition-all ${loading ? "bg-slate-100 text-slate-400" : "bg-indigo-600 text-white shadow-lg hover:brightness-110 active:scale-95"}`}
               >
                 {loading ? (
-                  <>
-                    <svg
-                      className="animate-spin h-4 w-4 text-slate-400"
-                      viewBox="0 0 24 24"
-                    >
-                      <circle
-                        className="opacity-25"
-                        cx="12"
-                        cy="12"
-                        r="10"
-                        stroke="currentColor"
-                        strokeWidth="4"
-                        fill="none"
-                      />
-                      <path
-                        className="opacity-75"
-                        fill="currentColor"
-                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                      />
-                    </svg>
-                    <span>Processing...</span>
-                  </>
+                  "Processing..."
                 ) : (
                   <>
-                    <HiOutlineSave
-                      size={20}
-                      className="transition-transform group-hover:rotate-12"
-                    />
-                    <span>Save Changes</span>
+                    <HiOutlineSave size={20} /> Save Changes
                   </>
-                )}
-
-                {/* Subtle glow effect on hover */}
-                {!loading && (
-                  <div className="absolute inset-0 rounded-2xl bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity" />
                 )}
               </button>
             </div>
           </div>
+
           {isConfirmModalOpen && (
             <ConfirmationModal
               isOpen={isConfirmModalOpen}
-              title="Confirm Changes"
-              message={`Are you sure you want to update your ${activeSection.toLowerCase()} settings?`}
+              title={
+                pendingAction === "forgotPassword"
+                  ? "Send Reset Email"
+                  : "Confirm Changes"
+              }
+              message={
+                pendingAction === "forgotPassword"
+                  ? "Are you sure you want to send a password reset link?"
+                  : `Confirm update to ${activeSection}?`
+              }
               type="warning"
-              confirmText="Yes, Update"
+              confirmText={
+                pendingAction === "forgotPassword" ? "Send Link" : "Yes, Update"
+              }
               onConfirm={handleFinalConfirm}
-              onCancel={() => setIsConfirmModalOpen(false)}
+              onCancel={() => {
+                setIsConfirmModalOpen(false);
+                setPendingAction(null);
+              }}
             />
           )}
         </main>
