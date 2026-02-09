@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import "../Auth.css";
+import { useNavigate } from "react-router-dom"; 
 import { loginSchema } from "../../../../validations/authSchema";
 import { HiOutlineEye, HiOutlineEyeOff } from "react-icons/hi";
 import api from "../../../../api/axiosInstance";

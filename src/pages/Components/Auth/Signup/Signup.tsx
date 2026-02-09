@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import "../Auth.css";
+import { Link, useNavigate } from "react-router-dom"; 
 import { signupSchema } from "../../../../validations/authSchema";
 import { Eye, EyeOff } from "lucide-react";
 const API_URL = import.meta.env.VITE_API_URL;
