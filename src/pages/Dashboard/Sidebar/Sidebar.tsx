@@ -1,16 +1,14 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   LayoutDashboard,
   Users,
   BarChart3,
   Settings,
-  X, 
+  X,
 } from "lucide-react";
-import "./Sidebar.css";
 import { NavLink, useNavigate } from "react-router-dom";
-import { canAccess, ROLES } from "../../Components/Utils/rbac"; // Import utility
+import { canAccess, ROLES } from "../../Components/Utils/rbac";
 import ConfirmationModal from "../../Components/Modal/confirmationModal";
-import { useState } from "react";
 import {
   HiOutlineClipboardList,
   HiOutlineHome,
@@ -26,7 +24,7 @@ interface SidebarProps {
 const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
   const navigate = useNavigate();
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
-  // Auth & Role Data
+  
   const token = localStorage.getItem("token");
   const userRole = localStorage.getItem("userRole");
   const isAuthenticated = !!token;
@@ -36,116 +34,87 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
     navigate("/auth/login");
   };
 
+  // Helper for shared NavLink styles
+  const navLinkClass = ({ isActive }: { isActive: boolean }) =>
+    `flex items-center gap-3 px-4 py-3 rounded-lg transition-colors mb-1 no-underline ${
+      isActive 
+        ? "bg-slate-100 text-indigo-600 font-medium" 
+        : "text-slate-500 hover:bg-slate-100 hover:text-indigo-600"
+    }`;
+
   return (
-    <aside className={`sidebar ${isOpen ? "open" : ""}`}>
-      <div className="sidebar-header">
-        <NavLink to="/" className="logo">
-          <LayoutDashboard size={24} /> <span>ERP System</span>
+    <aside
+      className={`fixed inset-y-0 left-0 z-[100] flex w-64 flex-col border-r border-slate-200 bg-white transition-transform duration-300 ease-in-out lg:translate-x-0 ${
+        isOpen ? "translate-x-0" : "-translate-x-full"
+      }`}
+    >
+      {/* Header */}
+      <div className="flex items-center justify-between p-6 text-indigo-600">
+        <NavLink to="/" className="flex items-center gap-2.5 text-lg font-bold">
+          <LayoutDashboard size={24} />
+          <span>ERP System</span>
         </NavLink>
 
-        <button className="close-btn" onClick={toggleSidebar}>
+        <button 
+          className="cursor-pointer bg-none border-none lg:hidden" 
+          onClick={toggleSidebar}
+        >
           <X size={24} />
         </button>
       </div>
 
-      <nav className="menu">
-        {/* Always visible to logged in users */}
-        <NavLink
-          to="/dashboard"
-          className={({ isActive }) =>
-            isActive ? "menu-item active" : "menu-item"
-          }
-          onClick={toggleSidebar}
-        >
+      {/* Navigation Menu */}
+      <nav className="flex-1 px-3">
+        <NavLink to="/dashboard" className={navLinkClass} onClick={toggleSidebar}>
           <HiOutlineHome size={20} /> Dashboard
         </NavLink>
 
-        {/* ADMIN ONLY: Users Management */}
+        {/* ADMIN ONLY */}
         {canAccess(userRole, [ROLES.ADMIN]) && (
           <>
-          <NavLink
-            to="/dashboard/users"
-            className={({ isActive }) =>
-              isActive ? "menu-item active" : "menu-item"
-            }
-            onClick={toggleSidebar}
-          >
-            <Users size={20} /> Users
-          </NavLink>
-          <NavLink
-            to="/dashboard/admin/students"
-            className={({ isActive }) =>
-              isActive ? "menu-item active" : "menu-item" 
-            }
-            onClick={toggleSidebar}
-          >
-            <FaUserGraduate size={20} /> Students
-
-          </NavLink></>
-
+            <NavLink to="/dashboard/users" className={navLinkClass} onClick={toggleSidebar}>
+              <Users size={20} /> Users
+            </NavLink>
+            <NavLink to="/dashboard/admin/students" className={navLinkClass} onClick={toggleSidebar}>
+              <FaUserGraduate size={20} /> Students
+            </NavLink>
+          </>
         )}
 
-        {/* ADMIN & TEACHER: Reports */}
+        {/* ADMIN & TEACHER */}
         {canAccess(userRole, [ROLES.ADMIN]) && (
-          <NavLink
-            to="/dashboard/reports"
-            className={({ isActive }) =>
-              isActive ? "menu-item active" : "menu-item"
-            }
-            onClick={toggleSidebar}
-          >
+          <NavLink to="/dashboard/reports" className={navLinkClass} onClick={toggleSidebar}>
             <BarChart3 size={20} /> Reports
           </NavLink>
         )}
 
-        {/* My Courses only for teacher and student */}
+        {/* TEACHER & STUDENT */}
         {canAccess(userRole, [ROLES.TEACHER, ROLES.STUDENT]) && (
-          <NavLink
-            to="/dashboard/mycourses"
-            className={({ isActive }) =>
-              isActive ? "menu-item active" : "menu-item"
-            }
-            onClick={toggleSidebar}
-          >
-            <HiOutlineLibrary size={20} /> My Courses
-          </NavLink>
-        )}
-        {/* My Courses only for teacher and student */}
-        {canAccess(userRole, [ROLES.TEACHER, ROLES.STUDENT]) && (
-          <NavLink
-            to="/dashboard/schedule"
-            className={({ isActive }) =>
-              isActive ? "menu-item active" : "menu-item"
-            }
-            onClick={toggleSidebar}
-          >
-            <HiOutlineClipboardList size={20} /> Schedule
-          </NavLink>
+          <>
+            <NavLink to="/dashboard/mycourses" className={navLinkClass} onClick={toggleSidebar}>
+              <HiOutlineLibrary size={20} /> My Courses
+            </NavLink>
+            <NavLink to="/dashboard/schedule" className={navLinkClass} onClick={toggleSidebar}>
+              <HiOutlineClipboardList size={20} /> Schedule
+            </NavLink>
+          </>
         )}
 
-        {/* Settings: Visible to everyone authenticated */}
-        <NavLink
-          to="/dashboard/settings"
-          className={({ isActive }) =>
-            isActive ? "menu-item active" : "menu-item"
-          }
-          onClick={toggleSidebar}
-        >
+        <NavLink to="/dashboard/settings" className={navLinkClass} onClick={toggleSidebar}>
           <Settings size={20} /> Settings
         </NavLink>
       </nav>
 
-      {/* ONLY show footer/logout if authenticated */}
+      {/* Footer / Logout */}
       {isAuthenticated && (
-        <div className="sidebar-footer">
+        <div className="p-4">
           <button
-            className="logout-btn-sidebar"
-            onClick={() => {
-              setIsLogoutModalOpen(true);
-            }}
+            className="flex w-full items-center justify-center gap-2 rounded-lg bg-red-600 p-3 text-white transition-colors hover:bg-red-700 cursor-pointer"
+            onClick={() => setIsLogoutModalOpen(true)}
           >
-            Logout{" "}
+            Logout
           </button>
+          
           <ConfirmationModal
             isOpen={isLogoutModalOpen}
             title="Confirm Logout"
