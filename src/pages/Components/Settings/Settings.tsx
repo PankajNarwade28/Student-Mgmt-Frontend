@@ -14,6 +14,10 @@ import { toast } from "react-hot-toast";
 import api from "../../../api/axiosInstance";
 import axios from "axios";
 import ConfirmationModal from "../../Components/Modal/confirmationModal";
+import {
+  profileSchema,
+  securitySchema,
+} from "../../../validations/settingSchema"; // Adjust path as needed
 
 interface ProfileData {
   first_name: string;
@@ -107,6 +111,14 @@ const Settings: React.FC = () => {
   };
 
   const handleSave = async () => {
+    const validation = profileSchema.safeParse(formData);
+
+    if (!validation.success) {
+      // Access 'issues' instead of 'errors'
+      const firstErrorMessage = validation.error.issues[0].message;
+      return toast.error(firstErrorMessage);
+    }
+
     try {
       setLoading(true);
       const response = await api.post("/api/user/profile", formData);
@@ -115,17 +127,19 @@ const Settings: React.FC = () => {
       }
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
-        toast.error(
-          error.response?.data?.message || "Failed to save profile changes.",
-        );
-      } else toast.error("Failed to save profile changes.");
+        toast.error(error.response?.data?.message || "Failed to save profile.");
+      } else {
+        toast.error("Failed to save profile changes.");
+      }
     } finally {
       setLoading(false);
     }
   };
-
+  
   const handlePasswordUpdate = async () => {
-    try { 
+    // Note: Password validation logic is moved to triggerSaveConfirmation
+    // to match your original flow, but you can also re-validate here if needed.
+    try {
       const response = await api.patch("/api/auth/change-password", {
         oldPassword: securityData.oldPassword,
         newPassword: securityData.newPassword,
@@ -149,17 +163,26 @@ const Settings: React.FC = () => {
 
   const triggerSaveConfirmation = () => {
     if (activeSection === "Security") {
-      if (securityData.oldPassword.length === 0)
-        return toast.error("Enter current password");
-      if (securityData.newPassword.length < 6)
-        return toast.error("Password too short");
-      if (securityData.newPassword !== securityData.confirmPassword)
-        return toast.error("Passwords do not match");
+      const validation = securitySchema.safeParse(securityData);
+
+      if (!validation.success) {
+        // Access 'issues' instead of 'errors'
+        const firstErrorMessage = validation.error.issues[0].message;
+        return toast.error(firstErrorMessage);
+      }
     }
+
+    // Optional: Add validation for Profile section here too
+    if (activeSection === "Profile") {
+      const validation = profileSchema.safeParse(formData);
+      if (!validation.success) {
+        return toast.error(validation.error.issues[0].message);
+      }
+    }
+
     setPendingAction("saveSettings");
     setIsConfirmModalOpen(true);
   };
-
   const handleForgotPassword = () => {
     if (!formData.email) {
       return toast.error("Please Complete Profile for Password Reset.");
