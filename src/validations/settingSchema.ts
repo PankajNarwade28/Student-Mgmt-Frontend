@@ -4,8 +4,35 @@ import { z } from "zod";
 export const profileSchema = z.object({
   first_name: z.string().min(2, "First name must be at least 2 characters"),
   last_name: z.string().min(2, "Last name must be at least 2 characters"),
-  date_of_birth: z.string().refine((date) => !Number.isNaN(Date.parse(date)), {
+  date_of_birth: z.string()
+  .refine((date) => !Number.isNaN(Date.parse(date)), {
     message: "Invalid date format",
+  })
+  .superRefine((date, ctx) => {
+    const dob = new Date(date);
+    const now = new Date();
+    
+    // 1. Check for Future Date
+    if (dob > now) {
+      ctx.addIssue({
+        code: "custom",
+        message: "Date of birth cannot be in the future",
+        path: [], // refers to this field
+      });
+      return;
+    }
+
+    // 2. Check for "Imaginary" / Too Old Date (e.g., older than 120 years)
+    const minDate = new Date();
+    minDate.setFullYear(now.getFullYear() - 120);
+    
+    if (dob < minDate) {
+      ctx.addIssue({
+        code: "custom",
+        message: "Please enter a realistic date of birth",
+        path: [],
+      });
+    }
   }),
   phone_number: z.string().regex(/^\d{10}$/, "Phone number must be exactly 10 digits"),
  email: z.email({ message: "Invalid email address" }),
