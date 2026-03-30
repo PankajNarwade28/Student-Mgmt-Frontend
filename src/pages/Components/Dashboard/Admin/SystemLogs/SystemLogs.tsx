@@ -22,24 +22,31 @@ const SystemLogs: React.FC = () => {
   const [logs, setLogs] = useState<AuditLog[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, ] = useState("");
+  const [page, setPage] = useState(1);
+const [totalPages, setTotalPages] = useState(1);
+const limit = 10; // Items per page
   
   // Modal State
   const [selectedLog, setSelectedLog] = useState<AuditLog | null>(null);
 
   const fetchLogs = useCallback(async () => {
-    try {
-      setLoading(true);
-      const { data } = await api.get("/api/audit/system/logs");
-      setLogs(data);
-    } catch (err) {
-      console.error(err);
-      toast.error("Failed to fetch audit records.");
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+  try {
+    setLoading(true);
+    // Assuming your controller updated to handle query params: ?page=1&limit=10
+    const { data } = await api.get(`/api/audit/system/logs?page=${page}&limit=${limit}`);
+    
+    // Adjust based on your API response structure
+    setLogs(data.items); 
+    setTotalPages(Math.ceil(data.total / limit));
+  } catch (err) {
+    console.error(err);
+    toast.error("Failed to fetch audit records.");
+  } finally {
+    setLoading(false);
+  }
+}, [page]); // Re-fetch when page changes
 
-  useEffect(() => { fetchLogs(); }, [fetchLogs]);
+useEffect(() => { fetchLogs(); }, [fetchLogs]);
 
   const getOperationColor = (op: string) => {
     if (op === 'INSERT') return 'text-emerald-600 bg-emerald-50 border-emerald-100';
@@ -134,6 +141,28 @@ const SystemLogs: React.FC = () => {
           </div>
         </div>
       )}
+      {/* Pagination Controls */}
+<div className="flex items-center justify-between px-6 py-4 bg-slate-50 border-t border-slate-100">
+  <div className="text-xs text-slate-500 font-medium">
+    Page <span className="text-slate-900">{page}</span> of <span className="text-slate-900">{totalPages}</span>
+  </div>
+  <div className="flex gap-2">
+    <button
+      disabled={page === 1 || loading}
+      onClick={() => setPage(p => p - 1)}
+      className="px-4 py-2 text-xs font-bold bg-white border rounded-xl hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+    >
+      Previous
+    </button>
+    <button
+      disabled={page === totalPages || loading}
+      onClick={() => setPage(p => p + 1)}
+      className="px-4 py-2 text-xs font-bold bg-white border rounded-xl hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+    >
+      Next
+    </button>
+  </div>
+</div>
     </div>
   );
 };
