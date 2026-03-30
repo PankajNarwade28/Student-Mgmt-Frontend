@@ -135,7 +135,7 @@ const Settings: React.FC = () => {
       setLoading(false);
     }
   };
-  
+
   const handlePasswordUpdate = async () => {
     // Note: Password validation logic is moved to triggerSaveConfirmation
     // to match your original flow, but you can also re-validate here if needed.
@@ -288,10 +288,11 @@ const Settings: React.FC = () => {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-1.5">
-                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                    <label htmlFor="first_name" className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
                       First Name
                     </label>
                     <input
+                      id="first_name"
                       name="first_name"
                       type="text"
                       value={formData.first_name}
@@ -300,10 +301,11 @@ const Settings: React.FC = () => {
                     />
                   </div>
                   <div className="space-y-1.5">
-                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                    <label htmlFor="last_name" className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
                       Last Name
                     </label>
                     <input
+                      id="last_name"
                       name="last_name"
                       type="text"
                       value={formData.last_name}
@@ -312,10 +314,11 @@ const Settings: React.FC = () => {
                     />
                   </div>
                   <div className="space-y-1.5">
-                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1">
+                    <label htmlFor="date_of_birth" className="text-[10px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1">
                       <HiOutlineCalendar /> DOB
                     </label>
                     <input
+                      id="date_of_birth"
                       name="date_of_birth"
                       type="date"
                       value={formData.date_of_birth}
@@ -324,10 +327,11 @@ const Settings: React.FC = () => {
                     />
                   </div>
                   <div className="space-y-1.5">
-                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1">
+                    <label htmlFor="phone_number" className="text-[10px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1">
                       <HiOutlinePhone /> Phone
                     </label>
                     <input
+                      id="phone_number"
                       name="phone_number"
                       type="text"
                       value={formData.phone_number}

@@ -4,11 +4,11 @@ import { z } from "zod";
 export const profileSchema = z.object({
   first_name: z.string().min(2, "First name must be at least 2 characters"),
   last_name: z.string().min(2, "Last name must be at least 2 characters"),
-  date_of_birth: z.string().refine((date) => !isNaN(Date.parse(date)), {
+  date_of_birth: z.string().refine((date) => !Number.isNaN(Date.parse(date)), {
     message: "Invalid date format",
   }),
   phone_number: z.string().regex(/^\d{10}$/, "Phone number must be exactly 10 digits"),
-  email: z.string().email("Invalid email address"),
+ email: z.email({ message: "Invalid email address" }),
 });
 
 // Schema for Security/Password Data
@@ -19,7 +19,7 @@ export const securitySchema = z
       .string()
       .min(8, "New password must be at least 8 characters")
       .regex(/[A-Z]/, "Must contain at least one uppercase letter")
-      .regex(/[0-9]/, "Must contain at least one number"),
+      .regex(/\d/, "Must contain at least one number"),
     confirmPassword: z.string(),
   })
   .refine((data) => data.newPassword === data.confirmPassword, {
