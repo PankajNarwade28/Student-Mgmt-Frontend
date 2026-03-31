@@ -248,6 +248,7 @@ const TeacherGrade: React.FC = () => {
               <tr>
                 <th className="px-6 py-4">Student</th>
                 <th className="px-6 py-4 text-center">Grade Status</th>
+                <th className="px-6 py-4 text-right">Remarks</th>
                 <th className="px-6 py-4 text-right">Actions</th>
               </tr>
             </thead>
@@ -275,6 +276,14 @@ const TeacherGrade: React.FC = () => {
                         Not Graded
                       </span>
                     )}
+                  </td>
+                  <td className="px-6 py-4 text-right">
+                    {student.remarks && (
+                      <p className="text-[10px] text-slate-400 italic">
+                        "{student.remarks}"
+                      </p>
+                    )
+                    }
                   </td>
                   <td className="px-6 py-4 text-right">
                     <button
