@@ -1,4 +1,3 @@
-// import React, { useEffect, useState, useCallback } from 'react';
 import React, { useEffect, useState } from "react";
 import api from "../../../api/axiosInstance";
 import type { SystemStatus } from "../../../models/systemStatus";
@@ -18,44 +17,7 @@ const navigate = useNavigate();
  useEffect(() => {
     console.log("I only run once on mount");
   }, []);
-
-  // useEffect(() => {
-  //   let isMounted = true;
-
-  //   const fetchData = async () => {  // to refactor
-  //     try {
-  //       // Inside your useEffect fetchData function
-  //       const response = await api.get("/health");
-  //       if (isMounted) {
-  //         setStatus({
-  //           backend: response.data.backend,
-  //           database: response.data.database,
-  //           totalStudents: response.data.totalStudents,
-  //           loading: false,
-  //           // This will now show the specific database name error
-  //           message: response.data.message,
-  //         });
-  //       }
-  //     } catch (error) {
-  //       console.error("Health check failed:", error);
-  //       if (isMounted) {
-  //         setStatus(() => ({
-  //           backend: false, // API is down
-  //           database: false, // Assume DB is unreachable
-  //           totalStudents: "N/A", // Show N/A on the blue card
-  //           loading: false,
-  //           message: "Network Error: API Server is unreachable",
-  //         }));
-  //       }
-  //     }
-  //   };
-  //   fetchData();
-
-  //   return () => {
-  //     isMounted = false;
-  //   }; // The "Kill Switch"
-  // }, []); // Empty array means "Run once on mount"
-
+ 
   useEffect(() => {
   const fetchData = async () => {
     try {
@@ -220,7 +182,7 @@ const navigate = useNavigate();
         {/* Action Button */}
         <div className="action-container">
           <button
-            onClick={() => window.location.reload()}
+            onClick={() => globalThis.location.reload()}
             className="refresh-button"
           >
             <svg

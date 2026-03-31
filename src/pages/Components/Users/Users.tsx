@@ -26,6 +26,13 @@ const Users: React.FC = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
 
+  // Function to get role badge styling
+  const getRoleBadgeStyle = (role: string): string => {
+    if (role === "Admin") return "bg-purple-50 text-purple-600";
+    if (role === "Teacher") return "bg-amber-50 text-amber-600";
+    return "bg-blue-50 text-blue-600";
+  };
+
   // 1. Reset page to 1 whenever the active tab changes
   useEffect(() => {
     setCurrentPage(1);
@@ -127,9 +134,7 @@ const Users: React.FC = () => {
                   </div>
                   <div>
                     <h3 className="font-bold text-slate-800">{user.first_name ? `${user.first_name} ${user.last_name}` : "User"}</h3>
-                    <span className={`text-[10px] uppercase tracking-widest font-extrabold px-2 py-0.5 rounded ${
-                      user.role === "Admin" ? "bg-purple-50 text-purple-600" : user.role === "Teacher" ? "bg-amber-50 text-amber-600" : "bg-blue-50 text-blue-600"
-                    }`}>
+                    <span className={`text-[10px] uppercase tracking-widest font-extrabold px-2 py-0.5 rounded ${getRoleBadgeStyle(user.role)}`}>
                       {user.role}
                     </span>
                   </div>
