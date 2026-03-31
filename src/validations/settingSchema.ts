@@ -34,8 +34,7 @@ export const profileSchema = z.object({
       });
     }
   }),
-  phone_number: z.string().regex(/^\d{10}$/, "Phone number must be exactly 10 digits"),
- email: z.email({ message: "Invalid email address" }),
+  phone_number: z.string().regex(/^\d{10}$/, "Phone number must be exactly 10 digits"), 
 });
 
 // Schema for Security/Password Data

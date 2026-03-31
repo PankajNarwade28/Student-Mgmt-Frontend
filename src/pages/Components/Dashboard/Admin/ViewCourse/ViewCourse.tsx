@@ -147,8 +147,7 @@ const ViewCourses: React.FC = () => {
       return (
         course.name.toLowerCase().includes(searchLower) ||
         course.code.toLowerCase().includes(searchLower) ||
-        (course.teacher_email &&
-          course.teacher_email.toLowerCase().includes(searchLower))
+        course.teacher_email?.toLowerCase().includes(searchLower)
       );
     });
 
@@ -269,7 +268,14 @@ const ViewCourses: React.FC = () => {
 
                 {/* Action Buttons - Hidden or changed for deleted courses */}
                 {/* Inside course map */}
-                {!isDeleted ? (
+                {isDeleted ? (
+                  <button
+                    onClick={() => openRestoreModal(course.id)}
+                    className="w-full bg-white hover:bg-green-50 text-green-600 py-2 rounded-xl text-xs font-bold transition-all border border-green-100"
+                  >
+                    Restore Course
+                  </button>
+                ) : (
                   <div className="flex justify-between gap-4 items-center mb-4">
                     <button
                       onClick={() => handleUpdate(course)}
@@ -284,13 +290,6 @@ const ViewCourses: React.FC = () => {
                       Delete
                     </button>
                   </div>
-                ) : (
-                  <button
-                    onClick={() => openRestoreModal(course.id)}
-                    className="w-full bg-white hover:bg-green-50 text-green-600 py-2 rounded-xl text-xs font-bold transition-all border border-green-100"
-                  >
-                    Restore Course
-                  </button>
                 )}
 
                 {/* Teacher Footer */}
@@ -331,9 +330,9 @@ const ViewCourses: React.FC = () => {
 
             <form onSubmit={handleUpdateSubmit} className="space-y-4">
               <div>
-                <label className="text-xs font-bold text-slate-500 uppercase ml-1">
+                <div className="text-xs font-bold text-slate-500 uppercase ml-1">
                   Course Name
-                </label>
+                </div>
                 <input
                   className="w-full bg-gray-50 border-2 border-gray-50 p-3.5 rounded-2xl focus:border-slate-800 outline-none transition-all"
                   value={editingCourse.name}
@@ -344,9 +343,9 @@ const ViewCourses: React.FC = () => {
               </div>
 
               <div>
-                <label className="text-xs font-bold text-slate-500 uppercase ml-1">
+                <div className="text-xs font-bold text-slate-500 uppercase ml-1">
                   Course Code
-                </label>
+                </div>
                 <input
                   className="w-full bg-gray-50 border-2 border-gray-50 p-3.5 rounded-2xl focus:border-slate-800 outline-none transition-all"
                   value={editingCourse.code}
@@ -360,9 +359,9 @@ const ViewCourses: React.FC = () => {
               </div>
 
               <div>
-                <label className="text-xs font-bold text-slate-500 uppercase ml-1">
+                <div className="text-xs font-bold text-slate-500 uppercase ml-1">
                   Assign Teacher
-                </label>
+                </div>
                 <select
                   className="w-full bg-gray-50 border-2 border-gray-50 p-3.5 rounded-2xl focus:border-slate-800 outline-none transition-all"
                   // Bind directly to teacher_id UUID from DB
@@ -387,9 +386,9 @@ const ViewCourses: React.FC = () => {
               </div>
 
               <div>
-                <label className="text-xs font-bold text-slate-500 uppercase ml-1">
+                <div className="text-xs font-bold text-slate-500 uppercase ml-1">
                   Description
-                </label>
+                </div>
                 <textarea
                   className="w-full bg-gray-50 border-2 border-gray-50 p-3.5 rounded-2xl focus:border-slate-800 outline-none transition-all h-24"
                   value={editingCourse.description}

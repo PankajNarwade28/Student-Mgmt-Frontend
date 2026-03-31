@@ -50,40 +50,7 @@ useEffect(() => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // const handleSubmit = async (e: React.FormEvent) => {
-  //   e.preventDefault();
-  //   setLoading(true);
-  //   const validation = createCourseSchema.safeParse(formData);
-  //       if (!validation.success) {
-  //         const newErrors: Record<string, string> = {};
-  //         validation.error.issues.forEach((issue) => {
-  //           const path = issue.path[0];
-  //           if (path) newErrors[path.toString()] = issue.message;
-  //         });
-  //         setErrors(newErrors);
-  //         return;
-  //       }
-    
-  //       setErrors({});
-  //       setLoading(true);
-  //   try {
-  //     const response = await api.post("/api/admin/addcourse", formData);
-  //     if (response.status === 201 || response.status === 200) {
-  //       toast.success("Course created successfully!");
-  //       setFormData({ name: "", code: "", description: "", teacher_id: "" });
-  //     }
-  //   } catch (error) {
-  //     if (axios.isAxiosError(error) && error.response?.status === 400) {
-  //       toast.error("Course code already exists. Please use a different code.");
-  //     } else {
-  //       console.error("Course creation failed", error);
-  //       toast.error("Failed to create course");
-  //     }
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
-
+  
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -155,9 +122,9 @@ useEffect(() => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             {/* Course Name */}
             <div className="space-y-1.5">
-              <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">
+              <div className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">
                 Course Name
-              </label>
+              </div>
               <div className="relative group">
                 <HiOutlineBookOpen className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-slate-800 transition-colors" />
                 <input
@@ -175,9 +142,9 @@ useEffect(() => {
 
             {/* Course Code */}
             <div className="space-y-1.5">
-              <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">
+              <div className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">
                 Course Code
-              </label>
+              </div>
               <div className="relative group">
                 <HiOutlineCode className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-slate-800 transition-colors" />
                 <input
@@ -196,9 +163,9 @@ useEffect(() => {
 
           {/* Assigned Teacher (UUID selection) */}
           <div className="space-y-1.5">
-            <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">
+            <div className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">
               Assign Teacher
-            </label>
+            </div>
             <div className="relative group">
               <HiOutlineUserCircle className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-slate-800 transition-colors z-10" />
               <select
@@ -221,9 +188,9 @@ useEffect(() => {
 
           {/* Description (Text Area) */}
           <div className="space-y-1.5">
-            <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">
+            <div className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">
               Description
-            </label>
+            </div>
             <div className="relative group">
               <HiOutlineDocumentText className="absolute left-4 top-4 text-gray-400 group-focus-within:text-slate-800 transition-colors" />
               <textarea

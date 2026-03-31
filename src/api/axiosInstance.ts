@@ -26,14 +26,13 @@ api.interceptors.response.use(
   },
  (error) => {
     // Check for 401 (Unauthorized) or 403 (Forbidden)
-    if (error.response && (error.response.status === 401 || error.response.status === 403)) {
-      // toast.error('Session expired. Please log in again.');
+    if (error.response && (error.response.status === 401 || error.response.status === 403)) { 
       console.warn('Token expired or unauthorized. Logging out user.');
       // Nuclear option (Clears everything in LocalStorage)
       localStorage.clear(); 
 
       // Redirect to login
-      window.location.href = '/auth/login';
+      globalThis.location.href = '/auth/login';
     }
     return Promise.reject(error);
   }

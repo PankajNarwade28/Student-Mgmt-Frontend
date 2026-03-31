@@ -24,8 +24,7 @@ const ProtectedRoute = ({ allowedRoles }: ProtectedRouteProps) => {
       role &&
       !allowedRoles.includes(role) &&
       !shown.current
-    ) {
-      // alert("You do not have permission to access this page.");
+    ) { 
       toast.error("You do not have permission to access this page.");
       shown.current = true;
     }

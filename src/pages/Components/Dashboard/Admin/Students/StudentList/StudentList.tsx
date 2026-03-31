@@ -48,30 +48,7 @@ const StudentList: React.FC = () => {
     fetchStudents();
   }, [currentPage]); // Re-fetch when page changes
 
-  // const fetchStudents = async () => {
-  //   setLoading(true);
-  //   try {
-  //     const response = await api.get("/api/admin/students");
-
-  //     toast.success(`${response.data.length} students loaded`);
-  //     setStudents(response.data);
-  //   } catch (error) {
-  //     if (axios.isAxiosError(error) && error.response) {
-  //       toast.error(
-  //         `Error: ${error.response.data.message || "Unable to fetch students"}`,
-  //       );
-  //     } else {
-  //       toast.error("An unexpected error occurred");
-  //     }
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   fetchStudents();
-  // }, []);
-
+  
   if (loading)
     return (
       <div className="animate-pulse space-y-4">

@@ -24,8 +24,7 @@ const Signup: React.FC = () => {
     }
   }, [navigate]);
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    // alert("Signup clicked");
+    e.preventDefault(); 
     const validation = signupSchema.safeParse(formData);
 
     if (!validation.success) {
@@ -46,8 +45,7 @@ const Signup: React.FC = () => {
    
       const response = await axios.post(`${API_URL}/api/auth/signup`, formData);
 
-      if (response.status === 201) {
-        // alert("Account created successfully!");
+      if (response.status === 201) { 
         toast.success("Account created successfully!");
         navigate("/auth/login");
       }
@@ -104,9 +102,9 @@ const Signup: React.FC = () => {
         <div
           className={`relative flex items-center rounded-lg border ${errors.password ? "border-red-500" : "border-gray-300"} focus-within:border-blue-500 focus-within:ring-1 focus-within:ring-blue-500`}
         >
-          <label className="absolute -top-2.5 left-3 bg-white px-1 text-xs font-medium text-blue-500">
+          <div  className="absolute -top-2.5 left-3 bg-white px-1 text-xs font-medium text-blue-500">
             Password
-          </label>
+          </div>
           <input
             type={showPass ? "text" : "password"}
             placeholder="Enter Password"
@@ -131,9 +129,9 @@ const Signup: React.FC = () => {
         <div
           className={`relative flex items-center rounded-lg border ${errors.confirmPassword ? "border-red-500" : "border-gray-300"} focus-within:border-blue-500 focus-within:ring-1 focus-within:ring-blue-500`}
         >
-          <label className="absolute -top-2.5 left-3 bg-white px-1 text-xs font-medium text-blue-500">
+          <div className="absolute -top-2.5 left-3 bg-white px-1 text-xs font-medium text-blue-500">
             Confirm Password
-          </label>
+          </div>
           <input
             type={showConfirm ? "text" : "password"}
             placeholder="Confirm Password"
@@ -152,8 +150,7 @@ const Signup: React.FC = () => {
         </div>
         {errors.confirmPassword && (
           <span className="error-text">{errors.confirmPassword}</span>
-        )}
-        {/* {errors.password && <span className="error-text">{errors.password}</span>} */}
+        )} 
         <button type="submit" className="signup-btn">
           Sign Up
         </button>

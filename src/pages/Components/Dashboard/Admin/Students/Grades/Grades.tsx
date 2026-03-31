@@ -21,7 +21,7 @@ const Grades: React.FC = () => {
   const [courses, setCourses] = useState<CourseRef[]>([]);
   const [selectedCourseId, setSelectedCourseId] = useState<string>("");
   const [students, setStudents] = useState<EnrolledStudent[]>([]);
-  const [, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   // Modal & Input State
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -87,6 +87,16 @@ const Grades: React.FC = () => {
     }
   };
 
+  if(loading) {
+    return (
+      <div className="p-4 md:p-8 max-w-6xl mx-auto">
+        <div className="text-center py-20 bg-slate-50 rounded-3xl border-2 border-dashed border-slate-200">
+          <p className="text-slate-400 font-medium">Loading students...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="p-4 md:p-8 max-w-6xl mx-auto space-y-6">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -113,11 +123,7 @@ const Grades: React.FC = () => {
         </div>
       </div>
 
-      {!selectedCourseId ? (
-        <div className="text-center py-20 bg-slate-50 rounded-3xl border-2 border-dashed border-slate-200">
-          <p className="text-slate-400 font-medium">Please select a course to begin grading.</p>
-        </div>
-      ) : (
+      {selectedCourseId ? (
         <div className="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden">
           {/* Responsive Table/Card View */}
           <div className="overflow-x-auto">
@@ -167,6 +173,10 @@ const Grades: React.FC = () => {
             </table>
           </div>
         </div>
+      ) : (
+        <div className="text-center py-20 bg-slate-50 rounded-3xl border-2 border-dashed border-slate-200">
+          <p className="text-slate-400 font-medium">Please select a course to begin grading.</p>
+        </div>
       )}
 
       {/* Grade Entry Modal (Responsive) */}
@@ -176,7 +186,7 @@ const Grades: React.FC = () => {
             <h2 className="text-xl font-bold text-slate-900">Modify Grade</h2>
             <div className="space-y-4">
               <div>
-                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Numeric Grade</label>
+                <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Numeric Grade</div>
                 <input
                   type="number"
                   step="0.01"
@@ -186,7 +196,7 @@ const Grades: React.FC = () => {
                 />
               </div>
               <div>
-                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Remarks</label>
+                <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Remarks</div>
                 <textarea
                   className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:ring-4 ring-indigo-500/10 text-sm"
                   rows={4}

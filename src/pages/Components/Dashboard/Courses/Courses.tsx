@@ -211,6 +211,8 @@ const MyCourses: React.FC = () => {
   );
 
   // --- Main Render ---
+  const gridTitle = userRole === "Teacher" ? "My Teaching Load" : "System Overview";
+
   return (
     <div className="p-4 md:p-8 max-w-7xl mx-auto space-y-12">
       <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
@@ -246,7 +248,7 @@ const MyCourses: React.FC = () => {
             </>
           ) : (
             renderGrid(
-              userRole === "Teacher" ? "My Teaching Load" : "System Overview",
+              gridTitle,
               enrolledCourses,
               true,
             )

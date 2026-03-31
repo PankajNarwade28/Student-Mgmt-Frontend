@@ -27,24 +27,7 @@ const Enrollments: React.FC = () => {
   );
   const [loading, setLoading] = useState(true);
 
-  // const fetchData = useCallback(async () => {
-  //   try {
-  //     setLoading(true);
-  //     const response = await api.get("/api/admin/courses/enrollment-data");
-  //     setCourses(response.data.courses);
-  //     setAllStudents(response.data.students);
-  //   } catch (err) {
-  //     console.error(err);
-  //     toast.error("Failed to load enrollment data");
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // }, []);
-
-  // useEffect(() => {
-  //   fetchData();
-  // }, [fetchData]);
-
+  
   useEffect(() => {
   // Move the function inside so it's not a dependency
   const fetchData = async () => {
@@ -122,10 +105,10 @@ const Enrollments: React.FC = () => {
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {courses.map((course) => (
-          <div
+          <button
             key={course.id}
             onClick={() => setSelectedCourse(course)}
-            className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm hover:border-indigo-500 cursor-pointer transition-all"
+            className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm hover:border-indigo-500 cursor-pointer transition-all text-left"
           >
             <div className="flex justify-between items-start mb-4">
               <div className="p-2 bg-indigo-50 text-indigo-600 rounded-lg">
@@ -139,7 +122,7 @@ const Enrollments: React.FC = () => {
             <p className="text-xs text-indigo-600 font-semibold mt-2">
               {course.enrolled_students?.length || 0} Students Enrolled
             </p>
-          </div>
+          </button>
         ))}
       </div>
 

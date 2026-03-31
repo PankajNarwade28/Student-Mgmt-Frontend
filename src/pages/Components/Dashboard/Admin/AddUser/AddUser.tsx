@@ -68,9 +68,9 @@ const AddUser: React.FC = () => {
           
           {/* Email Input */}
           <div className="space-y-1.5">
-            <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">
+            <div className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">
               Email Address
-            </label>
+            </div>
             <div className="relative group">
               <HiOutlineMail className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-slate-800 transition-colors" />
               <input
@@ -90,9 +90,9 @@ const AddUser: React.FC = () => {
 
           {/* Role Toggle */}
           <div className="space-y-1.5">
-            <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">
+            <div className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">
               Assign Role
-            </label>
+            </div>
             <div className="flex p-1.5 bg-gray-50 rounded-2xl border border-gray-100">
               <button
                 type="button"

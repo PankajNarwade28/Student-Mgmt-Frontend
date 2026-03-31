@@ -70,19 +70,7 @@ const Profile: React.FC<{ onClose: () => void }> = ({ onClose }) => {
       </div>
 
       <div className="p-5">
-        {!profile ? (
-          <div className="text-center py-6">
-            <p className="text-sm text-slate-500 mb-4">
-              No profile details found.
-            </p>
-            <button
-              onClick={handleEditRedirect}
-              className="w-full py-2.5 bg-indigo-600 text-white text-xs font-bold rounded-xl shadow-lg shadow-indigo-100"
-            >
-              Create Profile Now
-            </button>
-          </div>
-        ) : (
+        {profile ? (
           <div className="space-y-4">
             {/* User Name Section */}
             <div className="pb-3 border-b border-slate-50">
@@ -128,6 +116,18 @@ const Profile: React.FC<{ onClose: () => void }> = ({ onClose }) => {
             >
               <FaCog className="group-hover:rotate-90 transition-transform duration-500" />
               Manage Settings
+            </button>
+          </div>
+        ) : (
+          <div className="text-center py-6">
+            <p className="text-sm text-slate-500 mb-4">
+              No profile details found.
+            </p>
+            <button
+              onClick={handleEditRedirect}
+              className="w-full py-2.5 bg-indigo-600 text-white text-xs font-bold rounded-xl shadow-lg shadow-indigo-100"
+            >
+              Create Profile Now
             </button>
           </div>
         )}

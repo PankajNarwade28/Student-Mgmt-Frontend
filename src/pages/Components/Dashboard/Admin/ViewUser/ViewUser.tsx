@@ -330,9 +330,11 @@ const ViewUsers: React.FC = () => {
       {/* Edit Modal */}
       {isEditModalOpen && editingUser && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-          <div
+          <button
             className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm"
             onClick={() => setIsEditModalOpen(false)}
+            aria-label="Close modal"
+            type="button"
           />
           <div className="relative w-full max-w-md bg-white rounded-3xl shadow-2xl p-8 animate-in zoom-in-95 duration-200">
             <h3 className="text-xl font-bold text-slate-800 mb-6">

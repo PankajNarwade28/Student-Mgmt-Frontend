@@ -126,13 +126,13 @@ useEffect(() => { fetchLogs(); }, [fetchLogs]);
 
             <div className="p-6 overflow-y-auto grid grid-cols-1 md:grid-cols-2 gap-6 bg-slate-50">
               <div className="space-y-2">
-                <label className="text-[10px] font-black text-slate-400 uppercase ml-2">Previous State (Old Data)</label>
+                <div className="text-[10px] font-black text-slate-400 uppercase ml-2">Previous State (Old Data)</div>
                 <pre className="bg-white p-4 rounded-2xl border border-slate-200 text-[10px] font-mono overflow-auto max-h-96 shadow-inner">
                   {selectedLog.old_data ? JSON.stringify(selectedLog.old_data, null, 2) : "NULL (New Entry)"}
                 </pre>
               </div>
               <div className="space-y-2">
-                <label className="text-[10px] font-black text-indigo-400 uppercase ml-2">New State (Changes Applied)</label>
+                <div className="text-[10px] font-black text-indigo-400 uppercase ml-2">New State (Changes Applied)</div>
                 <pre className="bg-white p-4 rounded-2xl border border-indigo-100 text-[10px] font-mono overflow-auto max-h-96 shadow-inner text-indigo-900">
                   {selectedLog.new_data ? JSON.stringify(selectedLog.new_data, null, 2) : "NULL (Record Deleted)"}
                 </pre>
