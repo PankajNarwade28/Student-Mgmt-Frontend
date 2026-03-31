@@ -5,6 +5,7 @@ import {
   BarChart3,
   Settings,
   X,
+  BookOpen,
 } from "lucide-react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { canAccess, ROLES } from "../../Components/Utils/rbac";
@@ -78,6 +79,9 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
             <NavLink to="/dashboard/admin/students" className={navLinkClass} onClick={toggleSidebar}>
               <FaUserGraduate size={20} /> Students
             </NavLink>
+            <NavLink to="/dashboard/admin/fees" className={navLinkClass} onClick={toggleSidebar}>
+              <BookOpen size={20} /> Fees   
+              </NavLink>
           </>
         )}
 

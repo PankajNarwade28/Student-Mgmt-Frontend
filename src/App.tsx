@@ -28,6 +28,7 @@ import AccessCourse from "./pages/Components/Dashboard/Courses/AccessCourse/Acce
 import RequestsPage from "./pages/Components/Dashboard/Admin/Students/Requests/Requests";
 import EnrollmentStatus from "./pages/Components/Dashboard/Admin/Students/EnrollmentStatus/EnrollmentStatus";
 import ResetPass from "./pages/Components/ResetPass/ResetPass";
+import Fees from "./pages/Components/Dashboard/Admin/Fees/Fees";
 function App() {
   return (
     <BrowserRouter>
@@ -56,6 +57,7 @@ function App() {
                 <Route path="viewuser" element={<ViewUsers />} />
                 <Route path="addcourse" element={<AddCourse />} />
                 <Route path="courses" element={<ViewCourses />} />
+                
               </Route>
               <Route path="admin/students" element={<Students />}>
                 {/* The 'index' route renders automatically at /admin/students */}
@@ -82,6 +84,7 @@ function App() {
               </Route>
               <Route path="admin/logs" element={<SystemLogs />} />
               <Route path="admin/instructors" element={<Instructor />} />
+              <Route path="admin/fees" element={<Fees />} />
               {/* <Route path="admin/viewuser" element={<ViewUsers />} /> */}
             </Route>
 
@@ -90,6 +93,7 @@ function App() {
               element={<ProtectedRoute allowedRoles={["Admin"]} />}
             >
               <Route path="reports" element={<Reports />} />
+              
             </Route>
 
             <Route element={<ProtectedRoute allowedRoles={["Teacher"]} />}>
