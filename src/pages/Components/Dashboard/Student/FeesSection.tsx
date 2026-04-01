@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { toast } from 'react-hot-toast';
 import { 
   HiOutlineCreditCard, 
@@ -6,130 +6,153 @@ import {
   HiOutlineCheckCircle, 
   HiOutlineExclamationCircle,
   HiOutlineReceiptTax,
-  HiOutlineCalendar
 } from "react-icons/hi";
+import { HiArrowPath } from "react-icons/hi2";
+import api from '../../../../api/axiosInstance'; // Adjust path to your axios instance
 
+interface FeeData {
+  enrollment_id: number;
+  course_name: string;
+  total_fee: string;
+  payment_status: 'Paid' | 'Pending';
+}
 
 const FeesSection: React.FC = () => {
-  // Static Data for UI demonstration
-  const feeSummary = {
-    total: "₹1,20,000",
-    paid: "₹80,000",
-    remaining: "₹40,000",
-    dueDate: "Oct 15, 2026"
+  const [fees, setFees] = useState<FeeData[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [processingId, setProcessingId] = useState<number | null>(null);
+
+  // 1. Fetch Dynamic Data from your new feeRoutes.ts
+  const fetchFees = async () => {
+    try {
+      setLoading(true);
+      const response = await api.get('/api/student/my-fees');
+      setFees(response.data.data);
+    } catch (error) {
+        console.error("Error fetching fee data:", error);
+      toast.error("Failed to load fee information.");
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const paymentHistory = [
-    { id: "RCP-8821", date: "Aug 12, 2025", amount: "₹40,000", method: "UPI", status: "Paid" },
-    { id: "RCP-7742", date: "Jan 05, 2025", amount: "₹40,000", method: "Debit Card", status: "Paid" },
-  ];
-useEffect(() => {
-  toast.success("This is a demo dashboard. Payment functionalities are not active.", {
-    duration: 5000,
-    position: "top-right",
-  });
-}, []);
+  useEffect(() => {
+    fetchFees();
+  }, []);
+
+  // 2. Handle Payment Logic
+  const handlePayment = async (enrollmentId: number, amount: string) => {
+    try {
+      setProcessingId(enrollmentId);
+      // Simulate/Process payment via backend
+      await api.post('/api/student/pay-fee', { 
+        enrollmentId, 
+        amount: Number.parseFloat(amount) 
+      });
+      
+      toast.success("Payment successful! Your course is now locked.");
+      fetchFees(); // Refresh data to reflect "Paid" status and lock UI
+    } catch (error) {
+        console.error("Payment error:", error);
+      toast.error("Payment failed. Please try again.");
+    } finally {
+      setProcessingId(null);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center h-64 space-y-4">
+        <HiArrowPath className="text-4xl text-indigo-600 animate-spin" />
+        <p className="text-gray-500 animate-pulse">Loading financial records...</p>
+      </div>
+    );
+  }
+
   return (
     <div className="max-w-5xl mx-auto p-4 md:p-6 space-y-8">
-      {/* 1. Header & Quick Actions */}
+      {/* 1. Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-800">My Fee Dashboard</h1>
-          <p className="text-gray-500 text-sm">View your balance, download receipts, and make payments.</p>
+          <h1 className="text-2xl font-bold text-gray-800">Course Payments</h1>
+          <p className="text-gray-500 text-sm">Manage your tuition and view enrollment locks.</p>
         </div>
-        <button className="flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-xl font-bold shadow-lg shadow-indigo-200 transition-all active:scale-95">
-          <HiOutlineCreditCard className="text-xl" />
-          Pay Remaining Balance
-        </button>
       </div>
 
-      {/* 2. Financial Summary Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm">
-          <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">Total Course Fee</p>
-          <p className="text-2xl font-black text-gray-800 mt-1">{feeSummary.total}</p>
-        </div>
-        <div className="bg-green-50 p-5 rounded-2xl border border-green-100 shadow-sm">
-          <p className="text-xs font-bold text-green-600 uppercase tracking-wider">Total Paid</p>
-          <p className="text-2xl font-black text-green-700 mt-1">{feeSummary.paid}</p>
-        </div>
-        <div className="bg-amber-50 p-5 rounded-2xl border border-amber-100 shadow-sm">
-          <p className="text-xs font-bold text-amber-600 uppercase tracking-wider">Remaining Balance</p>
-          <p className="text-2xl font-black text-amber-700 mt-1">{feeSummary.remaining}</p>
-        </div>
-        <div className="bg-indigo-50 p-5 rounded-2xl border border-indigo-100 shadow-sm">
-          <p className="text-xs font-bold text-indigo-600 uppercase tracking-wider">Next Due Date</p>
-          <div className="flex items-center gap-2 mt-1">
-            <HiOutlineCalendar className="text-indigo-600" />
-            <p className="text-lg font-bold text-indigo-900">{feeSummary.dueDate}</p>
+      {/* 2. Dynamic Course Cards */}
+      <div className="grid grid-cols-1 gap-4">
+        {fees.length === 0 ? (
+          <div className="bg-gray-50 border-2 border-dashed border-gray-200 rounded-2xl p-12 text-center">
+            <HiOutlineExclamationCircle className="mx-auto text-4xl text-gray-400 mb-2" />
+            <p className="text-gray-500">No active enrollments found with fees.</p>
           </div>
-        </div>
+        ) : (
+          fees.map((item) => (
+            <div 
+              key={item.enrollment_id} 
+              className={`bg-white p-6 rounded-2xl border shadow-sm transition-all flex flex-col md:flex-row justify-between items-center gap-4 ${
+                item.payment_status === 'Paid' ? 'border-green-100' : 'border-gray-100'
+              }`}
+            >
+              <div className="flex items-center gap-4">
+                <div className={`p-3 rounded-xl ${item.payment_status === 'Paid' ? 'bg-green-50 text-green-600' : 'bg-indigo-50 text-indigo-600'}`}>
+                  <HiOutlineReceiptTax className="text-2xl" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-gray-800">{item.course_name}</h3>
+                  <p className="text-sm text-gray-500 font-medium">Total Fee: ₹{parseFloat(item.total_fee).toLocaleString('en-IN')}</p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3 w-full md:w-auto">
+                {item.payment_status === 'Paid' ? (
+                  <div className="flex items-center gap-2 bg-green-50 text-green-700 px-4 py-2 rounded-lg font-bold text-sm">
+                    <HiOutlineCheckCircle className="text-lg" />
+                    Paid & Locked
+                  </div>
+                ) : (
+                  <button 
+                    onClick={() => handlePayment(item.enrollment_id, item.total_fee)}
+                    disabled={processingId === item.enrollment_id}
+                    className="w-full md:w-auto flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-lg font-bold transition-all disabled:opacity-50"
+                  >
+                    {processingId === item.enrollment_id ? (
+                      <HiArrowPath className="animate-spin text-xl" />
+                    ) : (
+                      <>
+                        <HiOutlineCreditCard className="text-lg" />
+                        Pay Now
+                      </>
+                    )}
+                  </button>
+                )}
+                
+                {item.payment_status === 'Paid' && (
+                  <button className="p-2 text-gray-400 hover:text-indigo-600 transition-colors" title="Download Receipt">
+                    <HiOutlineDownload className="text-xl" />
+                  </button>
+                )}
+              </div>
+            </div>
+          ))
+        )}
       </div>
 
-      {/* 3. Important Notice */}
-      <div className="bg-blue-600 rounded-2xl p-6 text-white flex flex-col md:flex-row items-center gap-6 relative overflow-hidden">
+      {/* 3. Global Information Notice */}
+      <div className="bg-indigo-900 rounded-2xl p-6 text-white flex items-start gap-4 relative overflow-hidden">
+        <HiOutlineExclamationCircle className="text-3xl shrink-0" />
         <div className="z-10">
-          <h3 className="text-lg font-bold flex items-center gap-2">
-            <HiOutlineExclamationCircle className="text-2xl" />
-            Scholarship Applied
-          </h3>
-          <p className="text-blue-100 text-sm mt-1">
-            A 10% Merit Scholarship (₹12,000) has been deducted from your total annual tuition fee.
+          <h3 className="text-lg font-bold">Important Policy</h3>
+          <p className="text-indigo-200 text-sm mt-1 leading-relaxed">
+            Once the fee for a specific course is paid, your enrollment is permanently locked. 
+            You will not be able to change or drop the subject until the academic term concludes.
           </p>
         </div>
-        <div className="absolute right-[-20px] top-[-20px] opacity-10">
-          <HiOutlineReceiptTax className="text-9xl" />
-        </div>
-      </div>
-
-      {/* 4. Payment History Table */}
-      <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
-        <div className="p-6 border-b border-gray-100">
-          <h2 className="text-lg font-bold text-gray-800">Recent Transactions</h2>
-        </div>
-        <div className="overflow-x-auto">
-          <table className="w-full text-left">
-            <thead>
-              <tr className="bg-gray-50 text-[10px] uppercase tracking-wider font-bold text-gray-400">
-                <th className="px-6 py-4">Receipt ID</th>
-                <th className="px-6 py-4">Date</th>
-                <th className="px-6 py-4">Amount</th>
-                <th className="px-6 py-4">Method</th>
-                <th className="px-6 py-4">Status</th>
-                <th className="px-6 py-4 text-center">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-100">
-              {paymentHistory.map((history) => (
-                <tr key={history.id} className="hover:bg-gray-50/50 transition-colors">
-                  <td className="px-6 py-4 font-mono text-sm text-indigo-600 font-bold">{history.id}</td>
-                  <td className="px-6 py-4 text-sm text-gray-600">{history.date}</td>
-                  <td className="px-6 py-4 text-sm font-black text-gray-800">{history.amount}</td>
-                  <td className="px-6 py-4 text-sm text-gray-500">{history.method}</td>
-                  <td className="px-6 py-4">
-                    <span className="flex items-center gap-1 text-green-600 font-bold text-xs uppercase">
-                      <HiOutlineCheckCircle className="text-lg" />
-                      {history.status}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 text-center">
-                    <button 
-                      className="inline-flex items-center gap-2 text-indigo-600 hover:text-indigo-800 font-bold text-sm bg-indigo-50 px-3 py-1.5 rounded-lg transition-colors"
-                      onClick={() => alert('Downloading receipt...')}
-                    >
-                      <HiOutlineDownload className="text-lg" />
-                      Receipt
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <HiOutlineReceiptTax className="absolute right-[-20px] top-[-20px] text-9xl opacity-5 rotate-12" />
       </div>
       
-      <p className="text-center text-xs text-gray-400">
-        In case of any payment discrepancy, please contact the accounts office at <span className="text-indigo-600 font-medium underline">finance@university.edu</span>
+      <p className="text-center text-[10px] text-gray-400 uppercase tracking-widest font-bold">
+        Secure Financial Dashboard • University Management System
       </p>
     </div>
   );
