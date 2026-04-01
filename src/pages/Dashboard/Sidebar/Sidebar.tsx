@@ -103,6 +103,11 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
             </NavLink>
           </>
         )}
+        {canAccess(userRole, [ROLES.STUDENT]) && (
+          <NavLink to="/dashboard/fees" className={navLinkClass} onClick={toggleSidebar}>
+            <BookOpen size={20} /> Fees
+          </NavLink>
+        )}
 
         <NavLink to="/dashboard/settings" className={navLinkClass} onClick={toggleSidebar}>
           <Settings size={20} /> Settings

@@ -33,6 +33,7 @@ import FeeStructure from "./pages/Components/Dashboard/Admin/Fees/FeeStructure";
 import RevenueReports from "./pages/Components/Dashboard/Admin/Fees/RevenueReports";
 import TransactionHistory from "./pages/Components/Dashboard/Admin/Fees/TransactionHistory";
 import ScholarshipsDiscounts from "./pages/Components/Dashboard/Admin/Fees/ScholarshipsDiscounts";
+import FeesSection from "./pages/Components/Dashboard/Student/FeesSection";
 function App() {
   return (
     <BrowserRouter>
@@ -62,7 +63,7 @@ function App() {
                 <Route path="addcourse" element={<AddCourse />} />
                 <Route path="courses" element={<ViewCourses />} />
               </Route>
-              
+
               <Route path="admin/students" element={<Students />}>
                 {/* The 'index' route renders automatically at /admin/students */}
                 <Route index element={<StudentList />} />
@@ -115,6 +116,7 @@ function App() {
                 path="mycourses/access/:courseId"
                 element={<AccessCourse />}
               />
+              <Route path="fees" element={<FeesSection />} />
             </Route>
 
             {/* ALL LOGGED-IN USERS */}

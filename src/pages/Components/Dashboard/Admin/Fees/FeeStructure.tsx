@@ -82,7 +82,7 @@ const FeeStructure: React.FC = () => {
           
           <form onSubmit={handleUpdateFee} className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Target Course</label>
+              <div className="block text-sm font-medium text-gray-700 mb-1">Target Course</div>
               <select 
                 name="courseId"
                 required
@@ -98,7 +98,7 @@ const FeeStructure: React.FC = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">New Fee Amount (INR)</label>
+              <div className="block text-sm font-medium text-gray-700 mb-1">New Fee Amount (INR)</div>
               <div className="relative">
                 <span className="absolute left-3 top-2.5 text-gray-500">₹</span>
                 <input 
