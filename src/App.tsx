@@ -33,7 +33,7 @@ import FeeStructure from "./pages/Components/Dashboard/Admin/Fees/FeeStructure";
 import RevenueReports from "./pages/Components/Dashboard/Admin/Fees/RevenueReports";
 import TransactionHistory from "./pages/Components/Dashboard/Admin/Fees/TransactionHistory";
 import ScholarshipsDiscounts from "./pages/Components/Dashboard/Admin/Fees/ScholarshipsDiscounts";
-import FeesSection from "./pages/Components/Dashboard/Student/FeesSection";
+import FeesSection from "./pages/Components/Dashboard/Student/FeesSection"; 
 function App() {
   return (
     <BrowserRouter>
@@ -90,7 +90,7 @@ function App() {
               </Route>
               <Route path="admin/logs" element={<SystemLogs />} />
               <Route path="admin/instructors" element={<Instructor />} />
-              <Route path="admin/fees" element={<Fees />} />
+              <Route path="admin/fees" element={<Fees />} /> 
               {/* <Route path="admin/viewuser" element={<ViewUsers />} /> */}
             </Route>
 

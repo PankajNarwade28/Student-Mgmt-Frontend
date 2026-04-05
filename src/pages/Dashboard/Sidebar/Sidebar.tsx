@@ -82,6 +82,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
             <NavLink to="/dashboard/admin/fees" className={navLinkClass} onClick={toggleSidebar}>
               <BookOpen size={20} /> Fees   
               </NavLink>
+             
           </>
         )}
 
