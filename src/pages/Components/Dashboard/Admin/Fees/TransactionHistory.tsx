@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import { HiOutlineDownload, HiOutlineSearch, HiRefresh } from "react-icons/hi";
-import api from '../../../../../api/axiosInstance';
-import { toast } from 'react-hot-toast';
+import api from "../../../../../api/axiosInstance";
+import { toast } from "react-hot-toast";
 
 interface Transaction {
   id: string;
@@ -20,25 +20,56 @@ const TransactionHistory: React.FC = () => {
   const fetchTransactions = async () => {
     try {
       setLoading(true);
-      const response = await api.get('/api/student/admin/transactions');
+      const response = await api.get("/api/student/admin/transactions");
       toast.success("Transaction logs loaded");
       setTransactions(response.data.data);
     } catch (error) {
       console.error("Error fetching transactions:", error);
-      toast.error("Error loading transaction logs"); 
+      toast.error("Error loading transaction logs");
     } finally {
       setLoading(false);
     }
   };
+
+  const downloadInvoice = async (transactionId: string, studentEmail: string, courseName: string) => {
+  try {
+    const response = await api.get(`/api/student/invoice/${transactionId}`, {
+      responseType: 'blob', 
+    });
+
+    // FORCE the type to application/pdf here
+    const blob = new Blob([response.data], { type: 'application/pdf' });
+    
+    // Create the URL
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    
+    // Explicitly add .pdf extension to the filename
+    link.setAttribute('download', `Invoice_${studentEmail}_${courseName}_${transactionId}.pdf`);
+    
+    document.body.appendChild(link);
+    link.click();
+    
+    // Cleanup
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
+    
+  } catch (error) {
+    console.error("Download error:", error);
+    toast.error("Failed to open invoice.");
+  }
+};
 
   useEffect(() => {
     fetchTransactions();
   }, []);
 
   // Filter logic for the search bar
-  const filteredData = transactions.filter(txn => 
-    txn.student_email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    txn.id?.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredData = transactions.filter(
+    (txn) =>
+      txn.student_email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      txn.id?.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
   return (
@@ -46,24 +77,26 @@ const TransactionHistory: React.FC = () => {
       <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-800">Transaction Logs</h1>
-          <p className="text-gray-500 text-sm">Monitor all incoming and outgoing payments.</p>
+          <p className="text-gray-500 text-sm">
+            Monitor all incoming and outgoing payments.
+          </p>
         </div>
         <div className="flex gap-2">
           <div className="relative">
             <HiOutlineSearch className="absolute left-3 top-3 text-gray-400" />
-            <input 
-              type="text" 
-              placeholder="Search by email or ID..." 
+            <input
+              type="text"
+              placeholder="Search by email or ID..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm outline-none focus:ring-2 focus:ring-indigo-500 w-full md:w-64" 
+              className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm outline-none focus:ring-2 focus:ring-indigo-500 w-full md:w-64"
             />
           </div>
-          <button 
+          <button
             onClick={fetchTransactions}
             className="p-2 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
           >
-            <HiRefresh className={`text-xl ${loading ? 'animate-spin' : ''}`} />
+            <HiRefresh className={`text-xl ${loading ? "animate-spin" : ""}`} />
           </button>
         </div>
       </div>
@@ -82,26 +115,53 @@ const TransactionHistory: React.FC = () => {
           </thead>
           <tbody className="divide-y divide-gray-100">
             {loading ? (
-              <tr><td colSpan={6} className="text-center py-10 text-gray-400">Loading transactions...</td></tr>
+              <tr>
+                <td colSpan={6} className="text-center py-10 text-gray-400">
+                  Loading transactions...
+                </td>
+              </tr>
             ) : filteredData.length === 0 ? (
-              <tr><td colSpan={6} className="text-center py-10 text-gray-400">No transactions found.</td></tr>
+              <tr>
+                <td colSpan={6} className="text-center py-10 text-gray-400">
+                  No transactions found.
+                </td>
+              </tr>
             ) : (
               filteredData.map((txn) => (
-                <tr key={txn.id} className="hover:bg-gray-50 transition-colors text-sm">
-                  <td className="px-6 py-4 font-mono text-xs text-indigo-600">{txn.id || 'N/A'}</td>
+                <tr
+                  key={txn.id}
+                  className="hover:bg-gray-50 transition-colors text-sm"
+                >
+                  <td className="px-6 py-4 font-mono text-xs text-indigo-600">
+                    {txn.id || "N/A"}
+                  </td>
                   <td className="px-6 py-4 font-medium text-gray-800">
                     {txn.student_email}
-                    <br/><span className="text-[10px] text-gray-400">{txn.course_name}</span>
+                    <br />
+                    <span className="text-[10px] text-gray-400">
+                      {txn.course_name}
+                    </span>
                   </td>
-                  <td className="px-6 py-4 text-gray-500">{new Date(txn.date).toLocaleDateString()}</td>
-                  <td className="px-6 py-4 font-semibold text-gray-800">₹{parseFloat(txn.amount).toLocaleString()}</td>
+                  <td className="px-6 py-4 text-gray-500">
+                    {new Date(txn.date).toLocaleDateString()}
+                  </td>
+                  <td className="px-6 py-4 font-semibold text-gray-800">
+                    ₹{parseFloat(txn.amount).toLocaleString()}
+                  </td>
                   <td className="px-6 py-4">
-                    <span className={`px-2 py-1 rounded-full text-[10px] font-bold ${txn.status === 'Paid' ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'}`}>
+                    <span
+                      className={`px-2 py-1 rounded-full text-[10px] font-bold ${txn.status === "Paid" ? "bg-green-100 text-green-700" : "bg-amber-100 text-amber-700"}`}
+                    >
                       {txn.status}
                     </span>
                   </td>
                   <td className="px-6 py-4 text-right">
-                    <button className="text-gray-400 hover:text-indigo-600"><HiOutlineDownload className="text-xl inline" /></button>
+                    <button
+                      onClick={() => downloadInvoice(txn.id , txn.student_email, txn.course_name )}
+                      className="text-indigo-600 hover:text-indigo-800 p-2 rounded-lg bg-indigo-50"
+                    >
+                      <HiOutlineDownload className="text-xl" />
+                    </button>
                   </td>
                 </tr>
               ))

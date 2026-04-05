@@ -1,41 +1,97 @@
-import React from 'react';
-import { HiOutlineTrendingUp, HiOutlineCash, HiOutlineUsers } from "react-icons/hi";
+import React, { useEffect, useState } from 'react';
+import { AreaChart, Area,  YAxis, CartesianGrid, Tooltip, ResponsiveContainer, XAxis } from 'recharts';
+import api from '../../../../../api/axiosInstance';
+import { HiOutlineTrendingUp } from "react-icons/hi";
 
-const RevenueReports: React.FC = () => {
-  const stats = [
-    { label: "Total Revenue", value: "₹12,40,000", icon: <HiOutlineCash />, color: "text-green-600", bg: "bg-green-100" },
-    { label: "Pending Fees", value: "₹2,15,000", icon: <HiOutlineTrendingUp />, color: "text-amber-600", bg: "bg-amber-100" },
-    { label: "Active Payers", value: "842", icon: <HiOutlineUsers />, color: "text-indigo-600", bg: "bg-indigo-100" },
-  ];
+const RevenueChart: React.FC = () => {
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const res = await api.get('/api/student/admin/revenue-stats');
+        // Transform data for Recharts
+        const formatted = res.data.data.map((item: { date: string; total_revenue: string }) => ({
+          date: new Date(item.date).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' }),
+          revenue: Number.parseFloat(item.total_revenue)
+        }));
+        setData(formatted);
+      } catch (error) {
+        console.error("Error fetching revenue stats:", error);  
+        console.error("Failed to fetch revenue stats");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchStats();
+  }, []);
+
+  const totalRevenue = data.reduce((acc, curr: { revenue: number }) => acc + curr.revenue, 0);
 
   return (
-    <div className="max-w-6xl mx-auto">
-      <header className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-800">Revenue Analytics</h1>
-        <p className="text-gray-500 text-sm">Financial overview and collection reports.</p>
-      </header>
-
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        {stats.map((stat, i) => (
-          <div key={i} className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm flex items-center gap-4">
-            <div className={`p-3 rounded-lg ${stat.bg} ${stat.color} text-2xl`}>{stat.icon}</div>
-            <div>
-              <p className="text-sm text-gray-500 font-medium">{stat.label}</p>
-              <p className="text-2xl font-bold text-gray-800">{stat.value}</p>
-            </div>
-          </div>
-        ))}
+    <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+      <div className="flex items-center justify-between mb-8">
+        <div>
+          <h2 className="text-lg font-bold text-gray-800 flex items-center gap-2">
+            <HiOutlineTrendingUp className="text-indigo-600" />
+            Revenue Collection
+          </h2>
+          <p className="text-sm text-gray-500">Daily breakdown of successful course payments</p>
+        </div>
+        <div className="text-right">
+          <p className="text-xs font-bold text-gray-400 uppercase">Total (30 Days)</p>
+          <p className="text-2xl font-black text-indigo-600">₹{totalRevenue.toLocaleString()}</p>
+        </div>
       </div>
 
-      <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-20 flex flex-col items-center justify-center text-center">
-         <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
-            <HiOutlineTrendingUp className="text-gray-400 text-3xl" />
-         </div>
-         <h3 className="text-lg font-semibold text-gray-800">Charts coming soon</h3>
-         <p className="text-gray-500 max-w-xs">Detailed monthly revenue breakdown and course-wise analytics are being prepared.</p>
+      <div className="h-[300px] w-full">
+        {loading ? (
+          <div className="h-full flex items-center justify-center text-gray-400">Loading chart...</div>
+        ) : (
+          <ResponsiveContainer width="100%" height="100%">
+            <AreaChart data={data}>
+              <defs>
+                <linearGradient id="colorRev" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#4f46e5" stopOpacity={0.1}/>
+                  <stop offset="95%" stopColor="#4f46e5" stopOpacity={0}/>
+                </linearGradient>
+              </defs>
+              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
+              <XAxis 
+                dataKey="date" 
+                axisLine={false} 
+                tickLine={false} 
+                tick={{fontSize: 12, fill: '#9ca3af'}}
+                dy={10}
+              />
+              <YAxis 
+                axisLine={false} 
+                tickLine={false} 
+                tick={{fontSize: 12, fill: '#9ca3af'}}
+                tickFormatter={(value) => `₹${value / 1000}k`}
+              />
+              <Tooltip 
+                contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)' }}
+                formatter={(value) => {
+                  const numericValue = Array.isArray(value) ? Number(value[0]) : Number(value ?? 0);
+                  return [`₹${numericValue.toLocaleString()}`, 'Revenue'];
+                }}
+              />
+              <Area 
+                type="monotone" 
+                dataKey="revenue" 
+                stroke="#4f46e5" 
+                strokeWidth={3}
+                fillOpacity={1} 
+                fill="url(#colorRev)" 
+              />
+            </AreaChart>
+          </ResponsiveContainer>
+        )}
       </div>
     </div>
   );
 };
 
-export default RevenueReports;
+export default RevenueChart;

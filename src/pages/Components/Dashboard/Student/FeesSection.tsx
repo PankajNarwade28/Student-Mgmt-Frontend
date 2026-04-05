@@ -11,6 +11,8 @@ import { HiArrowPath } from "react-icons/hi2";
 import api from "../../../../api/axiosInstance"; // Adjust path to your axios instance
 
 interface FeeData {
+  razorpay_payment_id: string; // Add this field to store payment ID
+  student_email: string; // Add this field for receipt naming
   enrollment_id: number;
   course_name: string;
   total_fee: string;
@@ -134,6 +136,41 @@ const FeesSection: React.FC = () => {
     }
   };
 
+  const handleDownloadReceipt = async (paymentId: string) => {
+  if (!paymentId) {
+    toast.error("Receipt not available yet.");
+    return;
+  }
+
+  try {
+    toast.loading("Preparing receipt...", { id: "download-receipt" });
+
+    const response = await api.get(`/api/student/invoice/${paymentId}`, {
+      responseType: 'blob', // Critical for PDF files
+    });
+
+    // Create a URL for the PDF blob
+    const blob = new Blob([response.data], { type: 'application/pdf' });
+    const url = window.URL.createObjectURL(blob);
+    
+    // Create temporary link to trigger download
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', `Receipt_${paymentId}.pdf`);
+    document.body.appendChild(link);
+    link.click();
+
+    // Clean up
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
+    
+    toast.success("Receipt downloaded!", { id: "download-receipt" });
+  } catch (error) {
+    console.error("Download error:", error);
+    toast.error("Failed to download receipt.", { id: "download-receipt" });
+  }
+};
+
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center h-64 space-y-4">
@@ -219,12 +256,13 @@ const FeesSection: React.FC = () => {
                 )}
 
                 {item.payment_status === "Paid" && (
-                  <button
-                    className="p-2 text-gray-400 hover:text-indigo-600 transition-colors"
-                    title="Download Receipt"
-                  >
-                    <HiOutlineDownload className="text-xl" />
-                  </button>
+                  <button 
+    onClick={() => handleDownloadReceipt(item.razorpay_payment_id)} // Ensure your API returns this ID
+    className="p-2 text-gray-400 hover:text-indigo-600 transition-colors bg-gray-50 rounded-lg" 
+    title="Download Receipt"
+  >
+    <HiOutlineDownload className="text-xl" />
+  </button>
                 )}
               </div>
             </div>
