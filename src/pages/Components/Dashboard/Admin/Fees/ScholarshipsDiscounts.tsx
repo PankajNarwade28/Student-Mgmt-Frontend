@@ -75,7 +75,7 @@ const ScholarshipDiscounts = () => {
   };
 
   const handleDelete = async (id: number) => {
-    if (!window.confirm("Are you sure you want to delete this coupon?")) return;
+    if (!globalThis.confirm("Are you sure you want to delete this coupon?")) return;
     try {
       await api.delete(`/api/admin/coupons/${id}`);
       toast.success("Coupon deleted");
@@ -173,7 +173,7 @@ const ScholarshipDiscounts = () => {
           </div>
         )}
       </div>
-
+        
      {/* Ensure the parent component wrapping this has the "relative" class */}
 {isModalOpen && (
   <div className="absolute inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4 rounded-2xl">
@@ -195,9 +195,9 @@ const ScholarshipDiscounts = () => {
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* ... rest of your form remains the same ... */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <div className="block text-sm font-medium text-gray-700 mb-1">
             Coupon Code
-          </label>
+          </div>
           <input
             type="text"
             required
@@ -212,9 +212,9 @@ const ScholarshipDiscounts = () => {
 
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <div className="block text-sm font-medium text-gray-700 mb-1">
               Type
-            </label>
+            </div>
             <select
               className="w-full px-4 py-2.5 rounded-xl border border-gray-200 outline-none focus:ring-2 focus:ring-indigo-500"
               value={formData.discount_type}
@@ -230,9 +230,9 @@ const ScholarshipDiscounts = () => {
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <div className="block text-sm font-medium text-gray-700 mb-1">
               Value
-            </label>
+            </div>
             <input
               type="number"
               required
@@ -250,9 +250,9 @@ const ScholarshipDiscounts = () => {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <div className="block text-sm font-medium text-gray-700 mb-1">
             Expiry Date
-          </label>
+          </div>
           <input
             type="date"
             required
