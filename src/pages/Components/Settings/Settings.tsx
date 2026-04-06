@@ -18,6 +18,7 @@ import {
   profileSchema,
   securitySchema,
 } from "../../../validations/settingSchema"; // Adjust path as needed
+import PasswordVerificationModal from "../Modal/passwordVerificationModal";
 
 interface ProfileData {
   first_name: string;
@@ -27,8 +28,7 @@ interface ProfileData {
   email?: string;
 }
 
-interface SecurityData {
-  oldPassword: string;
+interface SecurityData { 
   newPassword: string;
   confirmPassword: string;
 }
@@ -38,8 +38,7 @@ const Settings: React.FC = () => {
     "Profile" | "Security" | "Notifications" | "Appearance"
   >("Profile");
   const [loading, setLoading] = useState(false);
-  const [securityData, setSecurityData] = useState<SecurityData>({
-    oldPassword: "",
+  const [securityData, setSecurityData] = useState<SecurityData>({ 
     newPassword: "",
     confirmPassword: "",
   });
@@ -51,13 +50,14 @@ const Settings: React.FC = () => {
     email: "",
   });
 
-  // Visibility toggles
-  const [showOldPass, setShowOldPass] = useState(false);
+  // Visibility toggles 
   const [showNewPass, setShowNewPass] = useState(false);
   const [showConfirmPass, setShowConfirmPass] = useState(false);
 
   // Modal states
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
+  const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
+
   const [pendingAction, setPendingAction] = useState<
     "saveSettings" | "forgotPassword" | null
   >(null);
@@ -110,43 +110,15 @@ const Settings: React.FC = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSave = async () => {
-    const validation = profileSchema.safeParse(formData);
-
-    if (!validation.success) {
-      // Access 'issues' instead of 'errors'
-      const firstErrorMessage = validation.error.issues[0].message;
-      return toast.error(firstErrorMessage);
-    }
-
-    try {
-      setLoading(true);
-      const response = await api.post("/api/user/profile", formData);
-      if (response.status === 200 || response.status === 201) {
-        toast.success("Profile updated successfully!");
-      }
-    } catch (error: unknown) {
-      if (axios.isAxiosError(error)) {
-        toast.error(error.response?.data?.message || "Failed to save profile.");
-      } else {
-        toast.error("Failed to save profile changes.");
-      }
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handlePasswordUpdate = async () => {
-    // Note: Password validation logic is moved to triggerSaveConfirmation
+  
+  const handlePasswordUpdate = async () => { 
     // to match your original flow, but you can also re-validate here if needed.
     try {
-      const response = await api.patch("/api/auth/change-password", {
-        oldPassword: securityData.oldPassword,
+      const response = await api.patch("/api/auth/change-password", { 
         newPassword: securityData.newPassword,
       });
       toast.success(response.data.message);
-      setSecurityData({
-        oldPassword: "",
+      setSecurityData({ 
         newPassword: "",
         confirmPassword: "",
       });
@@ -161,28 +133,6 @@ const Settings: React.FC = () => {
     }
   };
 
-  const triggerSaveConfirmation = () => {
-    if (activeSection === "Security") {
-      const validation = securitySchema.safeParse(securityData);
-
-      if (!validation.success) {
-        // Access 'issues' instead of 'errors'
-        const firstErrorMessage = validation.error.issues[0].message;
-        return toast.error(firstErrorMessage);
-      }
-    }
-
-    // Optional: Add validation for Profile section here too
-    if (activeSection === "Profile") {
-      const validation = profileSchema.safeParse(formData);
-      if (!validation.success) {
-        return toast.error(validation.error.issues[0].message);
-      }
-    }
-
-    setPendingAction("saveSettings");
-    setIsConfirmModalOpen(true);
-  };
   const handleForgotPassword = () => {
     if (!formData.email) {
       return toast.error("Please Complete Profile for Password Reset.");
@@ -191,16 +141,94 @@ const Settings: React.FC = () => {
     setIsConfirmModalOpen(true);
   };
 
+  const handleSave = async (confirmPassword?: string) => {
+    try {
+      setLoading(true);
+      // Send both profile data and the password for verification
+      const response = await api.post("/api/user/profile", {
+        ...formData,
+        confirmPassword,
+      });
+      if (response.status === 200 || response.status === 201) {
+        toast.success("Profile updated successfully!");
+      }
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        toast.error(error.response?.data?.message || "Failed to save profile.");
+      } else {
+        toast.error("Failed to save profile changes.");
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // 2. Modified Trigger Logic
+  // const triggerSaveConfirmation = () => {
+  //   if (activeSection === "Security") {
+  //     const validation = securitySchema.safeParse(securityData);
+  //     if (!validation.success) {
+  //       return toast.error(validation.error.issues[0].message);
+  //     }
+  //     // Security updates use 'oldPassword' already, so we use a simple confirmation
+  //     setPendingAction("saveSettings");
+  //     setIsConfirmModalOpen(true);
+  //   }
+
+  //   if (activeSection === "Profile") {
+  //     const validation = profileSchema.safeParse(formData);
+  //     if (!validation.success) {
+  //       return toast.error(validation.error.issues[0].message);
+  //     }
+  //     // Profile updates require password verification
+  //     setPendingAction("saveSettings");
+  //     setIsPasswordModalOpen(true);
+  //   }
+  // };
+ 
+  const triggerSaveConfirmation = () => {
+  // Existing Profile logic...
+  if (activeSection === "Profile") {
+    const validation = profileSchema.safeParse(formData);
+      if (!validation.success) {
+        return toast.error(validation.error.issues[0].message);
+      }
+    setPendingAction("saveSettings");
+    setIsPasswordModalOpen(true);
+  }
+
+  // New Security logic using the same modal
+  if (activeSection === "Security") {
+    const validation = securitySchema.safeParse(securityData);
+    if (!validation.success) {
+      return toast.error(validation.error.issues[0].message);
+    }
+    // We use the modal to "Verify & Finalize"
+    setPendingAction("saveSettings");
+    setIsPasswordModalOpen(true); 
+  }
+};
+const handlePasswordVerifiedSuccess = async () => {
+  setIsPasswordModalOpen(false);
+
+  if (pendingAction === "saveSettings") {
+    if (activeSection === "Profile") {
+      await handleSave();
+    } 
+    else if (activeSection === "Security") {
+      // The modal already verified the password, 
+      // so we can now safely call the update API.
+      await handlePasswordUpdate();
+    }
+  }
+};
+
   const handleFinalConfirm = async () => {
     setIsConfirmModalOpen(false);
 
-    // 1. Handle regular Save Settings (Profile or Security form)
-    if (pendingAction === "saveSettings") {
-      if (activeSection === "Profile") await handleSave();
-      else if (activeSection === "Security") await handlePasswordUpdate();
-    }
-    // 2. Handle Forgot Password Request
-    else if (pendingAction === "forgotPassword") {
+    if (pendingAction === "saveSettings" && activeSection === "Security") {
+      await handlePasswordUpdate();
+    } else if (pendingAction === "forgotPassword") {
       try {
         setLoading(true);
         const response = await api.post("/api/email/forgot-password", {
@@ -217,7 +245,6 @@ const Settings: React.FC = () => {
     }
     setPendingAction(null);
   };
-
   return (
     <div className="p-6 max-w-6xl mx-auto animate-in fade-in duration-500">
       {/* Global Full-Screen Loader Overlay */}
@@ -288,7 +315,10 @@ const Settings: React.FC = () => {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-1.5">
-                    <label htmlFor="first_name" className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                    <label
+                      htmlFor="first_name"
+                      className="text-[10px] font-bold text-slate-400 uppercase tracking-widest"
+                    >
                       First Name
                     </label>
                     <input
@@ -301,7 +331,10 @@ const Settings: React.FC = () => {
                     />
                   </div>
                   <div className="space-y-1.5">
-                    <label htmlFor="last_name" className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                    <label
+                      htmlFor="last_name"
+                      className="text-[10px] font-bold text-slate-400 uppercase tracking-widest"
+                    >
                       Last Name
                     </label>
                     <input
@@ -314,7 +347,10 @@ const Settings: React.FC = () => {
                     />
                   </div>
                   <div className="space-y-1.5">
-                    <label htmlFor="date_of_birth" className="text-[10px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1">
+                    <label
+                      htmlFor="date_of_birth"
+                      className="text-[10px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1"
+                    >
                       <HiOutlineCalendar /> DOB
                     </label>
                     <input
@@ -327,7 +363,10 @@ const Settings: React.FC = () => {
                     />
                   </div>
                   <div className="space-y-1.5">
-                    <label htmlFor="phone_number" className="text-[10px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1">
+                    <label
+                      htmlFor="phone_number"
+                      className="text-[10px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1"
+                    >
                       <HiOutlinePhone /> Phone
                     </label>
                     <input
@@ -349,7 +388,7 @@ const Settings: React.FC = () => {
                   <h3 className="font-bold text-slate-800 text-sm mb-2">
                     Change Password
                   </h3>
-                  <div className="relative">
+                  {/* <div className="relative">
                     <input
                       type={showOldPass ? "text" : "password"}
                       placeholder="Current Password"
@@ -372,7 +411,7 @@ const Settings: React.FC = () => {
                         <HiOutlineEye size={18} />
                       )}
                     </button>
-                  </div>
+                  </div> */}
                   <div className="relative">
                     <input
                       type={showNewPass ? "text" : "password"}
@@ -451,30 +490,33 @@ const Settings: React.FC = () => {
             </div>
           </div>
 
-          {isConfirmModalOpen && (
-            <ConfirmationModal
-              isOpen={isConfirmModalOpen}
-              title={
-                pendingAction === "forgotPassword"
-                  ? "Send Reset Email"
-                  : "Confirm Changes"
-              }
-              message={
-                pendingAction === "forgotPassword"
-                  ? "Are you sure you want to send a password reset link?"
-                  : `Confirm update to ${activeSection}?`
-              }
-              type="warning"
-              confirmText={
-                pendingAction === "forgotPassword" ? "Send Link" : "Yes, Update"
-              }
-              onConfirm={handleFinalConfirm}
-              onCancel={() => {
-                setIsConfirmModalOpen(false);
-                setPendingAction(null);
-              }}
-            />
-          )}
+          {/* Basic confirmation for Forgot Password and Security changes */}
+          <ConfirmationModal
+            isOpen={isConfirmModalOpen}
+            title={
+              pendingAction === "forgotPassword"
+                ? "Send Reset Email"
+                : "Confirm Changes"
+            }
+            message={
+              pendingAction === "forgotPassword"
+                ? "Are you sure you want to send a reset link?"
+                : "Update security settings?"
+            }
+            type="warning"
+            onConfirm={handleFinalConfirm}
+            onCancel={() => {
+              setIsConfirmModalOpen(false);
+              setPendingAction(null);
+            }}
+          />
+
+          {/* Password input for Profile updates */}
+          <PasswordVerificationModal
+  isOpen={isPasswordModalOpen}
+  onSuccess={handlePasswordVerifiedSuccess}
+  onCancel={() => setIsPasswordModalOpen(false)}
+/>
         </main>
       </div>
     </div>

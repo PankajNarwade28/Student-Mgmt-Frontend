@@ -12,8 +12,7 @@ const Login: React.FC = () => {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const navigate = useNavigate();
 
-  useEffect(() => {
-    toast.success("Please Login First.", { duration: 2000 })
+  useEffect(() => { 
         if (localStorage.getItem("token")) {
       navigate("/dashboard");
     }

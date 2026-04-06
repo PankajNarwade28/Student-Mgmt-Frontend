@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import axios from "axios";
 import api from "../../../../../../api/axiosInstance";
 import {
   HiOutlineUserAdd,
@@ -92,9 +93,18 @@ const Enrollments: React.FC = () => {
           enrolled_students: updatedEnrolledStudents,
         });
       }
-    } catch (err) {
+    } catch (err: unknown) {
       console.error(err);
-      toast.error("Operation failed");
+
+      if (axios.isAxiosError(err)) {
+        console.log("Error response from server:", err.response);
+      }
+
+      const errorMsg = axios.isAxiosError<{ message?: string }>(err)
+        ? err.response?.data?.message || "Failed to update enrollment"
+        : "Failed to update enrollment";
+
+      toast.error(errorMsg);
     }
   };
 

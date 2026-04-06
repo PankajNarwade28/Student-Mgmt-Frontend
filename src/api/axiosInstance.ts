@@ -29,10 +29,15 @@ api.interceptors.response.use(
     if (error.response && (error.response.status === 401 || error.response.status === 403)) { 
       console.warn('Token expired or unauthorized. Logging out user.');
       // Nuclear option (Clears everything in LocalStorage)
-      localStorage.clear(); 
+     // 2. Set the 5-second timeout (5000 milliseconds)
+      setTimeout(() => {
+        // Nuclear option (Clears everything in LocalStorage)
+        localStorage.clear();
 
-      // Redirect to login
-      globalThis.location.href = '/auth/login';
+        // Redirect to login
+        globalThis.location.href = '/auth/login';
+      }, 5000); 
+    
     }
     return Promise.reject(error);
   }

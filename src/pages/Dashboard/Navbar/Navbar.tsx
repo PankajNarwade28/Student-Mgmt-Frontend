@@ -43,10 +43,15 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
 
     try {
       setLoading(true);
-      const { data } = await api.get("/api/audit/system/logs");
+      const { data } = await api.get("/api/audit/system/logs?page=1&limit=3");
 
-      // Limit to the most recent 3 logs as requested
-      setLogs(data.slice(0, 3));
+      // The screenshot shows the array is in 'data.items'
+      if (data && Array.isArray(data.items)) {
+        setLogs(data.items);
+      } else {
+        console.error("Received data structure is unexpected:", data);
+        setLogs([]);
+      }
     } catch (err) {
       console.error("Failed to fetch notification logs:", err);
     } finally {
@@ -59,7 +64,30 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
     fetchTopLogs();
   }, [fetchTopLogs]);
 
-  if(loading){
+  useEffect(() => {
+  const handleClickOutside = (event: MouseEvent) => {
+    // We only want to close them if the click happened outside the actual menus
+    // This prevents the menu from closing when you click INSIDE it
+    const target = event.target as HTMLElement;
+
+    // Check if the click was NOT on the notification button/panel 
+    // AND NOT on the profile button/panel
+    if (!target.closest(".notification-trigger") && !target.closest(".profile-trigger")) {
+      setIsNotificationOpen(false);
+      setIsProfileOpen(false);
+    }
+  };
+
+  // Add listener when component mounts
+  document.addEventListener("mousedown", handleClickOutside);
+
+  // Clean up listener when component unmounts to prevent memory leaks
+  return () => {
+    document.removeEventListener("mousedown", handleClickOutside);
+  };
+}, []); // Empty dependency array means this runs once on mount
+
+  if (loading) {
     return <div>Loading...</div>;
   }
   return (
@@ -72,7 +100,7 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
         >
           <Menu size={24} />
         </button>
-        
+
         <div className="relative hidden items-center sm:flex">
           <Search className="absolute left-3 text-slate-400" size={18} />
           <input
@@ -101,7 +129,6 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
                   <span className="absolute right-2 top-2 h-2.5 w-2.5 rounded-full border-2 border-white bg-green-500 animate-pulse"></span>
                 )}
               </button>
-              
 
               {/* DROPDOWN */}
               {isNotificationOpen && (
@@ -141,8 +168,8 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
                           <p className="mt-1 text-xs font-bold text-slate-700">
                             {log.table_name} Updated
                           </p>
-                          <p className="text-[10px] text-slate-500 truncate">
-                            By {log.changed_by}
+                          <p className="text-[10px] text-slate-500 truncate"> 
+                            By {log.changed_by === "postgres" ? "System" : log.changed_by}
                           </p>
                         </div>
                       ))

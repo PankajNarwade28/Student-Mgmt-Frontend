@@ -39,8 +39,7 @@ export const profileSchema = z.object({
 
 // Schema for Security/Password Data
 export const securitySchema = z
-  .object({
-    oldPassword: z.string().min(1, "Old password is required"),
+  .object({ 
     newPassword: z
       .string()
       .min(8, "New password must be at least 8 characters")

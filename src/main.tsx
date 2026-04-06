@@ -8,7 +8,9 @@ const root = ReactDOM.createRoot(document.getElementById("root")!);
 root.render(
  
   <>
-    <Toaster position="top-right" />
+    <Toaster position="top-right" containerStyle={{
+          zIndex: 99999, // Higher than your modal's 9999
+        }}/>
     <App />
     </> 
 );
