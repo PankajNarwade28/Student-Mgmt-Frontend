@@ -23,13 +23,13 @@ const Layout: React.FC = () => {
       <Sidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
       
       {/* Main Container: margin-left (ml-64) matches the sidebar width (w-64) on desktop */}
-      <div className="flex flex-1 flex-col transition-all duration-300 ease-in-out lg:ml-64">
+      <div className="flex flex-1 flex-col transition-all duration-300 ease-in-out lg:ml-15">
         {/* Navbar */}
         <Navbar toggleSidebar={toggleSidebar} />
         
         {/* Content Area */}
-        <main className="flex-1 p-4 md:p-6 lg:p-8">
-          <div className="mx-auto h-full w-full max-w-7xl">
+        <main className="flex-1 p-2 md:p-4 lg:p-5">
+          <div className="mx-auto h-full w-full">
             <Outlet />
           </div>
         </main>
