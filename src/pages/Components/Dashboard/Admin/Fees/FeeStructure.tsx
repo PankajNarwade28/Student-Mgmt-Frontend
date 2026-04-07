@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { BookOpen, History, Save, Loader2 } from 'lucide-react';
 import api from '../../../../../api/axiosInstance'; 
 import { toast } from 'react-hot-toast';
+import { ChevronDown } from 'lucide-react';
 
 interface Course {
   id: number;
@@ -66,109 +67,131 @@ const FeeStructure: React.FC = () => {
   };
 
   return (
-    <div className="max-w-6xl mx-auto">
-      <header className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-800">Fee Administration</h1>
-        <p className="text-gray-500 text-sm">Assign and modify student fees for all active courses.</p>
-      </header>
+   <div className="mx-auto space-y-4  ">
+  <header className="mb-4">
+    <nav className="text-[10px] font-black text-[#00796b] uppercase tracking-[0.2em] mb-2">
+      Financial Management
+    </nav>
+    <h1 className="text-2xl md:text-3xl font-black text-slate-800 tracking-tight flex items-center gap-3">
+      Fee Administration
+    </h1>
+    <p className="text-sm text-slate-400 font-medium">Assign and modify student fees for all active curriculum modules.</p>
+  </header>
 
-      {/* SECTION 1: Update Fee Form */}
-      <section className="mb-10">
-        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
-          <h2 className="text-lg font-semibold text-gray-700 mb-4 flex items-center">
-            <BookOpen className="mr-2 w-5 h-5 text-indigo-600" />
-            Update Course Pricing
-          </h2>
-          
-          <form onSubmit={handleUpdateFee} className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div>
-              <div className="block text-sm font-medium text-gray-700 mb-1">Target Course</div>
-              <select 
-                name="courseId"
-                required
-                className="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none transition bg-white text-sm"
-              >
-                <option value="">-- Select Course --</option>
-                {courses.map((course) => (
-                  <option key={course.id} value={course.id}>
-                    {course.name} ({course.code})
-                  </option>
-                ))}
-              </select>
+  {/* SECTION 1: Update Fee Form */}
+  <section className="mb-4">
+    <div className="bg-white p-8 rounded-[2rem] border border-slate-100 shadow-xl shadow-teal-900/5">
+      <h2 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-6 flex items-center gap-2">
+        <BookOpen className="w-4 h-4 text-[#00796b]" />
+        Update Module Pricing
+      </h2>
+      
+      <form onSubmit={handleUpdateFee} className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="space-y-2">
+          <label className="text-[10px] font-black text-slate-500 uppercase tracking-wider ml-1">Target Module</label>
+          <div className="relative group">
+            <select 
+              name="courseId"
+              required
+              className="w-full p-3.5 pl-4 border-2 border-gray-50 bg-gray-50 rounded-2xl focus:border-[#00796b] focus:bg-white outline-none transition-all appearance-none text-sm font-bold text-slate-700 cursor-pointer"
+            >
+              <option value="">-- Select Module --</option>
+              {courses.map((course) => (
+                <option key={course.id} value={course.id}>
+                  {course.name} ({course.code})
+                </option>
+              ))}
+            </select>
+            <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400 group-focus-within:text-[#00796b]">
+               <ChevronDown size={16} />
             </div>
-
-            <div>
-              <div className="block text-sm font-medium text-gray-700 mb-1">New Fee Amount (INR)</div>
-              <div className="relative">
-                <span className="absolute left-3 top-2.5 text-gray-500">₹</span>
-                <input 
-                  name="amount"
-                  type="number" 
-                  required
-                  className="w-full pl-8 p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none transition text-sm" 
-                  placeholder="Enter amount"
-                />
-              </div>
-            </div>
-
-            <div className="flex items-end">
-              <button 
-                type="submit"
-                disabled={isSubmitting || loading}
-                className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2.5 rounded-lg transition-all flex items-center justify-center shadow-sm disabled:opacity-50 text-sm"
-              >
-                {isSubmitting ? <Loader2 className="w-5 h-5 animate-spin" /> : <Save className="w-4 h-4 mr-2" />}
-                Save Changes
-              </button>
-            </div>
-          </form>
+          </div>
         </div>
-      </section>
 
-      {/* SECTION 2: Global Fee Registry Table */}
-      <section className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-        <div className="p-6 border-b border-gray-100 bg-gray-50/50">
-          <h2 className="text-md font-bold text-gray-800 flex items-center">
-            <History className="mr-2 w-5 h-5 text-gray-500" />
-            Current Fee Structure
-          </h2>
+        <div className="space-y-2">
+          <label className="text-[10px] font-black text-slate-500 uppercase tracking-wider ml-1">Fee Amount (INR)</label>
+          <div className="relative group">
+            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-[#00796b] font-bold">₹</span>
+            <input 
+              name="amount"
+              type="number" 
+              required
+              className="w-full pl-9 p-3.5 border-2 border-gray-50 bg-gray-50 rounded-2xl focus:border-[#00796b] focus:bg-white outline-none transition-all text-sm font-bold text-slate-700" 
+              placeholder="0.00"
+            />
+          </div>
         </div>
-        
-        <div className="overflow-x-auto"> 
-          <table className="w-full text-left">
-            <thead>
-              <tr className="bg-gray-100 text-gray-500 text-[10px] uppercase tracking-wider font-bold">
-                <th className="px-6 py-4">Course Code</th>
-                <th className="px-6 py-4">Course Name</th>
-                <th className="px-6 py-4">Current Fee</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-100">
-              {loading ? (
-                 <tr>
-                  <td colSpan={3} className="px-6 py-10 text-center text-gray-400">
-                    <Loader2 className="w-6 h-6 animate-spin mx-auto mb-2" />
-                    Fetching fee data...
-                  </td>
-                </tr>
-              ) : courses.length === 0 ? (
-                <tr><td colSpan={3} className="px-6 py-10 text-center text-gray-400">No active courses found.</td></tr>
-              ) : (
-                courses.map((course) => (
-                  <tr key={course.id} className="hover:bg-indigo-50/30 transition-colors">
-                    <td className="px-6 py-4 font-mono text-sm text-indigo-600">{course.code}</td>
-                    <td className="px-6 py-4 font-medium text-gray-800 text-sm">{course.name}</td>
-                    <td className="px-6 py-4 text-gray-700 font-semibold text-sm">
-                      {course.base_amount ? `₹${course.base_amount}` : <span className="text-gray-300 italic text-xs">Not Set</span>}
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
+
+        <div className="flex items-end">
+          <button 
+            type="submit"
+            disabled={isSubmitting || loading}
+            className="w-full bg-[#00796b] hover:bg-[#004d40] text-white font-black uppercase tracking-widest text-[11px] py-4 rounded-2xl transition-all flex items-center justify-center shadow-lg shadow-teal-100 disabled:opacity-50 active:scale-[0.98]"
+          >
+            {isSubmitting ? <Loader2 className="w-5 h-5 animate-spin" /> : <Save className="w-4 h-4 mr-2" />}
+            Commit Changes
+          </button>
         </div>
-      </section>
+      </form>
     </div>
+  </section>
+
+  {/* SECTION 2: Global Fee Registry Table */}
+  <section className="bg-white rounded-[2.5rem] border border-slate-50 shadow-xl shadow-teal-900/5 overflow-hidden">
+    <div className="p-8 border-b border-slate-50 bg-gray-50/30">
+      <h2 className="text-xs font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
+        <History className="w-4 h-4 text-teal-600" />
+        Operational Fee Registry
+      </h2>
+    </div>
+    
+    <div className="overflow-x-auto"> 
+      <table className="w-full text-left">
+        <thead>
+          <tr className="bg-gray-50/50 text-[10px] font-black text-slate-400 uppercase tracking-[0.15em] border-b border-slate-50">
+            <th className="px-6 py-4">Index Code</th>
+            <th className="px-6 py-4">Module Identity</th>
+            <th className="px-6 py-4 text-right">Current Valuation</th>
+          </tr>
+        </thead>
+        <tbody className="divide-y divide-slate-50">
+          {loading ? (
+             <tr>
+              <td colSpan={3} className="px-8 py-20 text-center">
+                <div className="flex flex-col items-center gap-3">
+                  <Loader2 className="w-8 h-8 animate-spin text-[#00796b]" />
+                  <span className="text-[10px] font-black text-[#00796b] uppercase tracking-widest">Syncing Registry...</span>
+                </div>
+              </td>
+            </tr>
+          ) : courses.length === 0 ? (
+            <tr><td colSpan={3} className="px-8 py-16 text-center text-slate-400 font-bold text-xs uppercase tracking-widest">No active records found.</td></tr>
+          ) : (
+            courses.map((course) => (
+              <tr key={course.id} className="hover:bg-teal-50/30 transition-all group">
+                <td className="px-6 py-4">
+                  <span className="font-mono text-xs font-bold text-[#00796b] bg-teal-50 px-2 py-1 rounded-md border border-teal-100 group-hover:bg-white transition-colors">
+                    {course.code}
+                  </span>
+                </td>
+                <td className="px-6 py-4 font-bold text-slate-700 text-sm tracking-tight">{course.name}</td>
+                <td className="px-6 py-4 text-right">
+                  <div className="inline-flex items-center px-4 py-1.5 rounded-xl bg-gray-50 border border-slate-100 group-hover:bg-white group-hover:border-teal-200 transition-all">
+                    {course.base_amount ? (
+                      <span className="text-slate-800 font-black text-sm tracking-tight">₹{course.base_amount.toLocaleString('en-IN')}</span>
+                    ) : (
+                      <span className="text-slate-300 italic text-[10px] font-black uppercase tracking-tighter">Valuation Pending</span>
+                    )}
+                  </div>
+                </td>
+              </tr>
+            ))
+          )}
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>
   );
 };
 
