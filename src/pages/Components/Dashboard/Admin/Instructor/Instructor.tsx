@@ -4,8 +4,8 @@ import {
   HiOutlineAcademicCap, 
   HiOutlineMail, 
   HiOutlineBookOpen,
-  HiOutlineUserCircle,
-  HiOutlineIdentification
+  HiOutlineUserCircle, 
+  HiOutlineShieldCheck
 } from "react-icons/hi";
 import api from "../../../../../api/axiosInstance";
 
@@ -50,7 +50,7 @@ const Instructor: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="p-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="p-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {[1, 2, 3].map((n) => (
           <div key={n} className="h-64 bg-slate-50 animate-pulse rounded-3xl border border-slate-100" />
         ))}
@@ -59,68 +59,98 @@ const Instructor: React.FC = () => {
   }
 
   return (
-    <div className="p-4 md:p-8 max-w-7xl mx-auto space-y-8 animate-in fade-in duration-500">
-      <div className="space-y-1">
-        <h1 className="text-2xl md:text-3xl font-bold text-slate-900 flex items-center gap-3">
-          <HiOutlineAcademicCap className="text-indigo-600" />
-          Academic Faculty
-        </h1>
-        <p className="text-slate-500">Browse our experienced instructors and their curriculum</p>
-      </div>
+    <div className="p-4 md:p-6  mx-auto space-y-10 ">
+  {/* 1. COMPACT HEADER */}
+  <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 pb-6 border-b border-slate-100">
+    <div className="space-y-1">
+      <nav className="text-[10px] font-black text-[#00796b] uppercase tracking-[0.2em] mb-2">
+        Faculty Directory
+      </nav>
+      <h1 className="text-2xl md:text-4xl font-black text-slate-800 tracking-tighter flex items-center gap-3">
+        <HiOutlineAcademicCap className="text-[#00796b]" /> Academic Faculty
+      </h1>
+      <p className="text-slate-400 text-sm font-medium">
+        Registry of authorized instructors and their associated curriculum nodes.
+      </p>
+    </div>
+  </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {instructors.map((teacher) => (
-          <div key={teacher.user_id} className="bg-white rounded-3xl border border-slate-100 shadow-sm hover:shadow-xl transition-all overflow-hidden flex flex-col">
-            <div className="p-6 space-y-4 flex-grow">
-              <div className="flex items-center gap-4">
-                <div className="h-16 w-16 bg-indigo-100 rounded-2xl flex items-center justify-center text-indigo-600">
-                  <HiOutlineUserCircle size={40} />
-                </div>
-                <div>
-                  <h2 className="text-xl font-bold text-slate-900">{teacher.full_name}</h2>
-                  <p className="text-sm text-indigo-600 font-medium flex items-center gap-1">
-                    <HiOutlineIdentification /> Faculty Member
-                  </p>
-                </div>
-              </div>
+  {/* 2. FACULTY REGISTRY GRID */}
+  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+    {instructors.map((teacher) => (
+      <div 
+        key={teacher.user_id} 
+        className="group relative bg-white rounded-[2rem] border border-slate-100 shadow-xl shadow-teal-900/5 hover:shadow-teal-900/10 hover:border-teal-500/30 transition-all duration-300 flex flex-col overflow-hidden"
+      >
+        {/* Decorative Watermark */}
+        <div className="absolute top-0 right-0 opacity-[0.03] pointer-events-none p-6 group-hover:scale-110 transition-transform">
+          <HiOutlineUserCircle size={120} />
+        </div>
 
-              <div className="flex items-center gap-2 text-sm text-slate-500">
-                <HiOutlineMail className="shrink-0" />
-                <span className="truncate">{teacher.email}</span>
-              </div>
-
-              <div className="pt-4 border-t border-slate-50">
-                <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3 flex items-center gap-2">
-                  <HiOutlineBookOpen /> Assigned Courses ({teacher.course_count})
-                </h3>
-                
-                <div className="flex flex-wrap gap-2">
-                  {teacher.courses && teacher.courses.length > 0 ? (
-                    teacher.courses.map((course) => (
-                      <span 
-                        key={course.id} 
-                        className="bg-slate-50 text-slate-600 text-[10px] font-bold px-2 py-1 rounded-lg border border-slate-100"
-                        title={course.name}
-                      >
-                        {course.code}
-                      </span>
-                    ))
-                  ) : (
-                    <span className="text-xs text-slate-400 italic">No courses currently assigned.</span>
-                  )}
-                </div>
-              </div>
+        <div className="p-7 flex-grow space-y-6 relative z-10">
+          <div className="flex items-center gap-5">
+            <div className="h-16 w-16 bg-teal-50 rounded-[1.25rem] border border-teal-100 flex items-center justify-center text-[#00796b] shadow-inner">
+              <HiOutlineUserCircle size={40} />
             </div>
-
-            <div className="p-6 pt-0">
-              <button className="w-full py-3 bg-slate-900 text-white text-sm font-bold rounded-2xl hover:bg-indigo-600 transition-colors">
-                View Faculty Profile
-              </button>
+            <div>
+              <h2 className="text-xl font-black text-slate-800 tracking-tight group-hover:text-[#00796b] transition-colors">
+                {teacher.full_name}
+              </h2>
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-teal-50 text-[#00796b] text-[9px] font-black uppercase tracking-widest border border-teal-100 mt-1">
+                <HiOutlineShieldCheck /> Verified Faculty
+              </span>
             </div>
           </div>
-        ))}
+
+          <div className="space-y-3">
+            <div className="flex items-center gap-3 text-xs font-bold text-slate-500 bg-gray-50/50 p-3 rounded-xl border border-slate-100">
+              <HiOutlineMail className="text-[#00796b] text-base shrink-0" />
+              <span className="truncate">{teacher.email}</span>
+            </div>
+          </div>
+
+          <div className="pt-5 border-t border-slate-50">
+            <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4 flex items-center gap-2">
+              <HiOutlineBookOpen className="text-teal-500" /> Assigned Nodes ({teacher.course_count})
+            </h3>
+            
+            <div className="flex flex-wrap gap-2">
+              {teacher.courses && teacher.courses.length > 0 ? (
+                teacher.courses.map((course) => (
+                  <span 
+                    key={course.id} 
+                    className="bg-white text-slate-600 text-[10px] font-black px-2.5 py-1.5 rounded-lg border border-slate-200 shadow-sm hover:border-[#00796b] hover:text-[#00796b] transition-all cursor-default"
+                    title={course.name}
+                  >
+                    {course.code}
+                  </span>
+                ))
+              ) : (
+                <div className="w-full py-4 text-center bg-slate-50 rounded-2xl border border-dashed border-slate-200">
+                   <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">No Active Assignments</span>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        <div className="p-7 pt-0 relative z-10">
+          <button className="w-full py-4 bg-slate-800 text-white text-[10px] font-black uppercase tracking-[0.2em] rounded-2xl hover:bg-[#00796b] transition-all shadow-xl shadow-slate-200 active:scale-95 flex items-center justify-center gap-2">
+            View Registry Profile
+          </button>
+        </div>
       </div>
-    </div>
+    ))}
+  </div>
+
+  {/* 3. SYSTEM FOOTER METADATA */}
+  <div className="pt-8 flex flex-col items-center gap-2">
+    <div className="h-[1px] w-24 bg-slate-200"></div>
+    <p className="text-[9px] text-slate-300 font-black uppercase tracking-[0.4em]">
+      Faculty Information Protocol • Modern ERP v4.2.0
+    </p>
+  </div>
+</div>
   );
 };
 

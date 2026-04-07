@@ -1,10 +1,10 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { toast } from "react-hot-toast";
-import { 
-  HiOutlineUserCircle, 
+import {  
   HiOutlinePencilAlt,   
   HiOutlineBookOpen,
-  HiOutlineCheckCircle
+  HiOutlineCheckCircle, 
+  HiOutlineUserCircle,
 } from "react-icons/hi";
 import api from "../../../../../../api/axiosInstance";
 
@@ -89,7 +89,7 @@ const Grades: React.FC = () => {
 
   if(loading) {
     return (
-      <div className="p-4 md:p-8 max-w-6xl mx-auto">
+      <div className="p-4 md:p-6 mx-auto">
         <div className="text-center py-20 bg-slate-50 rounded-3xl border-2 border-dashed border-slate-200">
           <p className="text-slate-400 font-medium">Loading students...</p>
         </div>
@@ -98,121 +98,123 @@ const Grades: React.FC = () => {
   }
 
   return (
-    <div className="p-4 md:p-8 max-w-6xl mx-auto space-y-6">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-slate-900 flex items-center gap-2">
-            <HiOutlineCheckCircle className="text-indigo-600" /> Grade Management
-          </h1>
-          <p className="text-sm text-slate-500">Select a course to view and modify student performance.</p>
-        </div>
+    <div className="p-4 md:p-6 mx-auto space-y-8 animate-in fade-in duration-500">
+  {/* 1. HEADER & CONTROLS */}
+  <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+    <div className="space-y-1">
+      <nav className="text-[10px] font-black text-[#00796b] uppercase tracking-[0.2em] mb-2">
+        Performance Analytics
+      </nav>
+      <h1 className="text-2xl font-black text-slate-800 flex items-center gap-3 tracking-tight">
+        <HiOutlineCheckCircle className="text-[#00796b]" /> Grade Management
+      </h1>
+      <p className="text-sm text-slate-400 font-medium">Review and modify student performance evaluations.</p>
+    </div>
 
-        {/* Course Selector */}
-        <div className="relative w-full md:w-80">
-          <HiOutlineBookOpen className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-          <select
-            className="w-full pl-10 pr-4 py-3 bg-white border border-slate-200 rounded-2xl outline-none focus:ring-2 ring-indigo-500/20 font-medium text-slate-700 appearance-none shadow-sm"
-            value={selectedCourseId}
-            onChange={(e) => setSelectedCourseId(e.target.value)}
-          >
-            <option value="">Select a Course...</option>
-            {courses.map(course => (
-              <option key={course.id} value={course.id}>{course.code} - {course.name}</option>
-            ))}
-          </select>
+    <div className="relative group w-full md:w-80">
+      <HiOutlineBookOpen className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-[#00796b] transition-colors" />
+      <select
+        className="w-full pl-12 pr-4 py-3 bg-white border border-slate-100 rounded-2xl outline-none focus:ring-4 ring-teal-500/5 focus:border-[#00796b] text-xs font-bold text-slate-700 appearance-none shadow-sm transition-all"
+        value={selectedCourseId}
+        onChange={(e) => setSelectedCourseId(e.target.value)}
+      >
+        <option value="">Select Course Gateway...</option>
+        {courses.map((c) => (
+          <option key={c.id} value={c.id}>{`${c.code} - ${c.name}`}</option>
+        ))}
+      </select>
+    </div>
+  </div>
+
+  {/* 2. MAIN CONTENT AREA */}
+  {!selectedCourseId ? (
+    <div className="text-center py-24 bg-white rounded-[3rem] border-4 border-dashed border-slate-50">
+      <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4">
+        <HiOutlineCheckCircle className="text-slate-300 text-2xl" />
+      </div>
+      <p className="text-slate-400 font-black text-xs uppercase tracking-[0.2em]">Select a course to start performance grading</p>
+    </div>
+  ) : (
+    <div className="bg-white rounded-[2.5rem] border border-slate-50 shadow-xl shadow-teal-900/5 overflow-hidden">
+      <table className="w-full text-left">
+        <thead>
+          <tr className="bg-gray-50/50 text-[10px] font-black text-slate-400 uppercase tracking-[0.15em] border-b border-slate-50">
+            <th className="px-8 py-5">Enrolled Student</th>
+            <th className="px-8 py-5 text-center">Performance Grade</th>
+            <th className="px-8 py-5 hidden md:table-cell">Evaluation Remarks</th>
+            <th className="px-8 py-5 text-right">Action</th>
+          </tr>
+        </thead>
+        <tbody className="divide-y divide-slate-50">
+          {students.map((student) => (
+            <tr key={student.student_id} className="hover:bg-teal-50/30 transition-all group">
+              <td className="px-8 py-5">
+                <div className="flex items-center gap-3">
+                  <div className="p-2.5 bg-slate-100 rounded-xl text-slate-400 group-hover:bg-white group-hover:text-[#00796b] transition-all shadow-sm">
+                    <HiOutlineUserCircle size={22} />
+                  </div>
+                  <span className="font-bold text-slate-700 tracking-tight">{student.student_name}</span>
+                </div>
+              </td>
+              <td className="px-8 py-5 text-center">
+                <span className={`inline-flex items-center px-4 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest border shadow-sm ${
+                  student.grade_value ? "bg-emerald-50 text-emerald-600 border-emerald-100" : "bg-slate-50 text-slate-400 border border-slate-100"
+                }`}>
+                  {student.grade_value || "Pending"}
+                </span>
+              </td>
+              <td className="px-8 py-5 hidden md:table-cell text-xs text-slate-400 font-medium italic">
+                {student.remarks || "No supplementary remarks."}
+              </td>
+              <td className="px-8 py-5 text-right">
+                <button
+                  onClick={() => handleOpenModal(student)}
+                  className="p-2.5 bg-white border border-slate-100 text-teal-600 rounded-xl hover:bg-teal-600 hover:text-white transition-all shadow-sm active:scale-95"
+                >
+                  <HiOutlinePencilAlt size={18} />
+                </button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  )}
+
+  {/* Performance Entry Modal */}
+  {isModalOpen && (
+    <div className="fixed inset-0 bg-[#004d40]/30 backdrop-blur-md z-[150] flex items-center justify-center p-4">
+      <div className="bg-white w-full max-w-md rounded-[2.5rem] shadow-2xl p-10 space-y-8 animate-in zoom-in duration-200">
+        <h2 className="text-2xl font-black text-slate-800 tracking-tight text-center">Modify Performance Grade</h2>
+        <div className="space-y-6">
+          <div>
+            <label className="text-[10px] font-black text-[#00796b] uppercase tracking-widest ml-1">Numeric Evaluation</label>
+            <input
+              type="number"
+              step="0.01"
+              className="w-full px-6 py-5 bg-teal-50 border-2 border-transparent rounded-[1.5rem] outline-none focus:border-[#00796b] text-center text-3xl font-black text-teal-700 transition-all mt-2"
+              value={gradeInput}
+              onChange={(e) => setGradeInput(e.target.value)}
+            />
+          </div>
+          <div>
+            <label className="text-[10px] font-black text-[#00796b] uppercase tracking-widest ml-1">Evaluation Remarks</label>
+            <textarea
+              className="w-full px-5 py-4 bg-gray-50 border border-slate-100 rounded-2xl outline-none focus:border-[#00796b] text-sm font-medium mt-2 resize-none"
+              rows={4}
+              value={remarksInput}
+              onChange={(e) => setRemarksInput(e.target.value)}
+            />
+          </div>
+        </div>
+        <div className="flex gap-4">
+          <button onClick={() => setIsModalOpen(false)} className="flex-1 py-4 text-xs font-black text-gray-400 uppercase tracking-widest hover:bg-gray-50 rounded-2xl transition-all">Discard</button>
+          <button onClick={handleSaveGrade} className="flex-1 py-4 text-xs font-black text-white bg-[#00796b] rounded-2xl shadow-xl shadow-teal-100 uppercase tracking-widest hover:bg-[#004d40] transition-all">Update Grade</button>
         </div>
       </div>
-
-      {selectedCourseId ? (
-        <div className="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden">
-          {/* Responsive Table/Card View */}
-          <div className="overflow-x-auto">
-            <table className="w-full text-left">
-              <thead className="bg-slate-50 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-                <tr>
-                  <th className="px-6 py-4">Student</th>
-                  <th className="px-6 py-4">Grade</th>
-                  <th className="px-6 py-4 hidden md:table-cell">Remarks</th>
-                  <th className="px-6 py-4 text-right">Action</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-50">
-                {students.map((student) => (
-                  <tr key={student.student_id} className="hover:bg-slate-50/50 transition-colors">
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-3">
-                        <div className="p-2 bg-slate-100 rounded-full text-slate-400 hidden sm:block">
-                          <HiOutlineUserCircle size={20} />
-                        </div>
-                        <span className="font-bold text-slate-700">{student.student_name}</span>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <span className={`px-3 py-1 rounded-full text-xs font-bold ${
-                        student.grade_value ? "bg-emerald-50 text-emerald-600" : "bg-slate-100 text-slate-400"
-                      }`}>
-                        {student.grade_value || "N/A"}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 hidden md:table-cell">
-                      <p className="text-xs text-slate-500 truncate max-w-[200px]">
-                        {student.remarks || "No remarks provided."}
-                      </p>
-                    </td>
-                    <td className="px-6 py-4 text-right">
-                      <button
-                        onClick={() => handleOpenModal(student)}
-                        className="p-2 md:px-4 md:py-2 bg-indigo-50 text-indigo-600 rounded-xl text-xs font-bold hover:bg-indigo-600 hover:text-white transition-all inline-flex items-center gap-2"
-                      >
-                        <HiOutlinePencilAlt size={16} /> <span className="hidden sm:inline">Modify</span>
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      ) : (
-        <div className="text-center py-20 bg-slate-50 rounded-3xl border-2 border-dashed border-slate-200">
-          <p className="text-slate-400 font-medium">Please select a course to begin grading.</p>
-        </div>
-      )}
-
-      {/* Grade Entry Modal (Responsive) */}
-      {isModalOpen && (
-        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
-          <div className="bg-white w-full max-w-md rounded-[2rem] shadow-2xl p-6 md:p-8 space-y-6">
-            <h2 className="text-xl font-bold text-slate-900">Modify Grade</h2>
-            <div className="space-y-4">
-              <div>
-                <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Numeric Grade</div>
-                <input
-                  type="number"
-                  step="0.01"
-                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:ring-4 ring-indigo-500/10 text-center text-xl font-black text-indigo-600"
-                  value={gradeInput}
-                  onChange={(e) => setGradeInput(e.target.value)}
-                />
-              </div>
-              <div>
-                <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Remarks</div>
-                <textarea
-                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:ring-4 ring-indigo-500/10 text-sm"
-                  rows={4}
-                  value={remarksInput}
-                  onChange={(e) => setRemarksInput(e.target.value)}
-                />
-              </div>
-            </div>
-            <div className="flex gap-3">
-              <button onClick={() => setIsModalOpen(false)} className="flex-1 py-3 text-sm font-bold text-slate-500 bg-slate-100 rounded-2xl">Cancel</button>
-              <button onClick={handleSaveGrade} className="flex-1 py-3 text-sm font-bold text-white bg-indigo-600 rounded-2xl shadow-lg shadow-indigo-200">Update</button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
+  )}
+</div>
   );
 };
 

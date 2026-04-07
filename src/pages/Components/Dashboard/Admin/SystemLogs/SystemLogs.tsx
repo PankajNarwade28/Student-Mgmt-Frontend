@@ -52,13 +52,7 @@ const SystemLogs: React.FC = () => {
   useEffect(() => {
     fetchLogs();
   }, [fetchLogs]);
-
-  const getOperationColor = (op: string) => {
-    if (op === "INSERT")
-      return "text-emerald-600 bg-emerald-50 border-emerald-100";
-    if (op === "DELETE") return "text-rose-600 bg-rose-50 border-rose-100";
-    return "text-amber-600 bg-amber-50 border-amber-100"; // UPDATE
-  };
+ 
 
   const getChangedFields = (oldData: Record<string, unknown> | null, newData: Record<string, unknown> | null) => {
   if (!oldData && !newData) return []; // Fallback for edge cases
@@ -82,178 +76,183 @@ const SystemLogs: React.FC = () => {
   return changes;
 };
   return (
-    <div className="p-4 md:p-8 max-w-7xl mx-auto space-y-6">
-      {/* Header logic remains the same as previous version */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-slate-900 flex items-center gap-2">
-            <HiOutlineClipboardList className="text-indigo-600" /> Audit Trail
-          </h1>
-          <p className="text-sm text-slate-500">
-            Tracking database operations across all core entities.
-          </p>
-        </div>
-        <button
-          onClick={fetchLogs}
-          className="p-2 bg-white border rounded-xl hover:bg-slate-50 transition-all"
-        >
-          <HiOutlineRefresh className={loading ? "animate-spin" : ""} />
-        </button>
-      </div>
+   <div className="p-4 md:p-6   mx-auto space-y-10 ">
+  {/* 1. COMPACT HEADER & REFRESH */}
+  <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 pb-6 border-b border-slate-100">
+    <div className="space-y-1">
+      <nav className="text-[10px] font-black text-[#00796b] uppercase tracking-[0.2em] mb-2">Security & Governance</nav>
+      <h1 className="text-2xl md:text-4xl font-black text-slate-800 tracking-tighter flex items-center gap-3">
+        <HiOutlineClipboardList className="text-[#00796b]" /> System Audit Trail
+      </h1>
+      <p className="text-slate-400 text-sm font-medium">
+        Cryptographic ledger of database operations across all authorized nodes.
+      </p>
+    </div>
+    
+    <button
+      onClick={fetchLogs}
+      className="p-3 bg-white border border-slate-200 text-slate-600 rounded-2xl hover:border-[#00796b] hover:text-[#00796b] transition-all shadow-sm active:scale-95"
+    >
+      <HiOutlineRefresh className={`text-xl ${loading ? "animate-spin" : ""}`} />
+    </button>
+  </div>
 
-      <div className="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden">
-        <table className="w-full text-left">
-          <thead className="bg-slate-50 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-            <tr>
-              <th className="px-6 py-4">Table</th>
-              <th className="px-6 py-4">Operation</th>
-              {/* <th className="px-6 py-4">Changed By</th> */}
-              <th className="px-6 py-4">Time</th>
-              <th className="px-6 py-4 text-right">Details</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-50">
-            {logs
-              .filter((l) => l.table_name.includes(searchTerm))
-              .map((log) => (
-                <tr
-                  key={log.id}
-                  className="hover:bg-slate-50/50 transition-colors"
-                >
-                  <td className="px-6 py-4 font-mono text-xs font-bold text-slate-700">
+  {/* 2. AUDIT REGISTRY TABLE */}
+  <div className="bg-white rounded-[2.5rem] shadow-xl shadow-teal-900/5 border border-slate-50 overflow-hidden">
+    <div className="overflow-x-auto">
+      <table className="w-full text-left">
+        <thead>
+          <tr className="bg-gray-50/50 text-[10px] font-black text-slate-400 uppercase tracking-[0.15em] border-b border-slate-50">
+            <th className="px-4 py-3">Object Node</th>
+            <th className="px-4 py-3">Operation Type</th>
+            <th className="px-4 py-3">Audit Timestamp</th>
+            <th className="px-4 py-3 text-right">Data View</th>
+          </tr>
+        </thead>
+        <tbody className="divide-y divide-slate-50">
+          {logs
+            .filter((l) => l.table_name.includes(searchTerm))
+            .map((log) => (
+              <tr key={log.id} className="hover:bg-teal-50/30 transition-all group">
+                <td className="px-2 py-1.5">
+                  <span className="font-mono text-[11px] font-bold text-[#00796b] bg-teal-50 px-2.5 py-1 rounded-lg border border-teal-100 group-hover:bg-white transition-colors">
                     {log.table_name}
-                  </td>
-                  <td className="px-6 py-4">
-                    <span
-                      className={`px-2 py-1 rounded-md text-[10px] font-black border ${getOperationColor(log.operation)}`}
-                    >
-                      {log.operation}
-                    </span>
-                  </td>
-                  {/* <td className="px-6 py-4 text-sm text-slate-600">{log.changed_by}</td> */}
-                  <td className="px-6 py-4 text-xs text-slate-400">
-                    {new Date(log.changed_at).toLocaleString()}
-                  </td>
-                  <td className="px-6 py-4 text-right">
-                    <button
-                      onClick={() => setSelectedLog(log)}
-                      className="p-2 text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all"
-                    >
-                      <HiOutlineEye size={18} />
-                    </button>
-                  </td>
-                </tr>
-              ))}
-          </tbody>
-        </table>
-        {logs.length === 0 && !loading && (
-          <div className="p-6 text-center text-sm text-slate-500">
-            No audit records found.
-          </div>
-        )}
-      </div>
+                  </span>
+                </td>
+                <td className="px-2 py-1.5">
+                  <span className={`px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-tighter border shadow-sm ${
+                    log.operation === 'INSERT' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' :
+                    log.operation === 'DELETE' ? 'bg-red-50 text-red-600 border-red-100' :
+                    'bg-amber-50 text-amber-600 border-amber-100'
+                  }`}>
+                    {log.operation}
+                  </span>
+                </td>
+                <td className="px-2 py-1.5">
+                  <span className="text-xs font-bold text-slate-400">
+                    {new Date(log.changed_at).toLocaleString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                  </span>
+                </td>
+                <td className="px-2 py-1.5 text-right">
+                  <button
+                    onClick={() => setSelectedLog(log)}
+                    className="p-2.5 text-slate-400 hover:text-[#00796b] hover:bg-white rounded-xl transition-all shadow-sm border border-transparent hover:border-teal-100 active:scale-90"
+                  >
+                    <HiOutlineEye size={20} />
+                  </button>
+                </td>
+              </tr>
+            ))}
+        </tbody>
+      </table>
+    </div>
 
-      {/* Detail Modal */}
-      {selectedLog && (
-  <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[100] flex items-center justify-center p-3 animate-in fade-in duration-300">
-    <div className="bg-white w-full max-w-2xl rounded-3xl shadow-xl flex flex-col border border-slate-100 overflow-hidden">
-      
-      {/* 1. Header Section - Tightened */}
-      <div className="px-5 py-3 border-b flex justify-between items-center bg-gradient-to-r from-slate-50 to-white">
-        <div className="flex items-center gap-3">
-          <div className={`p-2 rounded-xl text-lg ${
-            selectedLog.operation === 'DELETE' ? 'bg-red-50 text-red-600' : 
-            selectedLog.operation === 'INSERT' ? 'bg-emerald-50 text-emerald-600' : 'bg-indigo-50 text-indigo-600'
-          }`}>
-            <HiOutlineDatabase />
-          </div>
-          <div>
-            <h2 className="text-base font-black text-slate-900 leading-tight">
-              {selectedLog.operation} • {selectedLog.table_name}
-            </h2>
-            <p className="text-[9px] text-slate-400 uppercase font-black tracking-widest -mt-0.5">
-              Ref: #{selectedLog.id} • By {selectedLog.changed_by}
-            </p>
-          </div>
-        </div>
-        <button onClick={() => setSelectedLog(null)} className="p-1.5 hover:bg-slate-100 rounded-full text-slate-400 hover:text-slate-900 transition-all">
-          <HiOutlineX size={16} />
+    {logs.length === 0 && !loading && (
+      <div className="py-20 text-center bg-white border-t border-slate-50">
+        <HiOutlineClipboardList className="mx-auto text-4xl text-slate-100 mb-2" />
+        <p className="text-[10px] font-black text-slate-300 uppercase tracking-widest">No audit records detected</p>
+      </div>
+    )}
+
+    {/* PAGINATION CONTROLS */}
+    <div className="flex items-center justify-between px-4 py-3 bg-gray-50/50 border-t border-slate-50">
+      <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+        Registry Page <span className="text-[#00796b]">{page}</span> of {totalPages}
+      </div>
+      <div className="flex gap-2">
+        <button
+          disabled={page === 1 || loading}
+          onClick={() => setPage((p) => p - 1)}
+          className="px-5 py-2 text-[10px] font-black uppercase tracking-widest bg-white border border-slate-200 rounded-xl hover:text-[#00796b] hover:border-[#00796b] disabled:opacity-30 transition-all shadow-sm active:scale-95"
+        >
+          Prev
         </button>
-      </div>
-
-      {/* 2. Content Section - Compact Diff */}
-      <div className="px-5 py-4 space-y-3">
-        
-        {/* Comparison Header */}
-        <div className="flex text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">
-          <div className="w-1/3">Field</div>
-          <div className="w-1/3 text-center">Previous Value</div>
-          <div className="w-1/3 text-center text-indigo-400">Current Value</div>
-        </div>
-        
-        {/* Loop through changed fields - Tightened Rows */}
-        <div className="space-y-1.5">
-          {getChangedFields(selectedLog.old_data, selectedLog.new_data).length > 0 ? (
-            getChangedFields(selectedLog.old_data, selectedLog.new_data).map((change, index) => (
-              <div key={index} className="flex items-center gap-1.5 px-1 py-1 rounded-lg border border-transparent hover:bg-slate-50 hover:border-slate-100 transition-colors">
-                
-                {/* Field Name */}
-                <div className="w-1/3 text-xs font-black text-slate-800 capitalize truncate pr-2">
-                  {change.field.replace(/_/g, ' ')}
-                </div>
-
-                {/* Old Value */}
-                <div className="w-1/3 bg-white px-2 py-1.5 rounded-md border border-slate-100 line-through text-slate-400 text-xs italic truncate">
-                  {change.oldVal === null || change.oldVal === undefined ? "empty" : String(change.oldVal)}
-                </div>
-
-                {/* New Value */}
-                <div className="w-1/3 bg-indigo-600 px-2 py-1.5 rounded-md shadow-sm text-white text-xs font-bold truncate">
-                  {change.newVal === null || change.newVal === undefined ? "deleted" : String(change.newVal)}
-                </div>
-              </div>
-            ))
-          ) : (
-            <div className="text-center py-6 bg-slate-50 rounded-xl border border-dashed border-slate-100">
-              <p className="text-[11px] text-slate-500 font-medium italic">No structural changes detected.</p>
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* 3. Footer Section - Single Line */}
-      <div className="px-5 py-2.5 bg-slate-50 border-t flex justify-center">
-        <p className="text-[9px] font-bold text-slate-400 uppercase">
-          Timestamp: {new Date(selectedLog.changed_at).toLocaleString()}
-        </p>
+        <button
+          disabled={page === totalPages || loading}
+          onClick={() => setPage((p) => p + 1)}
+          className="px-5 py-2 text-[10px] font-black uppercase tracking-widest bg-white border border-slate-200 rounded-xl hover:text-[#00796b] hover:border-[#00796b] disabled:opacity-30 transition-all shadow-sm active:scale-95"
+        >
+          Next
+        </button>
       </div>
     </div>
   </div>
-)}
-      {/* Pagination Controls */}
-      <div className="flex items-center justify-between px-6 py-4 bg-slate-50 border-t border-slate-100">
-        <div className="text-xs text-slate-500 font-medium">
-          Page <span className="text-slate-900">{page}</span> of{" "}
-          <span className="text-slate-900">{totalPages}</span>
+
+  {/* 3. COMPACT DATA DIFF MODAL */}
+  {selectedLog && (
+    <div className="fixed inset-0 bg-[#004d40]/40 backdrop-blur-md z-[200] flex items-center justify-center p-4 animate-in fade-in duration-300">
+      <div className="bg-white w-full max-w-2xl rounded-[2.5rem] shadow-2xl flex flex-col border border-slate-100 overflow-hidden animate-in zoom-in-95 duration-200">
+        
+        {/* Modal Header */}
+        <div className="px-4 py-3 border-b border-slate-50 flex justify-between items-center bg-gray-50/30">
+          <div className="flex items-center gap-4">
+            <div className={`p-3 rounded-2xl shadow-inner text-xl ${
+              selectedLog.operation === 'DELETE' ? 'bg-red-50 text-red-600' : 
+              selectedLog.operation === 'INSERT' ? 'bg-emerald-50 text-emerald-600' : 'bg-teal-50 text-[#00796b]'
+            }`}>
+              <HiOutlineDatabase />
+            </div>
+            <div>
+              <h2 className="text-lg font-black text-slate-800 tracking-tight leading-none uppercase">
+                {selectedLog.operation} Registry Lock
+              </h2>
+              <p className="text-[9px] text-slate-400 font-black uppercase tracking-[0.2em] mt-1.5">
+                Node: {selectedLog.table_name} • ID: #{selectedLog.id}
+              </p>
+            </div>
+          </div>
+          <button onClick={() => setSelectedLog(null)} className="p-2 hover:bg-slate-100 rounded-full text-slate-400 hover:text-slate-800 transition-all">
+            <HiOutlineX size={20} />
+          </button>
         </div>
-        <div className="flex gap-2">
-          <button
-            disabled={page === 1 || loading}
-            onClick={() => setPage((p) => p - 1)}
-            className="px-4 py-2 text-xs font-bold bg-white border rounded-xl hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
-          >
-            Previous
-          </button>
-          <button
-            disabled={page === totalPages || loading}
-            onClick={() => setPage((p) => p + 1)}
-            className="px-4 py-2 text-xs font-bold bg-white border rounded-xl hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
-          >
-            Next
-          </button>
+
+        {/* Diff Content Section */}
+        <div className="p-8 space-y-4">
+          <div className="flex text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] px-2 mb-2">
+            <div className="w-1/3">Property Node</div>
+            <div className="w-1/3 text-center">Previous State</div>
+            <div className="w-1/3 text-center text-[#00796b]">Modified State</div>
+          </div>
+          
+          <div className="space-y-2 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+            {getChangedFields(selectedLog.old_data, selectedLog.new_data).length > 0 ? (
+              getChangedFields(selectedLog.old_data, selectedLog.new_data).map((change, index) => (
+                <div key={index} className="flex items-center gap-2 p-1.5 rounded-2xl border border-transparent hover:bg-slate-50 transition-colors">
+                  {/* Field */}
+                  <div className="w-1/3 text-[11px] font-black text-slate-800 uppercase tracking-tight truncate pl-2">
+                    {change.field.replace(/_/g, ' ')}
+                  </div>
+
+                  {/* Old Data */}
+                  <div className="w-1/3 bg-gray-50 px-3 py-2 rounded-xl border border-slate-100 text-[10px] font-bold text-slate-400 line-through truncate text-center">
+                    {change.oldVal === null || change.oldVal === undefined ? "empty" : String(change.oldVal)}
+                  </div>
+
+                  {/* New Data */}
+                  <div className="w-1/3 bg-teal-50 px-3 py-2 rounded-xl border border-teal-100 shadow-sm text-[#00796b] text-[10px] font-black truncate text-center uppercase tracking-tighter">
+                    {change.newVal === null || change.newVal === undefined ? "purged" : String(change.newVal)}
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="text-center py-12 bg-slate-50 rounded-[2rem] border-2 border-dashed border-slate-100">
+                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">No structural mutations detected.</p>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Footer Audit Data */}
+        <div className="px-8 py-4 bg-gray-50/50 border-t border-slate-50 flex justify-between items-center">
+          <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Authorized By: {selectedLog.changed_by}</span>
+          <span className="text-[9px] font-black text-slate-300 uppercase tracking-widest">
+            v4.2.0 Audit Sync
+          </span>
         </div>
       </div>
     </div>
+  )}
+</div>
   );
 };
 

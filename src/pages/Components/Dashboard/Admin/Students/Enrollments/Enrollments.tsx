@@ -7,6 +7,7 @@ import {
   HiOutlineTrash,
   HiOutlineX,
   HiOutlineBookOpen,
+  HiOutlineChevronRight,
 } from "react-icons/hi";
 
 interface StudentRef {
@@ -112,96 +113,115 @@ const Enrollments: React.FC = () => {
     return <div className="animate-pulse h-40 bg-white rounded-2xl" />;
 
   return (
-    <div className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {courses.map((course) => (
-          <button
-            key={course.id}
-            onClick={() => setSelectedCourse(course)}
-            className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm hover:border-indigo-500 cursor-pointer transition-all text-left"
-          >
-            <div className="flex justify-between items-start mb-4">
-              <div className="p-2 bg-indigo-50 text-indigo-600 rounded-lg">
-                <HiOutlineBookOpen size={20} />
-              </div>
-              <span className="text-[10px] font-bold text-slate-400 bg-slate-50 px-2 py-1 rounded-md">
-                {course.code}
-              </span>
-            </div>
-            <h3 className="font-bold text-slate-900 truncate">{course.name}</h3>
-            <p className="text-xs text-indigo-600 font-semibold mt-2">
-              {course.enrolled_students?.length || 0} Students Enrolled
-            </p>
-          </button>
-        ))}
-      </div>
+   <div className="space-y-6 animate-in fade-in duration-500">
+  {/* Course Selection Grid */}
+ <div className="space-y-4 animate-in fade-in duration-500">
+  {/* Header Section for Context */}
+  <div className="flex items-center justify-between px-2">
+    <div>
+      <h3 className="text-sm font-black text-slate-800 uppercase tracking-widest">Available Modules</h3>
+      <p className="text-[10px] text-slate-400 font-medium">Select a course to manage enrollment status</p>
+    </div>
+    <div className="text-[10px] font-black text-teal-600 bg-teal-50 px-3 py-1 rounded-full border border-teal-100">
+      {courses.length} ACTIVE
+    </div>
+  </div>
 
-      {/* ASSIGNMENT MODAL */}
-      {selectedCourse && (
-        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-100 flex items-center justify-center p-4">
-          <div className="bg-white w-full max-w-md rounded-3xl shadow-2xl overflow-hidden animate-in zoom-in duration-200">
-            <div className="p-6 border-b flex justify-between items-center bg-slate-50/50">
-              <div>
-                <h2 className="text-lg font-bold text-slate-900">
-                  Manage Enrollment
-                </h2>
-                <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">
-                  {selectedCourse.name}
-                </p>
-              </div>
-              <button
-                onClick={() => setSelectedCourse(null)}
-                className="p-2 hover:bg-slate-200 rounded-full transition-colors"
-              >
-                <HiOutlineX />
-              </button>
-            </div>
+  {/* Compact 4-Column Grid */}
+  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+    {courses.map((course) => (
+      <button
+        key={course.id}
+        onClick={() => setSelectedCourse(course)}
+        className="group relative bg-white p-4 rounded-2xl border border-slate-50 shadow-sm hover:shadow-md hover:border-teal-500 transition-all duration-300 text-left flex flex-col justify-between h-full"
+      >
+        {/* Top Section: Icon and Code */}
+        <div className="flex justify-between items-start mb-3">
+          <div className="p-2 bg-teal-50 text-teal-600 rounded-xl group-hover:bg-teal-600 group-hover:text-white transition-all shadow-sm">
+            <HiOutlineBookOpen size={18} />
+          </div>
+          <span className="text-[9px] font-black text-teal-600/70 bg-teal-50/50 px-2 py-0.5 rounded-md border border-teal-100/30 uppercase tracking-tighter">
+            {course.code}
+          </span>
+        </div>
 
-            <div className="p-6 max-h-[50vh] overflow-y-auto space-y-2">
-              {allStudents.map((student) => {
-                const isEnrolled = selectedCourse.enrolled_students?.some(
-                  (s) => s.id === student.id,
-                );
-                return (
-                  <div
-                    key={student.id}
-                    className="flex items-center justify-between p-3 rounded-xl border border-slate-50 bg-slate-50/30 group hover:bg-slate-50"
-                  >
-                    <span className="text-sm font-medium text-slate-700">
-                      {student.name}
-                    </span>
-                    <button
-                      onClick={() =>
-                        toggleEnrollment(
-                          student.id,
-                          selectedCourse.id,
-                          !!isEnrolled,
-                        )
-                      }
-                      className={`flex items-center gap-1 px-3 py-1.5 rounded-lg text-[10px] font-bold transition-all ${
-                        isEnrolled
-                          ? "bg-rose-50 text-rose-600 hover:bg-rose-100"
-                          : "bg-emerald-50 text-emerald-600 hover:bg-emerald-100"
-                      }`}
-                    >
-                      {isEnrolled ? (
-                        <>
-                          <HiOutlineTrash /> Remove
-                        </>
-                      ) : (
-                        <>
-                          <HiOutlineUserAdd /> Assign
-                        </>
-                      )}
-                    </button>
-                  </div>
-                );
-              })}
-            </div>
+        {/* Middle Section: Name */}
+        <div className="mb-4">
+          <h4 className="font-bold text-slate-800 text-sm leading-tight group-hover:text-teal-700 transition-colors line-clamp-1">
+            {course.name}
+          </h4>
+          <p className="text-[10px] text-slate-400 font-medium mt-0.5 line-clamp-1">
+            System Identity Registry
+          </p>
+        </div>
+
+        {/* Bottom Section: Stats Footer */}
+        <div className="pt-3 border-t border-slate-50 flex items-center justify-between">
+          <div className="flex items-center gap-1.5">
+            <div className="w-1.5 h-1.5 rounded-full bg-teal-500 animate-pulse" />
+            <span className="text-[10px] font-black text-slate-600 uppercase tracking-tight">
+              {course.enrolled_students?.length || 0} Members
+            </span>
+          </div>
+          <div className="text-[9px] font-bold text-teal-600 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
+            Manage <HiOutlineChevronRight />
           </div>
         </div>
-      )}
+      </button>
+    ))}
+  </div>
+</div>
+
+  {/* ASSIGNMENT MODAL */}
+  {selectedCourse && (
+    <div className="fixed inset-0 bg-[#004d40]/30 backdrop-blur-md z-[150] flex items-center justify-center p-4">
+      <div className="bg-white w-full max-w-md rounded-[2.5rem] shadow-2xl overflow-hidden animate-in zoom-in duration-200">
+        <div className="p-8 border-b border-slate-50 flex justify-between items-center bg-teal-50/30">
+          <div>
+            <h2 className="text-xl font-black text-slate-800 tracking-tight">
+              Manage Enrollment
+            </h2>
+            <p className="text-[10px] text-teal-600 font-black uppercase tracking-[0.2em] mt-1">
+              {selectedCourse.name}
+            </p>
+          </div>
+          <button
+            onClick={() => setSelectedCourse(null)}
+            className="p-2.5 hover:bg-white rounded-full transition-all text-slate-400 hover:text-red-500"
+          >
+            <HiOutlineX size={20} />
+          </button>
+        </div>
+
+        <div className="p-8 max-h-[50vh] overflow-y-auto space-y-3 scrollbar-hide">
+          {allStudents.map((student) => {
+            const isEnrolled = selectedCourse.enrolled_students?.some((s) => s.id === student.id);
+            return (
+              <div
+                key={student.id}
+                className="flex items-center justify-between p-4 rounded-[1.25rem] border border-slate-50 bg-slate-50/50 hover:bg-white hover:shadow-sm transition-all"
+              >
+                <span className="text-sm font-bold text-slate-700">
+                  {student.name}
+                </span>
+                <button
+                  onClick={() => toggleEnrollment(student.id, selectedCourse.id, !!isEnrolled)}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
+                    isEnrolled
+                      ? "bg-red-50 text-red-600 hover:bg-red-600 hover:text-white"
+                      : "bg-teal-50 text-teal-600 hover:bg-teal-600 hover:text-white"
+                  }`}
+                >
+                  {isEnrolled ? <><HiOutlineTrash /> Remove</> : <><HiOutlineUserAdd /> Assign</>}
+                </button>
+              </div>
+            );
+          })}
+        </div>
+      </div>
     </div>
+  )}
+</div>
   );
 };
 

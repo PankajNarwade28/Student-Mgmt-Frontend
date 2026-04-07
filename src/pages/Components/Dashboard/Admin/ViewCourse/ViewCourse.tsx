@@ -156,170 +156,133 @@ const ViewCourses: React.FC = () => {
   }, []);
 
   return (
-    <div className="p-6 min-h-[calc(100vh-250px)] animate-in fade-in duration-500">
-      <div className="flex flex-col gap-6 mb-8 md:flex-row md:items-center md:justify-between">
-  {/* TEXT SECTION */}
-  <div className="space-y-1">
-    <h2 className="text-xl font-bold text-slate-800 md:text-2xl">
-      Academic Courses
-    </h2>
-    <p className="text-gray-400 text-xs md:text-sm">
-      Manage all registered courses and assignments
-    </p>
-  </div>
-
-  {/* ACTIONS SECTION (Search + Buttons) */}
-  <div className="flex flex-col gap-4 sm:flex-row sm:items-center w-full md:w-auto">
-    
-    {/* SEARCH BAR */}
-    <div className="relative w-full md:w-72">
-      <HiOutlineSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-      <input
-        type="text"
-        placeholder="Search name, code..."
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-        className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 ring-slate-800/5 outline-none transition-all text-sm"
-      />
+    <div className="p-4 md:p-6 min-h-[calc(100vh-250px)] animate-in fade-in duration-500">
+  {/* 1. COMPACT HEADER */}
+  <div className="flex flex-col gap-4 mb-8 md:flex-row md:items-center md:justify-between">
+    <div>
+      <h2 className="text-xl font-black text-slate-800 tracking-tight">Academic Courses</h2>
+      <p className="text-gray-400 text-xs">Manage registered modules and assignments</p>
     </div>
 
-    {/* BUTTON GROUP */}
-    <div className="flex items-center justify-between gap-2 sm:justify-end">
-      {/* ARCHIVE TOGGLE */}
-      <button
-        onClick={() => setShowDeleted(!showDeleted)}
-        className={`flex flex-1 sm:flex-none items-center justify-center gap-2 px-4 py-2 rounded-full text-[10px] md:text-xs font-bold transition-all border ${
-          showDeleted
-            ? "bg-red-50 text-red-600 border-red-100"
-            : "bg-slate-50 text-slate-600 border-slate-100 hover:bg-slate-100"
-        }`}
-      >
-        <span className="whitespace-nowrap">
-          {showDeleted ? "Hide Archived" : "Show Archived"}
-        </span>
-        <div
-          className={`w-2 h-2 rounded-full shrink-0 ${
-            showDeleted ? "bg-red-500" : "bg-gray-300"
-          }`}
-        ></div>
-      </button>
-
-      {/* REFRESH BUTTON */}
-      <button
-        onClick={fetchCourses}
-        className="p-2.5 bg-gray-50 border border-gray-100 sm:border-none sm:bg-transparent hover:bg-gray-100 rounded-full transition-colors text-slate-600"
-      >
-        <HiOutlineRefresh
-          className={`text-xl ${loading ? "animate-spin" : ""}`}
+    <div className="flex flex-col gap-3 sm:flex-row sm:items-center w-full md:w-auto">
+      {/* COMPACT SEARCH */}
+      <div className="relative w-full md:w-64 group">
+        <HiOutlineSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#00796b] text-sm" />
+        <input
+          type="text"
+          placeholder="Search..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="w-full pl-9 pr-3 py-2 bg-white border border-gray-100 rounded-xl focus:ring-2 ring-teal-500/5 focus:border-[#00796b] outline-none transition-all text-xs shadow-sm"
         />
-      </button>
+      </div>
+
+      <div className="flex items-center gap-2">
+        <button
+          onClick={() => setShowDeleted(!showDeleted)}
+          className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border ${
+            showDeleted
+              ? "bg-amber-50 text-amber-700 border-amber-100"
+              : "bg-teal-50 text-[#00796b] border-teal-100 hover:bg-teal-100/50"
+          }`}
+        >
+          {showDeleted ? "Active Only" : "Archived"}
+        </button>
+
+        <button
+          onClick={fetchCourses}
+          className="p-2 bg-white border border-gray-100 hover:text-[#00796b] rounded-xl transition-all shadow-sm active:scale-95"
+        >
+          <HiOutlineRefresh className={`text-lg ${loading ? "animate-spin" : ""}`} />
+        </button>
+      </div>
     </div>
   </div>
-</div>
 
-      {loading ? (
-        <div className="flex justify-center items-center h-64">
-          <div className="w-10 h-10 border-4 border-slate-200 border-t-slate-800 rounded-full animate-spin" />
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredCourses.map((course) => {
-            const isDeleted = course.deleted_at !== null;
+  {/* 2. COMPACT 4-COLUMN GRID */}
+  {loading ? (
+    <div className="flex justify-center items-center h-48">
+      <div className="w-8 h-8 border-3 border-teal-50 border-t-[#00796b] rounded-full animate-spin" />
+    </div>
+  ) : (
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+      {filteredCourses.map((course) => {
+        const isDeleted = course.deleted_at !== null;
 
-            return (
-              <div
-                key={course.id}
-                className={`relative border rounded-3xl p-6 transition-all ${
-                  isDeleted
-                    ? "bg-red-50/30 border-red-100 grayscale-[0.5] opacity-80"
-                    : "bg-white border-gray-100 shadow-xl shadow-slate-200/40 hover:shadow-slate-200/60"
-                }`}
-              >
-                {/* Deleted Badge */}
-                {isDeleted && (
-                  <div className="absolute -top-3 right-6 bg-red-500 text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-tighter">
-                    Archived / Deleted
-                  </div>
-                )}
-
-                <div className="flex justify-between items-start mb-4">
-                  <div
-                    className={`w-12 h-12 rounded-xl flex items-center justify-center ${
-                      isDeleted
-                        ? "bg-red-200 text-red-600"
-                        : "bg-slate-800 text-white"
-                    }`}
-                  >
-                    <HiOutlineBookOpen className="text-2xl" />
-                  </div>
-                  <span className="bg-slate-50 text-slate-600 px-3 py-1 rounded-lg text-xs font-bold uppercase border border-slate-100">
-                    {course.code}
-                  </span>
-                </div>
-
-                <h3
-                  className={`text-lg font-bold mb-1 ${isDeleted ? "text-red-900" : "text-slate-800"}`}
-                >
-                  {course.name}
-                </h3>
-                <p className="text-gray-400 text-sm line-clamp-2 mb-4">
-                  {course.description || "No description provided."}
-                </p>
-
-                {/* Action Buttons - Hidden or changed for deleted courses */}
-                {/* Inside course map */}
-                {isDeleted ? (
-                  <button
-                    onClick={() => openRestoreModal(course.id)}
-                    className="w-full bg-white hover:bg-green-50 text-green-600 py-2 rounded-xl text-xs font-bold transition-all border border-green-100"
-                  >
-                    Restore Course
-                  </button>
-                ) : (
-                  <div className="flex justify-between gap-4 items-center mb-4">
-                    <button
-                      onClick={() => handleUpdate(course)}
-                      className="ml-2 flex-1 bg-blue-50 hover:bg-blue-100 text-blue-600 py-2 rounded-xl text-xs font-bold transition-all border border-blue-100"
-                    >
-                      Edit Course
-                    </button>
-                    <button
-                      onClick={() => openDeleteModal(course.id)}
-                      className="flex-1 bg-red-50 hover:bg-red-100 text-red-500 py-2 rounded-xl text-xs font-bold transition-all border border-red-100"
-                    >
-                      Delete
-                    </button>
-                  </div>
-                )}
-
-                {/* Teacher Footer */}
-                <div className="pt-4 border-t border-gray-100 flex items-center gap-3">
-                  <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center">
-                    <HiOutlineUser className="text-gray-400" />
-                  </div>
-                  <div className="flex flex-col">
-                    <span className="text-xs font-bold text-slate-700">
-                      {course.teacher_name || "Unassigned"}
-                    </span>
-                    <span className="text-[10px] text-gray-400">
-                      {course.teacher_email}
-                    </span>
-                  </div>
-                </div>
+        return (
+          <div
+            key={course.id}
+            className={`relative border rounded-[1.5rem] p-4 transition-all duration-300 flex flex-col justify-between ${
+              isDeleted
+                ? "bg-gray-50 border-gray-200 opacity-70"
+                : "bg-white border-gray-50 shadow-sm hover:shadow-md hover:-translate-y-1"
+            }`}
+          >
+            {/* COMPACT BADGE */}
+            <div className="flex justify-between items-start mb-3">
+              <div className={`w-9 h-9 rounded-lg flex items-center justify-center text-lg ${
+                isDeleted ? "bg-gray-200 text-gray-500" : "bg-teal-50 text-[#00796b]"
+              }`}>
+                <HiOutlineBookOpen />
               </div>
-            );
-          })}
-        </div>
-      )}
+              <span className="text-[9px] font-black uppercase tracking-tighter text-teal-600 bg-teal-50/50 px-2 py-0.5 rounded-md border border-teal-100/50">
+                {course.code}
+              </span>
+            </div>
 
-      {!loading && courses.length === 0 && (
-        <div className="text-center py-20 bg-gray-50 rounded-3xl border-2 border-dashed border-gray-200">
-          <p className="text-gray-400 font-medium">
-            No courses found. Start by adding a new one.
-          </p>
-        </div>
-      )}
+            {/* CONTENT */}
+            <div className="mb-4">
+              <h3 className={`text-sm font-black mb-1 truncate ${isDeleted ? "text-gray-500" : "text-slate-800"}`}>
+                {course.name}
+              </h3>
+              <p className="text-gray-400 text-[11px] leading-snug line-clamp-2 h-8">
+                {course.description || "No module description available for this course entry."}
+              </p>
+            </div>
 
+            {/* TEACHER MINIMIZED */}
+            <div className="flex items-center gap-2 mb-4 p-2 bg-gray-50/50 rounded-xl border border-gray-100/50">
+              <div className="w-6 h-6 bg-white rounded-full flex items-center justify-center text-[10px] text-gray-400 border border-gray-100">
+                <HiOutlineUser />
+              </div>
+              <div className="flex flex-col overflow-hidden">
+                <span className="text-[10px] font-black text-slate-700 truncate uppercase tracking-tighter">
+                  {course.teacher_name || "Lead Pending"}
+                </span>
+              </div>
+            </div>
+
+            {/* COMPACT ACTIONS */}
+            <div className="flex gap-2">
+              {isDeleted ? (
+                <button
+                  onClick={() => openRestoreModal(course.id)}
+                  className="w-full bg-[#00796b] text-white py-2 rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-[#004d40] transition-all"
+                >
+                  Restore
+                </button>
+              ) : (
+                <>
+                  <button
+                    onClick={() => handleUpdate(course)}
+                    className="flex-1 bg-white hover:bg-teal-50 text-[#00796b] py-2 rounded-lg text-[9px] font-black uppercase border border-teal-50 transition-all"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => openDeleteModal(course.id)}
+                    className="flex-1 bg-white hover:bg-red-50 text-red-500 py-2 rounded-lg text-[9px] font-black uppercase border border-red-50 transition-all"
+                  >
+                    Archive
+                  </button>
+                </>
+              )}
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  )}
       {/* SIMPLE EDIT MODAL */}
       {isEditModalOpen && editingCourse && (
         <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-100 flex items-center justify-center p-4">

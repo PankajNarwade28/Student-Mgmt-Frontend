@@ -89,114 +89,104 @@ const RequestsPage = () => {
 
   if (loading)
     return (
-      <div className="p-10 text-center font-bold">Fetching Requests...</div>
+      <div className="p-4 text-center font-bold">Fetching Requests...</div>
     );
 
   return (
-    <div className="p-6 bg-gray-50 min-h-screen">
-      <div className="max-w-6xl mx-auto">
-        <header className="mb-8">
-          <h1 className="text-2xl font-bold text-gray-800 tracking-tight">
-            Enrollment Approvals
-          </h1>
-          <p className="text-gray-500 text-sm">
-            Review pending student course entries.
-          </p>
-        </header>
+    <div className="p-2 md:p-2 bg-gray-50/50 min-h-screen ">
+  <div className="mx-auto">
+    <header className="mb-4">
+      <nav className="text-[10px] font-black text-teal-600 uppercase tracking-[0.2em] mb-2">Internal Requests</nav>
+      <h1 className="text-3xl font-black text-slate-800 tracking-tight">Enrollment Approvals</h1>
+      <p className="text-slate-400 text-sm font-medium">System review for pending student course entries.</p>
+    </header>
 
-        <div className="bg-white shadow-sm rounded-2xl overflow-hidden border border-gray-100">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50/50">
-              <tr className="text-left text-xs font-bold text-gray-400 uppercase tracking-widest">
-                <th className="px-6 py-4">Student</th>
-                <th className="px-6 py-4">Course</th>
-                <th className="px-6 py-4">Requested On</th>
-                <th className="px-6 py-4 text-center">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-100">
-              {requests.length > 0 ? (
-                requests.map((req) => (
-                  <tr
-                    key={req.id}
-                    className="hover:bg-gray-50/50 transition-all"
+    <div className="bg-white shadow-xl shadow-teal-900/5 rounded-[2.5rem] overflow-hidden border border-slate-50">
+      <table className="min-w-full divide-y divide-slate-50">
+        <thead className="bg-gray-50/50">
+          <tr className="text-left text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">
+            <th className="px-6 py-4">Student Information</th>
+            <th className="px-6 py-4">Course Target</th>
+            <th className="px-6 py-4">Request Timeline</th>
+            <th className="px-6 py-4 text-center">System Action</th>
+          </tr>
+        </thead>
+        <tbody className="divide-y divide-slate-50">
+          {requests.length > 0 ? (
+            requests.map((req) => (
+              <tr key={req.id} className="hover:bg-teal-50/30 transition-all group">
+                <td className="px-4 py-4">
+                  <div className="font-bold text-slate-800 tracking-tight text-base group-hover:text-teal-600 transition-colors">
+                    {req.student_name}
+                  </div>
+                  <div className="text-[10px] font-black text-slate-300 uppercase tracking-widest">
+                    {req.student_email}
+                  </div>
+                </td>
+                <td className="px-4 py-4">
+                  <div className="text-[10px] font-black text-[#00796b] bg-teal-50 px-4 py-1.5 rounded-full inline-block border border-teal-100 uppercase tracking-widest">
+                    {req.course_name}
+                  </div>
+                </td>
+                <td className="px-4 py-4 text-[11px] text-slate-400 font-black uppercase">
+                  {new Date(req.requested_at).toLocaleDateString()}
+                </td>
+                <td className="px-4 py-4 flex justify-center gap-3">
+                  <button
+                    onClick={() => handleActionRequest(req, "ACCEPT")}
+                    className="flex items-center gap-2 px-5 py-2.5 bg-emerald-50 text-emerald-600 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-emerald-600 hover:text-white transition-all shadow-sm active:scale-95"
                   >
-                    <td className="px-6 py-4">
-                      <div className="font-bold text-gray-800 tracking-tight">
-                        {req.student_name}
-                      </div>
-                      <div className="text-[10px] font-mono text-gray-400">
-                        {req.student_email}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="text-xs font-bold text-indigo-600 bg-indigo-50 px-3 py-1.5 rounded-xl inline-block">
-                        {req.course_name}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 text-xs text-gray-500 font-semibold">
-                      {new Date(req.requested_at).toLocaleDateString()}
-                    </td>
-                    <td className="px-6 py-4 flex justify-center gap-3">
-                      <button
-                        onClick={() => handleActionRequest(req, "ACCEPT")}
-                        className="inline-flex items-center gap-2 px-4 py-2 bg-green-50 text-green-600 rounded-xl text-xs font-bold hover:bg-green-600 hover:text-white transition-all shadow-sm"
-                      >
-                        <HiOutlineCheck className="w-4 h-4" /> Accept
-                      </button>
-                      <button
-                        onClick={() => handleActionRequest(req, "REJECT")}
-                        className="inline-flex items-center gap-2 px-4 py-2 bg-red-50 text-red-600 rounded-xl text-xs font-bold hover:bg-red-600 hover:text-white transition-all shadow-sm"
-                      >
-                        <HiOutlineX className="w-4 h-4" /> Reject
-                      </button>
-                    </td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan={4} className="py-24 text-center">
-                    <div className="flex flex-col items-center opacity-40">
-                      <HiOutlineInbox className="w-12 h-12 mb-2" />
-                      <p className="font-bold text-gray-800">
-                        No Pending Requests
-                      </p>
-                    </div>
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-        {/* Pagination Navigation */}
-        <div className="mt-6 flex items-center justify-between px-2">
-          <div className="text-sm text-gray-500">
-            Showing{" "}
-            <span className="font-bold text-gray-900">{requests.length}</span>{" "}
-            requests on page{" "}
-            <span className="font-bold text-gray-900">{currentPage}</span>
-          </div>
+                    <HiOutlineCheck size={14} /> Accept
+                  </button>
+                  <button
+                    onClick={() => handleActionRequest(req, "REJECT")}
+                    className="flex items-center gap-2 px-5 py-2.5 bg-red-50 text-red-600 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-red-600 hover:text-white transition-all shadow-sm active:scale-95"
+                  >
+                    <HiOutlineX size={14} /> Reject
+                  </button>
+                </td>
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td colSpan={4} className="py-32 text-center">
+                <div className="flex flex-col items-center">
+                  <div className="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center text-gray-200 mb-4">
+                    <HiOutlineInbox size={40} />
+                  </div>
+                  <p className="font-black text-slate-300 uppercase tracking-[0.2em] text-xs">No Pending System Requests</p>
+                </div>
+              </td>
+            </tr>
+          )}
+        </tbody>
+      </table>
+    </div>
 
-          <div className="flex gap-2">
-            <button
-              disabled={currentPage === 1 || loading}
-              onClick={() => setCurrentPage((p) => p - 1)}
-              className="px-4 py-2 text-xs font-bold text-gray-600 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 disabled:opacity-50 transition-all shadow-sm"
-            >
-              Previous
-            </button>
-
-            <button
-              disabled={currentPage === totalPages || loading}
-              onClick={() => setCurrentPage((p) => p + 1)}
-              className="px-4 py-2 text-xs font-bold text-white bg-indigo-600 rounded-xl hover:bg-indigo-700 disabled:opacity-50 transition-all shadow-md shadow-indigo-100"
-            >
-              Next
-            </button>
-          </div>
-        </div>
+    {/* PAGINATION NAVIGATION */}
+    <div className="mt-4 flex items-center justify-between px-4">
+      <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+        Records: <span className="text-slate-800">{requests.length}</span> / Page <span className="text-slate-800">{currentPage}</span>
       </div>
 
+      <div className="flex gap-3">
+        <button
+          disabled={currentPage === 1 || loading}
+          onClick={() => setCurrentPage((p) => p - 1)}
+          className="px-4 py-2 text-[10px] font-black uppercase tracking-widest text-slate-500 bg-white border border-slate-100 rounded-2xl hover:bg-gray-50 disabled:opacity-30 transition-all shadow-sm"
+        >
+          Previous
+        </button>
+        <button
+          disabled={currentPage === totalPages || loading}
+          onClick={() => setCurrentPage((p) => p + 1)}
+          className="px-4 py-2 text-[10px] font-black uppercase tracking-widest text-white bg-teal-600 rounded-2xl hover:bg-teal-700 disabled:opacity-30 transition-all shadow-xl shadow-teal-100"
+        >
+          Next
+        </button>
+      </div>
+    </div>
+  </div> 
       {isModalOpen && modalConfig && (
         <ConfirmationModal
           isOpen={isModalOpen}

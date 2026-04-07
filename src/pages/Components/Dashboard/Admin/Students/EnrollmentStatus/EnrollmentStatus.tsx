@@ -111,133 +111,149 @@ const EnrollmentStatus: React.FC = () => {
   );
 
   return (
-    <div className="p-4 md:p-8 max-w-6xl mx-auto space-y-6">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-slate-900 flex items-center gap-2">
-            <HiOutlineShieldCheck className="text-indigo-600" /> Enrollment
-            Status
-          </h1>
-          <p className="text-sm text-slate-500">
-            Manage student enrollment lifecycle and states.
-          </p>
-        </div>
-
-        <div className="flex flex-col sm:flex-row gap-3">
-          <div className="relative w-full md:w-64">
-            <HiOutlineBookOpen className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-            <select
-              className="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl outline-none focus:ring-2 ring-indigo-500/20 text-sm font-medium text-slate-700 appearance-none shadow-sm"
-              value={selectedCourseId}
-              onChange={(e) => setSelectedCourseId(e.target.value)}
-            >
-              <option value="">Select Course...</option>
-              {courses.map((c) => (
-                <option
-                  key={c.id}
-                  value={c.id}
-                >{`${c.code} - ${c.name}`}</option>
-              ))}
-            </select>
+    <div className="p-2 md:p-4  mx-auto">
+      <div className="p-2 md:p-4 mx-auto   animate-in fade-in duration-500">
+        {/* 1. HEADER & CONTROLS */}
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+          <div className="space-y-1">
+            <nav className="text-[10px] font-black text-[#00796b] uppercase tracking-[0.2em] mb-2">
+              Student Lifecycle
+            </nav>
+            <h1 className="text-2xl font-black text-slate-800 flex items-center gap-3 tracking-tight">
+              <HiOutlineShieldCheck className="text-[#00796b]" />
+              Enrollment Status
+            </h1>
+            <p className="text-sm text-slate-400 font-medium">
+              Manage student enrollment lifecycle and states.
+            </p>
           </div>
 
-          <div className="relative w-full md:w-48">
-            <HiOutlineFilter className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-            <select
-              className="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl outline-none focus:ring-2 ring-indigo-500/20 text-sm font-medium text-slate-700 appearance-none shadow-sm"
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-            >
-              <option value="ALL">All Statuses</option>
-              <option value="Active">Active</option>
-              <option value="Completed">Completed</option>
-              <option value="Dropped">Dropped</option>
-            </select>
+          <div className="flex flex-col sm:flex-row gap-4">
+            {/* Course Selector */}
+            <div className="relative group w-full md:w-64">
+              <HiOutlineBookOpen className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-[#00796b] transition-colors" />
+              <select
+                className="w-full pl-12 pr-4 py-3 bg-white border border-slate-100 rounded-2xl outline-none focus:ring-4 ring-teal-500/5 focus:border-[#00796b] text-xs font-bold text-slate-700 appearance-none shadow-sm transition-all"
+                value={selectedCourseId}
+                onChange={(e) => setSelectedCourseId(e.target.value)}
+              >
+                <option value="">Select Course...</option>
+                {courses.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {`${c.code} - ${c.name}`}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Filter Selector */}
+            <div className="relative group w-full md:w-48">
+              <HiOutlineFilter className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-[#00796b] transition-colors" />
+              <select
+                className="w-full pl-12 pr-4 py-3 bg-white border border-slate-100 rounded-2xl outline-none focus:ring-4 ring-teal-500/5 focus:border-[#00796b] text-xs font-bold text-slate-700 appearance-none shadow-sm transition-all"
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+              >
+                <option value="ALL">All Statuses</option>
+                <option value="Active">Active</option>
+                <option value="Completed">Completed</option>
+                <option value="Dropped">Dropped</option>
+              </select>
+            </div>
           </div>
         </div>
-      </div>
 
-      {!selectedCourseId ? (
-        <div className="text-center py-20 bg-slate-50 rounded-3xl border-2 border-dashed border-slate-200">
-          <p className="text-slate-400 font-medium">
-            Please select a course to manage enrollments.
-          </p>
-        </div>
-      ) : (
-        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
-          <table className="w-full text-left">
-            <thead className="bg-slate-50 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-              <tr>
-                <th className="px-6 py-4">Student</th>
-                <th className="px-6 py-4">Current Status</th>
-                <th className="px-6 py-4 text-right">Update Status</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-50">
-              {loading ? (
-                <tr>
-                  <td
-                    colSpan={3}
-                    className="text-center py-10 animate-pulse text-slate-400"
-                  >
-                    Loading students...
-                  </td>
+        {/* 2. MAIN CONTENT AREA */}
+        {!selectedCourseId ? (
+          <div className="text-center py-24 bg-white rounded-[3rem] border-4 border-dashed border-slate-50">
+            <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4">
+              <HiOutlineBookOpen className="text-slate-300 text-2xl" />
+            </div>
+            <p className="text-slate-400 font-black text-xs uppercase tracking-[0.2em]">
+              Please select a course to manage enrollments
+            </p>
+          </div>
+        ) : (
+          <div className="bg-white rounded-[2.5rem] border border-slate-50 shadow-xl shadow-teal-900/5 overflow-hidden">
+            <table className="w-full text-left">
+              <thead>
+                <tr className="bg-gray-50/50 text-[10px] font-black text-slate-400 uppercase tracking-[0.15em] border-b border-slate-50">
+                  <th className="px-8 py-5">Student Identity</th>
+                  <th className="px-8 py-5">Current State</th>
+                  <th className="px-8 py-5 text-right">Operational Update</th>
                 </tr>
-              ) : filteredStudents.length === 0 ? (
-                <tr>
-                  <td colSpan={3} className="text-center py-10 text-slate-400">
-                    No students found with the selected status.
-                  </td>
-                </tr>
-              ) : (
-                filteredStudents.map((student) => (
-                  <tr
-                    key={student.student_id}
-                    className="hover:bg-slate-50/50 transition-colors"
-                  >
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-3">
-                        <div className="p-2 bg-slate-100 rounded-full text-slate-400">
-                          <HiOutlineUserCircle size={20} />
-                        </div>
-                        <span className="font-bold text-slate-700">
-                          {student.student_name}
+              </thead>
+              <tbody className="divide-y divide-slate-50">
+                {loading ? (
+                  <tr>
+                    <td colSpan={3} className="text-center py-20">
+                      <div className="flex flex-col items-center gap-3">
+                        <div className="w-10 h-10 border-4 border-teal-50 border-t-[#00796b] rounded-full animate-spin" />
+                        <span className="text-[10px] font-black text-[#00796b] uppercase tracking-widest">
+                          Syncing Records...
                         </span>
                       </div>
                     </td>
-                    <td className="px-6 py-4">
-                      <span
-                        className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider ${
-                          student.status === "Active"
-                            ? "bg-emerald-50 text-emerald-600"
-                            : student.status === "Dropped"
-                              ? "bg-red-50 text-red-600"
-                              : "bg-amber-50 text-amber-600"
-                        }`}
-                      >
-                        {student.status}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 text-right">
-                      <select
-                        className="text-xs font-bold bg-slate-100 border-none rounded-lg px-2 py-1 outline-none focus:ring-2 ring-indigo-500 cursor-pointer"
-                        value={student.status}
-                        onChange={(e) =>
-                          handleStatusChange(student, e.target.value)
-                        }
-                      >
-                        <option value="Active">Active</option>
-                        <option value="Dropped">Dropped</option>
-                        <option value="Completed">Completed</option>
-                      </select>
+                  </tr>
+                ) : filteredStudents.length === 0 ? (
+                  <tr>
+                    <td
+                      colSpan={3}
+                      className="text-center py-20 text-slate-400 font-bold text-xs uppercase tracking-widest"
+                    >
+                      No matching student records found.
                     </td>
                   </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
-      )}
+                ) : (
+                  filteredStudents.map((student) => (
+                    <tr
+                      key={student.student_id}
+                      className="hover:bg-teal-50/30 transition-all group"
+                    >
+                      <td className="px-8 py-5">
+                        <div className="flex items-center gap-3">
+                          <div className="p-2.5 bg-slate-100 rounded-xl text-slate-400 group-hover:bg-white group-hover:text-[#00796b] transition-all shadow-sm">
+                            <HiOutlineUserCircle size={22} />
+                          </div>
+                          <span className="font-bold text-slate-700 tracking-tight">
+                            {student.student_name}
+                          </span>
+                        </div>
+                      </td>
+                      <td className="px-8 py-5">
+                        <span
+                          className={`inline-flex items-center px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-tighter border shadow-sm ${
+                            student.status === "Active"
+                              ? "bg-emerald-50 text-emerald-600 border-emerald-100"
+                              : student.status === "Dropped"
+                                ? "bg-red-50 text-red-600 border-red-100"
+                                : "bg-amber-50 text-amber-600 border-amber-100"
+                          }`}
+                        >
+                          {student.status}
+                        </span>
+                      </td>
+                      <td className="px-8 py-5 text-right">
+                        <select
+                          className="text-[10px] font-black uppercase tracking-widest bg-gray-50 border-none rounded-xl px-4 py-2 outline-none focus:ring-4 ring-teal-500/10 cursor-pointer text-slate-600 hover:text-[#00796b] transition-all"
+                          value={student.status}
+                          onChange={(e) =>
+                            handleStatusChange(student, e.target.value)
+                          }
+                        >
+                          <option value="Active">Active</option>
+                          <option value="Dropped">Dropped</option>
+                          <option value="Completed">Completed</option>
+                        </select>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
 
       {isModalOpen && modalConfig && (
         <ConfirmationModal
