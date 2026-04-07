@@ -7,7 +7,7 @@ import {
   HiOutlineExclamationCircle,
   HiOutlineReceiptTax,
 } from "react-icons/hi";
-import { HiArrowPath } from "react-icons/hi2";
+import { HiArrowPath, HiOutlineShieldCheck } from "react-icons/hi2";
 import api from "../../../../api/axiosInstance"; // Adjust path to your axios instance
 
 interface FeeData {
@@ -183,111 +183,133 @@ const FeesSection: React.FC = () => {
   }
 
   return (
-    <div className="max-w-5xl mx-auto p-4 md:p-6 space-y-8">
-      {/* 1. Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-800">Course Payments</h1>
-          <p className="text-gray-500 text-sm">
-            Manage your tuition and view enrollment locks.
-          </p>
-        </div>
-      </div>
-
-      {/* 2. Dynamic Course Cards */}
-      <div className="grid grid-cols-1 gap-4">
-        {fees.length === 0 ? (
-          <div className="bg-gray-50 border-2 border-dashed border-gray-200 rounded-2xl p-12 text-center">
-            <HiOutlineExclamationCircle className="mx-auto text-4xl text-gray-400 mb-2" />
-            <p className="text-gray-500">
-              No active enrollments found with fees.
-            </p>
-          </div>
-        ) : (
-          fees.map((item) => (
-            <div
-              key={item.enrollment_id}
-              className={`bg-white p-6 rounded-2xl border shadow-sm transition-all flex flex-col md:flex-row justify-between items-center gap-4 ${
-                item.payment_status === "Paid"
-                  ? "border-green-100"
-                  : "border-gray-100"
-              }`}
-            >
-              <div className="flex items-center gap-4">
-                <div
-                  className={`p-3 rounded-xl ${item.payment_status === "Paid" ? "bg-green-50 text-green-600" : "bg-indigo-50 text-indigo-600"}`}
-                >
-                  <HiOutlineReceiptTax className="text-2xl" />
-                </div>
-                <div>
-                  <h3 className="font-bold text-gray-800">
-                    {item.course_name}
-                  </h3>
-                  <p className="text-sm text-gray-500 font-medium">
-                    Total Fee: ₹
-                    {parseFloat(item.total_fee).toLocaleString("en-IN")}
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-3 w-full md:w-auto">
-                {item.payment_status === "Paid" ? (
-                  <div className="flex items-center gap-2 bg-green-50 text-green-700 px-4 py-2 rounded-lg font-bold text-sm">
-                    <HiOutlineCheckCircle className="text-lg" />
-                    Paid & Locked
-                  </div>
-                ) : (
-                  <button
-                    onClick={() =>
-                      handlePayment(item.enrollment_id, item.total_fee)
-                    }
-                    disabled={processingId === item.enrollment_id}
-                    className="w-full md:w-auto flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-lg font-bold transition-all disabled:opacity-50"
-                  >
-                    {processingId === item.enrollment_id ? (
-                      <HiArrowPath className="animate-spin text-xl" />
-                    ) : (
-                      <>
-                        <HiOutlineCreditCard className="text-lg" />
-                        Pay Now
-                      </>
-                    )}
-                  </button>
-                )}
-
-                {item.payment_status === "Paid" && (
-                  <button 
-    onClick={() => handleDownloadReceipt(item.razorpay_payment_id)} // Ensure your API returns this ID
-    className="p-2 text-gray-400 hover:text-indigo-600 transition-colors bg-gray-50 rounded-lg" 
-    title="Download Receipt"
-  >
-    <HiOutlineDownload className="text-xl" />
-  </button>
-                )}
-              </div>
-            </div>
-          ))
-        )}
-      </div>
-
-      {/* 3. Global Information Notice */}
-      <div className="bg-indigo-900 rounded-2xl p-6 text-white flex items-start gap-4 relative overflow-hidden">
-        <HiOutlineExclamationCircle className="text-3xl shrink-0" />
-        <div className="z-10">
-          <h3 className="text-lg font-bold">Important Policy</h3>
-          <p className="text-indigo-200 text-sm mt-1 leading-relaxed">
-            Once the fee for a specific course is paid, your enrollment is
-            permanently locked. You will not be able to change or drop the
-            subject until the academic term concludes.
-          </p>
-        </div>
-        <HiOutlineReceiptTax className="absolute right-[-20px] top-[-20px] text-9xl opacity-5 rotate-12" />
-      </div>
-
-      <p className="text-center text-[10px] text-gray-400 uppercase tracking-widest font-bold">
-        Secure Financial Dashboard • University Management System
+    <div className=" mx-auto p-4 md:p-6 space-y-10  ">
+  {/* 1. COMPACT HEADER */}
+  <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b border-slate-100">
+    <div className="space-y-1">
+      <nav className="text-[10px] font-black text-[#00796b] uppercase tracking-[0.2em] mb-2">
+        Financial Obligations
+      </nav>
+      <h1 className="text-2xl md:text-4xl font-black text-slate-800 tracking-tighter flex items-center gap-3">
+        <HiOutlineReceiptTax className="text-[#00796b]" /> Course Payments
+      </h1>
+      <p className="text-slate-400 text-sm font-medium">
+        Audit your tuition ledger and finalize enrollment locks.
       </p>
     </div>
+  </div>
+
+  {/* 2. OPERATIONAL FEE REGISTRY */}
+  <div className="space-y-4">
+    <div className="flex items-center gap-4 mb-6">
+       <h2 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] whitespace-nowrap">
+          Active Fee Ledger
+       </h2>
+       <div className="h-[1px] w-full bg-slate-100"></div>
+    </div>
+
+    {fees.length === 0 ? (
+      <div className="bg-white border-4 border-dashed border-slate-50 rounded-[3rem] p-20 text-center">
+        <HiOutlineExclamationCircle className="mx-auto text-5xl text-slate-200 mb-2" />
+        <p className="text-slate-300 font-black text-xs uppercase tracking-[0.2em]">
+          No pending financial records detected.
+        </p>
+      </div>
+    ) : (
+      fees.map((item) => (
+        <div
+          key={item.enrollment_id}
+          className={`group bg-white p-5 rounded-[2rem] border transition-all flex flex-col md:flex-row justify-between items-center gap-6 shadow-xl shadow-teal-900/5 hover:shadow-teal-900/10 ${
+            item.payment_status === "Paid"
+              ? "border-emerald-100/50"
+              : "border-slate-100 hover:border-teal-200"
+          }`}
+        >
+          <div className="flex items-center gap-5 w-full md:w-auto">
+            <div
+              className={`p-2 rounded-2xl shadow-inner transition-colors ${
+                item.payment_status === "Paid" 
+                ? "bg-emerald-50 text-emerald-600" 
+                : "bg-teal-50 text-[#00796b]"
+              }`}
+            >
+              <HiOutlineReceiptTax size={28} />
+            </div>
+            <div>
+              <h3 className="font-black text-slate-800 text-lg tracking-tight group-hover:text-[#00796b] transition-colors">
+                {item.course_name}
+              </h3>
+              <p className="text-[11px] font-black text-slate-400 uppercase tracking-widest mt-1">
+                Valuation: <span className="text-slate-600">₹{parseFloat(item.total_fee).toLocaleString("en-IN")}</span>
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3 w-full md:w-auto">
+            {item.payment_status === "Paid" ? (
+              <div className="flex-1 md:flex-none flex items-center justify-center gap-2 bg-emerald-50 text-emerald-700 border border-emerald-100 px-6 py-3 rounded-xl font-black text-[10px] uppercase tracking-widest shadow-sm">
+                <HiOutlineCheckCircle size={16} />
+                Registry Locked
+              </div>
+            ) : (
+              <button
+                onClick={() => handlePayment(item.enrollment_id, item.total_fee)}
+                disabled={processingId === item.enrollment_id}
+                className="w-full md:w-auto flex items-center justify-center gap-3 bg-[#00796b] hover:bg-[#004d40] text-white px-8 py-3.5 rounded-xl font-black text-[10px] uppercase tracking-[0.2em] transition-all shadow-xl shadow-teal-100 active:scale-95 disabled:opacity-50"
+              >
+                {processingId === item.enrollment_id ? (
+                  <HiArrowPath className="animate-spin text-lg" />
+                ) : (
+                  <>
+                    <HiOutlineCreditCard size={18} className="text-teal-300" />
+                    Authorize Payment
+                  </>
+                )}
+              </button>
+            )}
+
+            {item.payment_status === "Paid" && (
+              <button 
+                onClick={() => handleDownloadReceipt(item.razorpay_payment_id)}
+                className="p-3.5 text-slate-400 hover:text-[#00796b] hover:bg-teal-50 border border-slate-100 rounded-xl transition-all shadow-sm bg-white active:scale-90" 
+                title="Download Audit Receipt"
+              >
+                <HiOutlineDownload size={22} />
+              </button>
+            )}
+          </div>
+        </div>
+      ))
+    )}
+  </div>
+
+  {/* 3. SYSTEM POLICY DISCLOSURE */}
+  <div className="bg-[#004d40] rounded-[2.5rem] p-10 text-white flex flex-col md:flex-row items-start md:items-center gap-8 relative overflow-hidden shadow-2xl shadow-teal-900/20">
+    {/* Abstract Background Detail */}
+    <div className="absolute -top-10 -right-10 w-40 h-40 bg-white/5 rounded-full blur-3xl" />
+    
+    <div className="p-4 bg-white/10 rounded-[1.5rem] backdrop-blur-md border border-white/10">
+        <HiOutlineShieldCheck className="text-4xl text-teal-300" />
+    </div>
+
+    <div className="z-10 flex-1">
+      <h3 className="text-xs font-black uppercase tracking-[0.3em] text-teal-400 mb-2">Operational Protocol</h3>
+      <p className="text-teal-50 text-sm leading-relaxed font-medium">
+        Successful transaction processing triggers an <span className="text-white font-black">Enrollment Lock</span>. 
+        Module state becomes immutable; adjustments or curriculum withdrawal will be restricted until the 
+        conclusion of the current academic audit cycle.
+      </p>
+    </div>
+    
+    <HiOutlineReceiptTax className="absolute right-[-30px] bottom-[-30px] text-[12rem] opacity-5 rotate-12 pointer-events-none" />
+  </div>
+
+  <div className="pt-4 flex flex-col items-center gap-2">
+    <p className="text-[9px] text-slate-300 font-black uppercase tracking-[0.4em]">
+      Secure Encryption Active • Unified Financial Hub v4.2.0
+    </p>
+  </div>
+</div>
   );
 };
 

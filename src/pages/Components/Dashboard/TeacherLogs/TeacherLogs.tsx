@@ -62,103 +62,111 @@ const Logs: React.FC = () => {
   ];
 
   return (
-    <div className="p-6 max-w-5xl mx-auto space-y-8 animate-in fade-in duration-500">
-      {/* Header */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <div>
-          <h1 className="text-3xl font-bold text-slate-900 flex items-center gap-3">
-            <HiOutlineCalendar className="text-indigo-600" /> Academic Logs
-          </h1>
-          <p className="text-slate-500">Daily schedule and session logs for Modern College of Engineering</p>
+    <div className="p-4 md:p-8  mx-auto space-y-8 animate-in fade-in duration-500">
+  {/* 1. COMPACT HEADER & VIEW TOGGLE */}
+  <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+    <div className="space-y-1">
+      <nav className="text-[10px] font-black text-[#00796b] uppercase tracking-[0.2em] mb-2">Institutional Ledger</nav>
+      <h1 className="text-2xl md:text-3xl font-black text-slate-800 tracking-tight flex items-center gap-3">
+        <HiOutlineCalendar className="text-[#00796b]" /> Academic Logs
+      </h1>
+      <p className="text-slate-400 text-sm font-medium">Daily operational schedule for Modern College of Engineering</p>
+    </div>
+
+    <div className="flex bg-slate-100/80 p-1.5 rounded-2xl border border-slate-200 shadow-inner">
+      <button 
+        onClick={() => setViewAs("Student")}
+        className={`px-5 py-2 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all ${viewAs === "Student" ? "bg-white text-[#00796b] shadow-md" : "text-slate-500 hover:text-slate-700"}`}
+      >
+        Student View
+      </button>
+      <button 
+        onClick={() => setViewAs("Teacher")}
+        className={`px-5 py-2 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all ${viewAs === "Teacher" ? "bg-white text-[#00796b] shadow-md" : "text-slate-500 hover:text-slate-700"}`}
+      >
+        Faculty Roster
+      </button>
+    </div>
+  </div>
+
+  {/* 2. TIMELINE REGISTRY */}
+  <div className="relative border-l-4 border-slate-100 ml-4 md:ml-40 space-y-6 pb-12">
+    {scheduleData.map((log) => (
+      <div key={log.id} className="relative pl-8 md:pl-12 group">
+        
+        {/* TIME STAMP (Desktop Lateral) */}
+        <div className="hidden md:block absolute -left-40 top-2 text-right w-32 pr-4">
+          <p className="text-sm font-black text-slate-800 tracking-tighter leading-none">{log.time}</p>
+          <p className="text-[9px] text-[#00796b] font-black uppercase tracking-widest mt-1 opacity-70">{log.duration}</p>
         </div>
 
-        <div className="flex bg-slate-100 p-1 rounded-xl border border-slate-200">
-          <button 
-            onClick={() => setViewAs("Student")}
-            className={`px-4 py-2 text-xs font-bold rounded-lg transition-all ${viewAs === "Student" ? "bg-white text-indigo-600 shadow-sm" : "text-slate-500"}`}
-          >
-            Student Schedule
-          </button>
-          <button 
-            onClick={() => setViewAs("Teacher")}
-            className={`px-4 py-2 text-xs font-bold rounded-lg transition-all ${viewAs === "Teacher" ? "bg-white text-indigo-600 shadow-sm" : "text-slate-500"}`}
-          >
-            Teacher Roster
-          </button>
-        </div>
-      </div>
+        {/* TIMELINE NODE (Modern Teal Style) */}
+        <div className={`absolute -left-[10px] top-3 w-4 h-4 rounded-full border-4 border-white shadow-md transition-all group-hover:scale-125 z-10 ${
+          log.type === "Lecture" ? "bg-teal-500" : 
+          log.type === "Lab" ? "bg-emerald-500" : "bg-rose-500"
+        }`} />
 
-      {/* Timeline Section */}
-      <div className="relative border-l-2 border-slate-100 ml-4 md:ml-32 space-y-8 pb-10">
-        {scheduleData.map((log) => (
-          <div key={log.id} className="relative pl-8 group">
-            {/* Time Indicator for Desktop */}
-            <div className="hidden md:block absolute -left-32 top-1 text-right w-24">
-              <p className="text-sm font-bold text-slate-900">{log.time}</p>
-              <p className="text-[10px] text-slate-400 font-medium uppercase">{log.duration}</p>
+        {/* LOG REGISTRY CARD */}
+        <div className="bg-white rounded-[2rem] border border-slate-100 p-6 shadow-xl shadow-teal-900/5 hover:shadow-teal-900/10 hover:border-teal-200 transition-all duration-300">
+          <div className="flex justify-between items-start mb-4">
+            <div className="space-y-1">
+              <span className={`text-[9px] font-black px-3 py-1 rounded-lg uppercase tracking-widest border shadow-sm ${
+                log.type === "Lecture" ? "bg-teal-50 text-teal-600 border-teal-100" : 
+                log.type === "Lab" ? "bg-emerald-50 text-emerald-600 border-emerald-100" : 
+                "bg-rose-50 text-rose-600 border-rose-100"
+              }`}>
+                {log.type}
+              </span>
+              <h3 className="font-black text-slate-800 text-lg tracking-tight group-hover:text-[#00796b] transition-colors">
+                {log.title}
+              </h3>
             </div>
+            <button className="p-2 text-slate-300 hover:text-slate-600 hover:bg-slate-50 rounded-xl transition-all">
+              <HiOutlineDotsVertical size={20} />
+            </button>
+          </div>
 
-            {/* Timeline Dot */}
-            <div className={`absolute -left-[9px] top-2 w-4 h-4 rounded-full border-4 border-white shadow-sm transition-all group-hover:scale-125 ${
-              log.type === "Lecture" ? "bg-blue-500" : 
-              log.type === "Lab" ? "bg-emerald-500" : 
-              "bg-rose-500"
-            }`} />
-
-            {/* Log Card */}
-            <div className="bg-white rounded-2xl border border-slate-100 p-5 shadow-sm hover:shadow-md hover:border-indigo-100 transition-all">
-              <div className="flex justify-between items-start mb-3">
-                <div>
-                  <span className={`text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider mb-1 inline-block ${
-                    log.type === "Lecture" ? "bg-blue-50 text-blue-600" : 
-                    log.type === "Lab" ? "bg-emerald-50 text-emerald-600" : 
-                    "bg-rose-50 text-rose-600"
-                  }`}>
-                    {log.type}
-                  </span>
-                  <h3 className="font-bold text-slate-800 text-lg">{log.title}</h3>
-                </div>
-                <button className="p-2 text-slate-400 hover:bg-slate-50 rounded-lg">
-                  <HiOutlineDotsVertical />
-                </button>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div className="flex items-center gap-2 text-sm text-slate-500">
-                  <HiOutlineClock className="text-indigo-400" />
-                  <span className="md:hidden font-bold text-slate-700 mr-1">{log.time}</span>
-                  {log.duration}
-                </div>
-                <div className="flex items-center gap-2 text-sm text-slate-500">
-                  <HiOutlineLocationMarker className="text-indigo-400" />
-                  {log.location}
-                </div>
-                <div className="flex items-center gap-2 text-sm text-slate-500">
-                  <HiOutlineUser className="text-indigo-400" />
-                  {viewAs === "Student" ? log.instructor : log.batch}
-                </div>
-              </div>
-              
-              {/* Mobile Time Label */}
-              <div className="mt-4 pt-4 border-t border-slate-50 flex gap-2">
-                <button className="flex-1 py-2 bg-indigo-600 text-white text-xs font-bold rounded-lg hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-100">
-                  View Resources
-                </button>
-                <button className="flex-1 py-2 border border-slate-200 text-slate-600 text-xs font-bold rounded-lg hover:bg-slate-50 transition-all">
-                  Set Reminder
-                </button>
-              </div>
+          {/* METADATA GRID */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 border-t border-slate-50 pt-5">
+            <div className="flex items-center gap-2 text-xs font-bold text-slate-500">
+              <div className="p-1.5 bg-slate-50 rounded-lg text-[#00796b]"><HiOutlineClock /></div>
+              <span className="md:hidden text-slate-800 mr-1">{log.time} • </span>
+              {log.duration}
+            </div>
+            <div className="flex items-center gap-2 text-xs font-bold text-slate-500">
+              <div className="p-1.5 bg-slate-50 rounded-lg text-[#00796b]"><HiOutlineLocationMarker /></div>
+              {log.location}
+            </div>
+            <div className="flex items-center gap-2 text-xs font-bold text-slate-500">
+              <div className="p-1.5 bg-slate-50 rounded-lg text-[#00796b]"><HiOutlineUser /></div>
+              {viewAs === "Student" ? log.instructor : log.batch}
             </div>
           </div>
-        ))}
-      </div>
-      
-      {scheduleData.length === 0 && (
-        <div className="text-center py-20 bg-slate-50 rounded-3xl border-2 border-dashed border-slate-200">
-          <p className="text-slate-400">No scheduled sessions for today.</p>
+          
+          {/* ACTION STRIP */}
+          <div className="mt-6 flex gap-3">
+            <button className="flex-1 py-3 bg-[#00796b] text-white text-[10px] font-black uppercase tracking-[0.2em] rounded-xl hover:bg-[#004d40] transition-all shadow-lg shadow-teal-100 active:scale-95">
+              Access Resources
+            </button>
+            <button className="px-6 py-3 border border-slate-200 text-slate-400 text-[10px] font-black uppercase tracking-[0.2em] rounded-xl hover:bg-slate-50 hover:text-slate-600 transition-all">
+              Log Data
+            </button>
+          </div>
         </div>
-      )}
+      </div>
+    ))}
+  </div>
+  
+  {/* EMPTY STATE */}
+  {scheduleData.length === 0 && (
+    <div className="text-center py-24 bg-white rounded-[3rem] border-4 border-dashed border-gray-50">
+      <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4">
+         <HiOutlineCalendar className="text-slate-200 text-3xl" />
+      </div>
+      <p className="text-slate-300 font-black text-xs uppercase tracking-[0.2em]">Operational Schedule Clear for Today</p>
     </div>
+  )}
+</div>
   );
 };
 
