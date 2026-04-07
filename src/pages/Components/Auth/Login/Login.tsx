@@ -119,118 +119,142 @@ const Login: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-50 p-4">
-      <form
-        onSubmit={handleLogin}
-        className="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md space-y-4"
-        noValidate
-      >
-        <h2 className="text-2xl font-bold text-slate-800">Login</h2>
+    <div className="min-h-screen flex items-center justify-center bg-[#f8fafc] p-4 relative overflow-hidden perspective-1000">
+  
+  {/* --- 3D BACKGROUND ELEMENTS --- */}
+  {/* Floating Glassmorphic Ring */}
+  <div className="absolute top-[-10%] left-[-5%] w-96 h-96 border-[40px] border-teal-500/5 rounded-full animate-pulse pointer-events-none" style={{ transform: 'rotateX(45deg) rotateY(-20deg) translateZ(-100px)' }} />
+  
+  {/* Floating 3D Cube SVG */}
+  <div className="absolute bottom-[15%] right-[10%] opacity-20 animate-bounce duration-[6000ms] pointer-events-none">
+    <svg width="120" height="120" viewBox="0 0 24 24" fill="none" stroke="#00796b" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" style={{ transform: 'rotateX(15deg) rotateY(30deg)' }}>
+      <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+      <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+      <line x1="12" y1="22.08" x2="12" y2="12"></line>
+    </svg>
+  </div>
 
-        {/* Email Input */}
-        <div className="space-y-1">
-          <input
-            type="email"
-            className="w-full px-4 py-2 border rounded-xl outline-none focus:ring-2 ring-indigo-500/10"
-            placeholder="Email"
-            value={formData.email}
-            onChange={(e) =>
-              setFormData({ ...formData, email: e.target.value })
-            }
-            required
-          />
-          {errors.email && (
-            <p className="text-xs text-red-500 ml-1">{errors.email}</p>
-          )}
-        </div>
+  {/* --- LOGIN FORM WITH 3D TILT EFFECT --- */}
+  <form
+    onSubmit={handleLogin}
+    className="relative bg-white p-10 rounded-[2.5rem] shadow-[20px_20px_60px_#bebebe,-20px_-20px_60px_#ffffff] w-full max-w-md space-y-6 animate-in fade-in zoom-in duration-500 border border-white/50"
+    noValidate
+    style={{ transform: 'rotateX(2deg) rotateY(-1deg)' }}
+  >
+    {/* Decorative Top Bar */}
+    <div className="absolute top-0 left-0 w-full h-2 bg-[#00796b] rounded-t-[2.5rem]" />
 
-        {/* Password Input with Toggle */}
-        <div className="space-y-1">
-          <div className="relative">
-            <input
-              type={showPassword ? "text" : "password"}
-              placeholder="Password"
-              className="w-full px-4 py-2 border rounded-xl outline-none focus:ring-2 ring-indigo-500/10"
-              value={formData.password}
-              onChange={(e) =>
-                setFormData({ ...formData, password: e.target.value })
-              }
-              required
-            />
-            <button
-              type="button"
-              onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-indigo-600 transition-colors"
-            >
-              {showPassword ? (
-                <HiOutlineEyeOff size={18} />
-              ) : (
-                <HiOutlineEye size={18} />
-              )}
-            </button>
-          </div>
-          {errors.password && (
-            <p className="text-xs text-red-500 ml-1">{errors.password}</p>
-          )}
-        </div>
+    <div className="space-y-1 mb-8">
+      <nav className="text-[10px] font-black text-[#00796b] uppercase tracking-[0.3em] mb-2">System Authentication</nav>
+      <h2 className="text-4xl font-black text-slate-800 tracking-tighter">Login</h2>
+      <p className="text-xs text-slate-400 font-medium">Authorized Personnel Registry Access</p>
+    </div>
 
+    {/* Email Input */}
+    <div className="space-y-2">
+      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Registry Email</label>
+      <div className="relative group">
+        <input
+          type="email"
+          className="w-full px-5 py-4 bg-gray-50 border-2 border-transparent rounded-2xl outline-none focus:border-[#00796b] focus:bg-white transition-all font-bold text-slate-700 shadow-inner"
+          placeholder="name@modern.edu"
+          value={formData.email}
+          onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+          required
+        />
+      </div>
+      {errors.email && <p className="text-[10px] text-red-500 font-bold ml-1 uppercase">{errors.email}</p>}
+    </div>
+
+    {/* Password Input */}
+    <div className="space-y-2">
+      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Access Key</label>
+      <div className="relative group">
+        <input
+          type={showPassword ? "text" : "password"}
+          placeholder="••••••••"
+          className="w-full px-5 py-4 bg-gray-50 border-2 border-transparent rounded-2xl outline-none focus:border-[#00796b] focus:bg-white transition-all font-bold text-slate-700 shadow-inner"
+          value={formData.password}
+          onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+          required
+        />
         <button
-          type="submit"
-          disabled={loading}
-          className="w-full bg-indigo-600 text-white py-2 rounded-xl hover:bg-indigo-700 transition disabled:opacity-50"
+          type="button"
+          onClick={() => setShowPassword(!showPassword)}
+          className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-300 hover:text-[#00796b] transition-colors"
         >
-          {loading ? "Logging in..." : "Login"}
+          {showPassword ? <HiOutlineEyeOff size={20} /> : <HiOutlineEye size={20} />}
         </button>
+      </div>
+      {errors.password && <p className="text-[10px] text-red-500 font-bold ml-1 uppercase">{errors.password}</p>}
+    </div>
 
-        {/* Forgot Password Trigger */}
-        <div className="flex justify-center pt-2">
+    <button
+      type="submit"
+      disabled={loading}
+      className="w-full bg-[#00796b] hover:bg-[#004d40] text-white py-4.5 rounded-2xl font-black uppercase tracking-[0.2em] text-xs transition-all shadow-xl shadow-teal-100 active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-2"
+    >
+      {loading ? (
+        <>
+          <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+          Verifying...
+        </>
+      ) : "Authorize Access"}
+    </button>
+
+    <div className="flex justify-center pt-4 border-t border-slate-50">
+      <button
+        type="button"
+        onClick={() => handleForgotPassword()}
+        className="text-[10px] font-black text-slate-400 uppercase tracking-widest hover:text-[#00796b] transition-all"
+      >
+        Request Credential Recovery?
+      </button>
+    </div>
+  </form>
+
+  {/* --- EMAIl DIALOG MODAL --- */}
+  {showEmailDialog && (
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-[#004d40]/30 backdrop-blur-md animate-in fade-in duration-300">
+      <div className="bg-white p-10 rounded-[2.5rem] shadow-2xl w-full max-w-md m-4 animate-in zoom-in-95 duration-200 relative overflow-hidden">
+        <div className="absolute top-0 left-0 w-full h-2 bg-amber-400" />
+        <h3 className="text-2xl font-black text-slate-800 tracking-tight mb-2">Identification Required</h3>
+        <p className="text-sm text-slate-400 font-medium mb-6">
+          System registry requires a verified email node to transmit recovery protocols.
+        </p>
+
+        <input
+          type="email"
+          placeholder="Enter Registry Email"
+          className="w-full px-5 py-4 bg-gray-50 border-2 border-transparent rounded-2xl outline-none focus:border-amber-400 transition-all font-bold text-slate-700 mb-6"
+          value={manualEmail}
+          onChange={(e) => setManualEmail(e.target.value)}
+        />
+
+        <div className="flex flex-col sm:flex-row gap-3">
           <button
-            type="button"
-            onClick={() => handleForgotPassword()}
-            className="text-xs font-medium text-indigo-600 hover:text-indigo-700 hover:underline transition-all"
+            onClick={() => setShowEmailDialog(false)}
+            className="flex-1 px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400 bg-gray-50 rounded-2xl hover:bg-gray-100 transition-all"
           >
-            Forgot your password?
+            Abort
+          </button>
+          <button
+            onClick={() => handleForgotPassword(manualEmail)}
+            disabled={loading || !manualEmail}
+            className="flex-1 px-6 py-4 text-[10px] font-black uppercase tracking-widest text-white bg-[#00796b] rounded-2xl hover:bg-[#004d40] shadow-lg shadow-teal-100 transition-all disabled:opacity-50"
+          >
+            Dispatch Link
           </button>
         </div>
-      </form>
-      {showEmailDialog && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-white p-6 rounded-2xl shadow-2xl w-full max-w-sm m-4 animate-in zoom-in-95 duration-200">
-            <h3 className="text-lg font-bold text-slate-800 mb-2">
-              Email Required
-            </h3>
-            <p className="text-sm text-slate-500 mb-4">
-              We couldn't find an email in your profile. Please enter it to
-              receive a reset link.
-            </p>
-
-            <input
-              type="email"
-              placeholder="Enter your registered email"
-              className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 ring-indigo-500/20 mb-4"
-              value={manualEmail}
-              onChange={(e) => setManualEmail(e.target.value)}
-            />
-
-            <div className="flex gap-3">
-              <button
-                onClick={() => setShowEmailDialog(false)}
-                className="flex-1 px-4 py-2 text-sm font-semibold text-slate-600 bg-slate-100 rounded-xl hover:bg-slate-200 transition-colors"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={() => handleForgotPassword(manualEmail)}
-                disabled={loading || !manualEmail}
-                className="flex-1 px-4 py-2 text-sm font-semibold text-white bg-indigo-600 rounded-xl hover:bg-indigo-700 disabled:opacity-50 transition-colors"
-              >
-                {loading ? "Sending..." : "Send Link"}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      </div>
     </div>
+  )}
+
+  {/* System Version Footer */}
+  <div className="absolute bottom-6 text-[9px] font-black text-slate-300 uppercase tracking-[0.4em] pointer-events-none">
+    Unified Security Gateway v4.2.0 • Modern ERP
+  </div>
+</div>
   );
 };
 

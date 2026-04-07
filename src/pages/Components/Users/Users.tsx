@@ -24,14 +24,7 @@ const Users: React.FC = () => {
   // Pagination State
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [totalItems, setTotalItems] = useState(0);
-
-  // Function to get role badge styling
-  const getRoleBadgeStyle = (role: string): string => {
-    if (role === "Admin") return "bg-purple-50 text-purple-600";
-    if (role === "Teacher") return "bg-amber-50 text-amber-600";
-    return "bg-blue-50 text-blue-600";
-  };
+  const [, setTotalItems] = useState(0);
 
   // 1. Reset page to 1 whenever the active tab changes
   useEffect(() => {
@@ -74,108 +67,156 @@ const Users: React.FC = () => {
   if (loading) return <div className="p-20 text-center animate-pulse text-slate-500 font-medium">Loading Directory...</div>;
 
   return (
-    <div className="p-6 max-w-7xl mx-auto space-y-6">
-      <div className="space-y-6">
-        {/* Header Section */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-          <div>
-            <h1 className="text-2xl md:text-3xl font-bold text-slate-900 flex items-center gap-2">
-              <HiOutlineUserGroup className="text-slate-400 shrink-0" /> 
-              Member Directory
-            </h1>
-            <p className="text-slate-500 text-sm md:text-base">Public view of all enrolled members</p>
-          </div>
+   <div className="p-4 md:p-6   mx-auto space-y-6 ">
+  {/* 1. COMPACT HEADER */}
+  <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+    <div className="space-y-1">
+      <h1 className="text-xl md:text-2xl font-black text-slate-800 tracking-tight flex items-center gap-2">
+        <HiOutlineUserGroup className="text-[#00796b]" /> 
+        Member Directory
+      </h1>
+      <p className="text-slate-400 text-xs font-medium uppercase tracking-wider">System Registry Overview</p>
+    </div>
 
-          <div className="relative w-full md:w-80">
-            <HiOutlineSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-            <input
-              className="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl focus:ring-2 ring-slate-800/5 outline-none transition-all"
-              placeholder="Search on this page..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
-          </div>
-        </div>
+    <div className="relative w-full md:w-72 group">
+      <HiOutlineSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#00796b] transition-colors" />
+      <input
+        className="w-full pl-10 pr-4 py-2 bg-white border border-slate-200 rounded-xl focus:ring-4 ring-teal-500/5 focus:border-[#00796b] outline-none transition-all text-sm shadow-sm"
+        placeholder="Filter by name or email..."
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+      />
+    </div>
+  </div>
 
-        {/* Tabs Section */}
-        <div className="grid grid-cols-1 min-[500px]:grid-cols-2 lg:flex lg:items-center border-b border-slate-200 w-full bg-white rounded-t-2xl overflow-hidden">
-          {[
-            { name: "All", label: "Overview", icon: <HiOutlineViewGrid size={20} /> },
-            { name: "Student", label: "Students", icon: <HiOutlineUserGroup size={20} /> },
-            { name: "Teacher", label: "Teachers", icon: <HiOutlineAcademicCap size={20} /> },
-            { name: "Admin", label: "Administrators", icon: <HiOutlineShieldCheck size={20} /> },
-          ].map((tab) => (
-            <button
-              key={tab.name}
-              onClick={() => setActiveTab(tab.name as "All" | "Student" | "Teacher" | "Admin")}
-              className={`flex items-center gap-2 px-6 py-4 text-sm font-medium transition-all relative lg:flex-1 justify-center lg:justify-start ${
-                activeTab === tab.name ? "text-indigo-600 bg-indigo-50/30" : "text-slate-500 hover:bg-slate-50"
-              }`}
-            >
-              <span className={activeTab === tab.name ? "text-indigo-600" : "text-slate-400"}>{tab.icon}</span>
-              {tab.label}
-              {activeTab === tab.name && (
-                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-indigo-600 hidden lg:block" />
-              )}
-            </button>
-          ))}
-        </div>
-      </div>
+  {/* 2. COMPACT TABS SECTION */}
+  <div className="flex flex-wrap items-center gap-1 p-1 bg-white border border-slate-100 rounded-2xl shadow-sm overflow-hidden">
+    {[
+      { name: "All", label: "All Members", icon: <HiOutlineViewGrid size={16} /> },
+      { name: "Student", label: "Students", icon: <HiOutlineUserGroup size={16} /> },
+      { name: "Teacher", label: "Teachers", icon: <HiOutlineAcademicCap size={16} /> },
+      { name: "Admin", label: "Administrators", icon: <HiOutlineShieldCheck size={16} /> },
+    ].map((tab) => (
+      <button
+        key={tab.name}
+        onClick={() => setActiveTab(tab.name as "All" | "Student" | "Teacher" | "Admin")}
+        className={`flex items-center gap-2 px-4 py-2 text-xs font-bold transition-all rounded-xl ${
+          activeTab === tab.name 
+            ? "text-[#00796b] bg-teal-50 shadow-inner" 
+            : "text-slate-400 hover:text-slate-600 hover:bg-slate-50"
+        }`}
+      >
+        {tab.icon}
+        {tab.label}
+      </button>
+    ))}
+  </div>
 
-      {/* Grid Display */}
-      {filtered.length > 0 ? (
-        <>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filtered.map((user) => (
-              <div key={user.id} className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-all group">
-                <div className="flex items-center gap-4 mb-4">
-                  <div className="h-12 w-12 rounded-full bg-slate-50 border border-slate-200 flex items-center justify-center text-slate-700 font-bold text-lg group-hover:bg-slate-800 group-hover:text-white transition-colors">
-                    {user.first_name?.[0] || user.email[0].toUpperCase()}
-                  </div>
-                  <div>
-                    <h3 className="font-bold text-slate-800">{user.first_name ? `${user.first_name} ${user.last_name}` : "User"}</h3>
-                    <span className={`text-[10px] uppercase tracking-widest font-extrabold px-2 py-0.5 rounded ${getRoleBadgeStyle(user.role)}`}>
+  {/* 3. ROW-BASED LIST DISPLAY */}
+  <div className="bg-white border border-slate-100 rounded-[2rem] shadow-xl shadow-teal-900/5 overflow-hidden">
+    {filtered.length > 0 ? (
+      <>
+        <div className="overflow-x-auto">
+          <table className="w-full text-left border-collapse">
+            <thead>
+              <tr className="bg-gray-50/50 border-b border-slate-100">
+                {["Member Identity", "System Role", "Contact Info", "Authorization Status"].map((h) => (
+                  <th key={h} className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-[0.15em]">
+                    {h}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-50">
+              {filtered.map((user) => (
+                <tr key={user.id} className="group hover:bg-teal-50/30 transition-all">
+                  {/* Identity Column */}
+                  <td className="px-6 py-4">
+                    <div className="flex items-center gap-3">
+                      <div className="h-10 w-10 rounded-xl bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-600 font-black text-sm uppercase group-hover:bg-[#00796b] group-hover:text-white transition-all shadow-sm">
+                        {user.first_name?.[0] || user.email[0].toUpperCase()}
+                      </div>
+                      <div>
+                        <h3 className="font-bold text-slate-800 text-sm leading-none mb-1">
+                          {user.first_name ? `${user.first_name} ${user.last_name}` : "System User"}
+                        </h3>
+                        <p className="text-[10px] text-slate-400 font-mono tracking-tighter uppercase">ID: {user.id.slice(0, 12)}</p>
+                      </div>
+                    </div>
+                  </td>
+
+                  {/* Role Column */}
+                  <td className="px-6 py-4">
+                    <span className={`text-[10px] uppercase tracking-widest font-black px-3 py-1 rounded-lg ${
+                      user.role === 'Admin' ? 'bg-purple-50 text-purple-600 border border-purple-100' :
+                      user.role === 'Teacher' ? 'bg-amber-50 text-amber-600 border border-amber-100' :
+                      'bg-blue-50 text-blue-600 border border-blue-100'
+                    }`}>
                       {user.role}
                     </span>
-                  </div>
-                </div>
-                <div className="space-y-2 text-sm text-slate-600">
-                  <div className="flex items-center gap-2"><HiOutlineMail className="text-slate-400" /> {user.email}</div>
-                  {user.phone_number && <div className="flex items-center gap-2"><HiOutlinePhone className="text-slate-400" /> {user.phone_number}</div>}
-                </div>
-              </div>
-            ))}
-          </div>
+                  </td>
 
-          {/* Pagination UI */}
-          <div className="flex flex-col sm:flex-row items-center justify-between pt-8 border-t border-slate-200 gap-4">
-            <p className="text-sm text-slate-500">
-              Showing page <span className="font-bold text-slate-900">{currentPage}</span> of <span className="font-bold text-slate-900">{totalPages}</span> ({totalItems} total)
-            </p>
-            <div className="flex items-center gap-2">
-              <button
-                disabled={currentPage === 1}
-                onClick={() => setCurrentPage(p => p - 1)}
-                className="p-2 border border-slate-200 rounded-xl hover:bg-slate-50 disabled:opacity-40 transition-all"
-              >
-                <HiChevronLeft size={20} />
-              </button>
-              <button
-                disabled={currentPage === totalPages}
-                onClick={() => setCurrentPage(p => p + 1)}
-                className="p-2 border border-slate-200 rounded-xl hover:bg-slate-50 disabled:opacity-40 transition-all"
-              >
-                <HiChevronRight size={20} />
-              </button>
-            </div>
-          </div>
-        </>
-      ) : (
-        <div className="py-20 text-center bg-slate-50 rounded-3xl border-2 border-dashed border-slate-200">
-          <p className="text-slate-400 font-medium">No {activeTab.toLowerCase()}s found.</p>
+                  {/* Contact Info Column */}
+                  <td className="px-6 py-4">
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-2 text-xs font-semibold text-slate-600">
+                        <HiOutlineMail className="text-teal-500" /> {user.email}
+                      </div>
+                      {user.phone_number && (
+                        <div className="flex items-center gap-2 text-[11px] text-slate-400">
+                          <HiOutlinePhone className="text-teal-400" /> {user.phone_number}
+                        </div>
+                      )}
+                    </div>
+                  </td>
+
+                  {/* Status Column */}
+                  <td className="px-6 py-4">
+                    <div className="flex items-center gap-2 text-[11px] font-bold text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full w-fit border border-emerald-100">
+                      <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                      Active Member
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
-      )}
-    </div>
+
+        {/* COMPACT PAGINATION */}
+        <div className="flex items-center justify-between p-4 bg-gray-50/50 border-t border-slate-100">
+          <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.1em]">
+            Page <span className="text-slate-800">{currentPage}</span> / {totalPages}
+          </p>
+          
+          <div className="flex items-center gap-2">
+            <button
+              disabled={currentPage === 1}
+              onClick={() => setCurrentPage(p => p - 1)}
+              className="p-1.5 border border-slate-200 rounded-lg hover:bg-white text-slate-500 disabled:opacity-30 transition-all shadow-sm"
+            >
+              <HiChevronLeft size={16} />
+            </button>
+            <button
+              disabled={currentPage === totalPages}
+              onClick={() => setCurrentPage(p => p + 1)}
+              className="p-1.5 border border-slate-200 rounded-lg hover:bg-white text-slate-500 disabled:opacity-30 transition-all shadow-sm"
+            >
+              <HiChevronRight size={16} />
+            </button>
+          </div>
+        </div>
+      </>
+    ) : (
+      <div className="py-20 text-center bg-slate-50/50">
+        <HiOutlineUserGroup className="mx-auto text-4xl text-slate-200 mb-2" />
+        <p className="text-slate-400 font-black text-xs uppercase tracking-widest">
+          No records matching "{activeTab}"
+        </p>
+      </div>
+    )}
+  </div>
+</div>
   );
 };
 

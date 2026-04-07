@@ -33,7 +33,10 @@ import FeeStructure from "./pages/Components/Dashboard/Admin/Fees/FeeStructure";
 import RevenueReports from "./pages/Components/Dashboard/Admin/Fees/RevenueReports";
 import TransactionHistory from "./pages/Components/Dashboard/Admin/Fees/TransactionHistory";
 import ScholarshipsDiscounts from "./pages/Components/Dashboard/Admin/Fees/ScholarshipsDiscounts";
-import FeesSection from "./pages/Components/Dashboard/Student/FeesSection"; 
+import FeesSection from "./pages/Components/Dashboard/Student/FeesSection";
+import { Quiz } from "./pages/Components/Dashboard/Quiz/Quiz";
+import { Results } from "./pages/Components/Dashboard/Results/Results";
+import {Attendance} from "./pages/Components/Dashboard/Attendence/Attendence";
 function App() {
   return (
     <BrowserRouter>
@@ -90,7 +93,7 @@ function App() {
               </Route>
               <Route path="admin/logs" element={<SystemLogs />} />
               <Route path="admin/instructors" element={<Instructor />} />
-              <Route path="admin/fees" element={<Fees />} /> 
+              <Route path="admin/fees" element={<Fees />} />
               {/* <Route path="admin/viewuser" element={<ViewUsers />} /> */}
             </Route>
 
@@ -123,6 +126,9 @@ function App() {
             <Route path="settings" element={<Settings />} />
             <Route path="profile" element={<Profile onClose={() => {}} />} />
             <Route path="schedule" element={<TeacherLogs />} />
+            <Route path="quiz" element={<Quiz />} />
+            <Route path="results" element={<Results />} />
+            <Route path="attendance" element={<Attendance />} />
           </Route>
         </Route>
 

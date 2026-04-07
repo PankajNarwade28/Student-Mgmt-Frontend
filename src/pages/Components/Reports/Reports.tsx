@@ -6,7 +6,8 @@ import {
   HiOutlineAcademicCap,
   HiOutlineBookOpen,
   HiOutlineDownload,
-  HiOutlineRefresh,
+  HiOutlineRefresh, 
+  HiOutlineViewGrid
 } from "react-icons/hi";
 import api from "../../../api/axiosInstance";
 
@@ -54,9 +55,38 @@ const Report: React.FC = () => {
         <HiOutlineRefresh className="animate-spin text-indigo-600" size={40} />
       </div>
     );
+  const handleSavePDF = async () => {
+    try {
+      const response = await fetch("/api/admin/reports/export-pdf");
 
-  const handleSavePDF = () => async () => {
-    toast.success("Comming Soon..");
+      // Check if the server actually returned a PDF
+      if (!response.ok) {
+        const errorData = await response.json();
+        alert(`Error: ${errorData.details || "Could not generate PDF"}`);
+        return;
+      }
+
+      const blob = await response.blob();
+
+      // Safety check: if blob is empty, don't trigger download
+      if (blob.size === 0) {
+        console.error("Received empty blob from server");
+        return;
+      }
+
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "System_Report.pdf";
+      document.body.appendChild(a); // Recommended for better browser compatibility
+      a.click();
+
+      // Cleanup
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error("Download failed:", err);
+    }
   };
   const statsCards = [
     {
@@ -90,117 +120,128 @@ const Report: React.FC = () => {
   ];
 
   return (
-    <div className="p-6 max-w-7xl mx-auto space-y-8 animate-in fade-in duration-500">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <div>
-          <h1 className="text-3xl font-bold text-slate-900 flex items-center gap-2">
-            System Analytics
-          </h1>
-          <p className="text-slate-500">
-            Live overview of institutional performance
-          </p>
-        </div>
-        <button
-          onClick={handleSavePDF()}
-          className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition-all font-bold text-sm shadow-lg shadow-indigo-200"
-        >
-          <HiOutlineDownload size={18} /> Export PDF Report
-        </button>
-      </div>
+    <div className="p-4 md:p-6   mx-auto space-y-8 ">
+  {/* 1. HEADER SECTION */}
+  <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+    <div>
+      <nav className="text-[10px] font-black text-[#00796b] uppercase tracking-[0.2em] mb-2">
+        Institutional Intelligence
+      </nav>
+      <h1 className="text-2xl md:text-3xl font-black text-slate-800 flex items-center gap-2 tracking-tight">
+        System Analytics
+      </h1>
+      <p className="text-slate-400 text-sm font-medium">
+        Live registry of operational and institutional performance metrics.
+      </p>
+    </div>
+    <button
+      onClick={handleSavePDF}
+      className="flex items-center gap-2 px-6 py-3 bg-[#00796b] hover:bg-[#004d40] text-white rounded-2xl transition-all font-black uppercase tracking-widest text-[11px] shadow-xl shadow-teal-100 active:scale-95"
+    >
+      <HiOutlineDownload size={18} /> Export PDF Report
+    </button>
+  </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {statsCards.map((stat, index) => (
+  {/* 2. CORE METRICS GRID */}
+  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+    {statsCards.map((stat, index) => (
+      <div
+        key={index}
+        className="bg-white p-6 rounded-[2rem] border border-slate-50 shadow-xl shadow-teal-900/5 flex items-center gap-5 hover:shadow-teal-900/10 transition-shadow"
+      >
+        <div className={`p-4 rounded-2xl ${stat.bg} ${stat.color} text-2xl shadow-inner`}>
+          {stat.icon}
+        </div>
+        <div>
+          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-0.5">
+            {stat.label}
+          </p>
+          <p className="text-2xl font-black text-slate-800 tracking-tight">{stat.value}</p>
+        </div>
+      </div>
+    ))}
+  </div>
+
+  {/* 3. LOGS & INSIGHTS SPLIT */}
+  <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    
+    {/* RECENT ACTIVITY LOGS */}
+    <div className="lg:col-span-2 bg-white rounded-[2.5rem] border border-slate-50 shadow-xl shadow-teal-900/5 overflow-hidden">
+      <div className="px-8 py-5 border-b border-slate-50 bg-gray-50/30 flex justify-between items-center">
+        <h3 className="font-black text-slate-800 text-sm uppercase tracking-widest">Recent Activity Logs</h3>
+        <span className="text-[10px] bg-teal-50 text-[#00796b] border border-teal-100 px-3 py-1 rounded-full font-black uppercase tracking-tighter">
+          Registry Tracking
+        </span>
+      </div>
+      <div className="divide-y divide-slate-50">
+        {data?.recentActivity.map((log) => (
           <div
-            key={index}
-            className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex items-center gap-4"
+            key={log.id}
+            className="px-8 py-4 flex items-center justify-between hover:bg-teal-50/30 transition-all group"
           >
-            <div className={`p-3 rounded-xl ${stat.bg} ${stat.color} text-2xl`}>
-              {stat.icon}
+            <div className="flex items-center gap-4">
+              {/* Type-based indicator */}
+              <div
+                className={`w-2.5 h-2.5 rounded-full shadow-sm animate-pulse ${
+                  log.type === "INSERT" ? "bg-emerald-500" : 
+                  log.type === "UPDATE" ? "bg-amber-500" : "bg-rose-500"
+                }`}
+              />
+
+              <div>
+                <p className="text-sm font-bold text-slate-700">
+                  <span className="text-[#00796b] font-black uppercase text-[11px] tracking-tight mr-1">Admin</span>
+                  <span className="font-medium text-slate-400">performed</span>{" "}
+                  <span className="text-slate-800">{log.type}</span>
+                </p>
+                <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-0.5">
+                  Target Object: <span className="text-slate-600 group-hover:text-[#00796b]">{log.table_name}</span>
+                </p>
+              </div>
             </div>
-            <div>
-              <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">
-                {stat.label}
-              </p>
-              <p className="text-2xl font-bold text-slate-900">{stat.value}</p>
-            </div>
+            <span className="text-[10px] font-black text-slate-300 uppercase tracking-tighter">
+              {new Date(log.date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short' })}
+            </span>
           </div>
         ))}
       </div>
+    </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
-          <div className="px-6 py-4 border-b border-slate-50 bg-slate-50/50 flex justify-between items-center">
-            <h3 className="font-bold text-slate-800">Recent Activity Logs</h3>
-            <span className="text-[10px] bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded-full font-bold">
-              TOP 5
-            </span>
+    {/* OPERATIONAL CAPACITY CARD */}
+    <div className="bg-[#004d40] rounded-[2.5rem] p-8 text-white shadow-2xl shadow-teal-900/20 flex flex-col justify-between relative overflow-hidden group">
+      {/* Abstract Background Detail */}
+      <div className="absolute -top-10 -right-10 w-40 h-40 bg-white/5 rounded-full blur-3xl group-hover:bg-white/10 transition-all duration-700" />
+      
+      <div className="relative z-10">
+        <div className="flex items-center gap-2 mb-4">
+          <div className="p-2 bg-white/10 rounded-lg backdrop-blur-md">
+            <HiOutlineViewGrid className="text-teal-300" />
           </div>
-          <div className="divide-y divide-slate-50">
-            {data?.recentActivity.map((log) => (
-              <div
-                key={log.id}
-                className="px-6 py-4 flex items-center justify-between hover:bg-slate-50 transition-colors"
-              >
-                <div className="flex items-center gap-3">
-                  {/* Color indicator based on operation type */}
-                  <div
-                    className={`w-2 h-2 rounded-full ${
-                      log.type === "INSERT"
-                        ? "bg-emerald-500"
-                        : log.type === "UPDATE"
-                          ? "bg-amber-500"
-                          : "bg-rose-500"
-                    }`}
-                  ></div>
-
-                  <div>
-                    <p className="text-sm font-semibold text-slate-800">
-                      <b>Admin </b>
-                      <span className="font-normal text-slate-500">
-                        performed
-                      </span>{" "}
-                      {log.type}
-                    </p>
-                    <p className="text-[10px] text-slate-400 uppercase tracking-tight">
-                    {" "}  Target Table:{" "}
-                      <span className="font-bold">{log.table_name}</span>
-                    </p>
-                  </div>
-                </div>
-                <span className="text-xs font-medium text-slate-400">
-                  {new Date(log.date).toLocaleDateString()}
-                </span>
-              </div>
-            ))}
-          </div>
+          <h3 className="font-black uppercase tracking-widest text-[11px] text-teal-300">Capacity Insight</h3>
         </div>
+        <p className="text-teal-50 text-sm leading-relaxed font-medium">
+          Based on <span className="text-white font-black">{data?.stats.totalCourses}</span> active modules, the system is
+          operating at <span className="text-teal-300 font-black">{data?.stats.enrollmentRate}%</span> enrollment velocity.
+        </p>
+      </div>
 
-        {/* Dynamic Insight Card */}
-        <div className="bg-indigo-900 rounded-2xl p-6 text-white shadow-xl shadow-indigo-100 flex flex-col justify-between">
+      <div className="mt-12 pt-8 border-t border-white/10 relative z-10">
+        <div className="flex justify-between items-center">
           <div>
-            <h3 className="font-bold text-lg mb-2">Capacity Insight</h3>
-            <p className="text-indigo-200 text-sm leading-relaxed">
-              Based on {data?.stats.totalCourses} active courses, your system is
-              currently operating at a {data?.stats.enrollmentRate}% active
-              enrollment rate.
+            <p className="text-[10px] uppercase font-black text-teal-400 tracking-[0.2em] mb-1">
+              Efficiency Target
             </p>
+            <p className="text-xl font-black tracking-tight">Optimal Load</p>
           </div>
-          <div className="mt-8 pt-6 border-t border-indigo-800">
-            <div className="flex justify-between items-end">
-              <div>
-                <p className="text-[10px] uppercase font-bold text-indigo-300">
-                  Target Efficiency
-                </p>
-                <p className="text-xl font-bold">High Capacity</p>
-              </div>
-              <div className="h-14 w-14 rounded-full border-4 border-indigo-500 border-t-emerald-400 flex items-center justify-center text-xs font-bold">
-                {data?.stats.enrollmentRate}%
-              </div>
-            </div>
+          <div className="h-16 w-16 rounded-[1.5rem] bg-white/10 backdrop-blur-md border border-white/20 flex flex-col items-center justify-center">
+             <span className="text-lg font-black">{data?.stats.enrollmentRate}%</span>
+             <span className="text-[8px] font-black uppercase opacity-60">Rate</span>
           </div>
         </div>
       </div>
     </div>
+  </div>
+</div>
   );
 };
 
