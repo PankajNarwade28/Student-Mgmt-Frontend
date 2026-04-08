@@ -81,7 +81,7 @@ const HeroCarousel = () => {
   }, [slides.length]);
 
   return (
-    <section className="pt-40 pb-24 bg-[#f8fafc] relative overflow-hidden">
+    <section  id="features" className="pt-40 pb-24 bg-[#f8fafc] relative overflow-hidden">
       {/* Visual Tech Decors */}
       <div className="absolute top-0 right-0 opacity-[0.03] pointer-events-none translate-x-1/3 -translate-y-1/3">
         <svg width="800" height="800" viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" stroke="#00796b" fill="none" strokeWidth="0.2" strokeDasharray="1 1" /></svg>
