@@ -16,6 +16,7 @@ import { toast } from "react-hot-toast";
 interface ProfileData {
   first_name: string;
   last_name: string;
+  role: string;
   date_of_birth: string;
   phone_number: string;
 }
@@ -88,7 +89,7 @@ const Profile: React.FC<{ onClose: () => void }> = ({ onClose }) => {
               </div>
               <div>
                 <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">
-                  Primary Holder
+                  Primary Holder {profile.role}
                 </p>
                 <p className="text-[14px] font-bold text-slate-800 leading-tight">
                   {profile.first_name} {profile.last_name}

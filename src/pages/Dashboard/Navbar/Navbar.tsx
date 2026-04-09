@@ -29,6 +29,7 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
   const [profile, setProfile] = useState<{
     first_name: string;
     last_name: string;
+    role: string;
     date_of_birth: string;
     phone_number: string;
   } | null>(null);
@@ -41,6 +42,8 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
     localStorage.removeItem("userRole");
     navigate("/login");
   };
+
+
 
   const [loading, setLoading] = useState(false);
   const [logs, setLogs] = useState<AuditLog[]>([]);
@@ -64,7 +67,7 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
     }
   }, [userRole]);
 
-   useEffect(() => {
+  useEffect(() => {
     getProfile();
   }, []);
 
@@ -87,6 +90,8 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
     fetchTopLogs();
   }, [fetchTopLogs]);
 
+ 
+
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as HTMLElement;
@@ -108,6 +113,28 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
     DELETE: "bg-red-50 text-red-600 border border-red-200",
   };
 
+useEffect(() => {
+  // Only run the check if both values are present to avoid false triggers during initial loading
+  if (profile?.role && userRole) {
+    
+    if (profile.role !== userRole) {
+      console.warn(`Security Alert: Role mismatch. DB: ${profile.role}, Local: ${userRole}`);
+      
+      // 1. Show a message to the user
+      toast.error("Security mismatch detected. Logging out...");
+
+      // 2. Perform Logout Logic
+      // Wrap in a small timeout if you want the user to see the toast message first
+      setTimeout(() => {
+        handleLogout(); 
+        
+        // 3. Clear storage and redirect
+        localStorage.clear();
+        globalThis.location.href = '/login';
+      }, 1000);
+    }
+  }
+}, [profile, userRole, handleLogout]);
   return (
     <nav
       className="sticky top-0 z-50 flex h-16 w-full items-center justify-between bg-white px-5 md:px-8"
@@ -180,7 +207,8 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
                   className="absolute right-0 mt-3 w-80 rounded-2xl bg-white overflow-hidden"
                   style={{
                     border: "1px solid #e2eeec",
-                    boxShadow: "0 8px 32px rgba(0,100,80,0.1), 0 2px 8px rgba(0,0,0,0.06)",
+                    boxShadow:
+                      "0 8px 32px rgba(0,100,80,0.1), 0 2px 8px rgba(0,0,0,0.06)",
                   }}
                 >
                   <div
@@ -209,7 +237,10 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
                       <div className="p-6 text-center">
                         <div
                           className="mx-auto h-5 w-5 rounded-full border-2 border-t-transparent animate-spin"
-                          style={{ borderColor: "#00a896", borderTopColor: "transparent" }}
+                          style={{
+                            borderColor: "#00a896",
+                            borderTopColor: "transparent",
+                          }}
                         />
                       </div>
                     ) : logs.length > 0 ? (
@@ -292,19 +323,21 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
                 }`}
               >
                 <img
-                  src={`https://ui-avatars.com/api/?name=${userRole}&background=00897b&color=fff&bold=true`}
+                  src={`https://ui-avatars.com/api/?name=${profile?.role}&background=00897b&color=fff&bold=true`}
                   alt="user"
                   className="h-8 w-8 rounded-full shadow-sm"
                 />
                 <div className="hidden sm:flex flex-col items-start leading-tight">
                   <span className="text-[9px] font-black uppercase tracking-widest text-slate-400">
-                    {userRole === "Admin" ? "Organization admin" : userRole}
+                    {profile?.role === "Admin" ? "Organization admin" : profile?.role || "User"}
                   </span>
                   <span
                     className="text-xs font-bold"
                     style={{ color: "#007a6e" }}
                   >
-                    {profile ? `${profile.first_name} ${profile.last_name}` : "Unknown User"}
+                    {profile
+                      ? `${profile.first_name} ${profile.last_name}`
+                      : "Unknown User"}
                   </span>
                 </div>
                 <ChevronDown
