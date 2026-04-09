@@ -57,16 +57,13 @@ const Report: React.FC = () => {
     );
   const handleSavePDF = async () => {
     try {
-      const response = await fetch("/api/admin/reports/export-pdf");
+      const response = await api.get("/api/admin/reports/export-pdf");
 
-      // Check if the server actually returned a PDF
-      if (!response.ok) {
-        const errorData = await response.json();
-        alert(`Error: ${errorData.details || "Could not generate PDF"}`);
+      if(response.status !== 200) {
+        toast.error("Failed to generate PDF report.");
         return;
       }
-
-      const blob = await response.blob();
+      const blob = new Blob([response.data], { type: "application/pdf" });
 
       // Safety check: if blob is empty, don't trigger download
       if (blob.size === 0) {
