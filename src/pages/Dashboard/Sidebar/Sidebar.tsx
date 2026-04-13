@@ -143,6 +143,12 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
                 onClick={toggleSidebar}
               />
               <NavItem
+                to="/dashboard/admin/schedule"
+                icon={<CalendarClock size={20} />}
+                label="Schedule"
+                onClick={toggleSidebar}
+              />
+              <NavItem
                 to="/dashboard/reports"
                 icon={<BarChart3 size={20} />}
                 label="Reports"

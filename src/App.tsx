@@ -16,8 +16,7 @@ import Profile from "./pages/Components/Dashboard/Profile/Profile";
 import AdminPage from "./pages/Components/Dashboard/Admin/AdminPage";
 import AddCourse from "./pages/Components/Dashboard/Admin/AddCourse/AddCourse";
 import ViewCourses from "./pages/Components/Dashboard/Admin/ViewCourse/ViewCourse";
-import MyCourses from "./pages/Components/Dashboard/Courses/Courses";
-import TeacherLogs from "./pages/Components/Dashboard/TeacherLogs/TeacherLogs";
+import MyCourses from "./pages/Components/Dashboard/Courses/Courses"; 
 import Instructor from "./pages/Components/Dashboard/Admin/Instructor/Instructor";
 import Students from "./pages/Components/Dashboard/Admin/Students/Students";
 import StudentList from "./pages/Components/Dashboard/Admin/Students/StudentList/StudentList";
@@ -36,7 +35,9 @@ import ScholarshipsDiscounts from "./pages/Components/Dashboard/Admin/Fees/Schol
 import FeesSection from "./pages/Components/Dashboard/Student/FeesSection";
 import { Quiz } from "./pages/Components/Dashboard/Quiz/Quiz";
 import { Results } from "./pages/Components/Dashboard/Results/Results";
-import {Attendance} from "./pages/Components/Dashboard/Attendence/Attendence";
+import {Attendance} from "./pages/Components/Dashboard/Attendence/Attendence";  
+import ManageSchedule from "./pages/Components/Dashboard/Admin/Schedule/Schedule";
+import MySchedule from "./pages/Components/Dashboard/Schedule/Schedule";
 function App() {
   return (
     <BrowserRouter>
@@ -94,6 +95,7 @@ function App() {
               <Route path="admin/logs" element={<SystemLogs />} />
               <Route path="admin/instructors" element={<Instructor />} />
               <Route path="admin/fees" element={<Fees />} />
+              <Route path="admin/schedule" element={<ManageSchedule />} />
               {/* <Route path="admin/viewuser" element={<ViewUsers />} /> */}
             </Route>
 
@@ -125,7 +127,7 @@ function App() {
             {/* ALL LOGGED-IN USERS */}
             <Route path="settings" element={<Settings />} />
             <Route path="profile" element={<Profile onClose={() => {}} />} />
-            <Route path="schedule" element={<TeacherLogs />} />
+            <Route path="schedule" element={<MySchedule />} />
             <Route path="quiz" element={<Quiz />} />
             <Route path="results" element={<Results />} />
             <Route path="attendance" element={<Attendance />} />
