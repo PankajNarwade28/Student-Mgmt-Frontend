@@ -32,12 +32,12 @@ import FeeStructure from "./pages/Components/Dashboard/Admin/Fees/FeeStructure";
 import RevenueReports from "./pages/Components/Dashboard/Admin/Fees/RevenueReports";
 import TransactionHistory from "./pages/Components/Dashboard/Admin/Fees/TransactionHistory";
 import ScholarshipsDiscounts from "./pages/Components/Dashboard/Admin/Fees/ScholarshipsDiscounts";
-import FeesSection from "./pages/Components/Dashboard/Student/FeesSection";
-import { Quiz } from "./pages/Components/Dashboard/Quiz/Quiz";
+import FeesSection from "./pages/Components/Dashboard/Student/FeesSection"; 
 import { Results } from "./pages/Components/Dashboard/Results/Results";
 import {Attendance} from "./pages/Components/Dashboard/Attendence/Attendence";  
 import ManageSchedule from "./pages/Components/Dashboard/Admin/Schedule/Schedule";
 import MySchedule from "./pages/Components/Dashboard/Schedule/Schedule";
+import QuizUtility from "./pages/Components/Dashboard/Quiz/Quiz";
 function App() {
   return (
     <BrowserRouter>
@@ -128,7 +128,7 @@ function App() {
             <Route path="settings" element={<Settings />} />
             <Route path="profile" element={<Profile onClose={() => {}} />} />
             <Route path="schedule" element={<MySchedule />} />
-            <Route path="quiz" element={<Quiz />} />
+            <Route path="quiz" element={<QuizUtility />} />
             <Route path="results" element={<Results />} />
             <Route path="attendance" element={<Attendance />} />
           </Route>
