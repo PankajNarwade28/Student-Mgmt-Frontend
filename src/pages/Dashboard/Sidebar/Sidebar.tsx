@@ -120,7 +120,6 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
             label="Dashboard"
             onClick={toggleSidebar}
           />
-
           {/* ADMIN ONLY */}
           {canAccess(userRole, [ROLES.ADMIN]) && (
             <>
@@ -156,7 +155,6 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
               />
             </>
           )}
-
           {/* TEACHER & STUDENT */}
           {canAccess(userRole, [ROLES.TEACHER, ROLES.STUDENT]) && (
             <>
@@ -180,9 +178,11 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
               />
             </>
           )}
-
+          
           <NavItem
-            to="/dashboard/quiz"
+            to={
+              userRole === "Admin" ? "/dashboard/admin/quiz" : "/dashboard/quiz"
+            }
             icon={<ClipboardList size={20} />}
             label="Quiz"
             onClick={toggleSidebar}
@@ -193,7 +193,6 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
             label="Attendance"
             onClick={toggleSidebar}
           />
-
           {canAccess(userRole, [ROLES.STUDENT]) && (
             <NavItem
               to="/dashboard/fees"
@@ -202,10 +201,8 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
               onClick={toggleSidebar}
             />
           )}
-
           {/* Divider before settings */}
           <div className="w-8 h-px my-2 rounded-full bg-white/20" />
-
           <NavItem
             to="/dashboard/settings"
             icon={<Settings size={20} />}
