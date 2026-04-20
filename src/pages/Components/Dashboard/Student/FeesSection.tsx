@@ -54,6 +54,26 @@ const FeesSection: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [processingId, setProcessingId] = useState<number | null>(null);
 
+  const loadRazorpayScript = () => {
+  return new Promise<boolean>((resolve) => {
+    // prevent duplicate loading
+    if (document.getElementById("razorpay-script")) {
+      resolve(true);
+      return;
+    }
+
+    const script = document.createElement("script");
+    script.src = "https://checkout.razorpay.com/v1/checkout.js";
+    script.id = "razorpay-script";
+    script.async = true;
+
+    script.onload = () => resolve(true);
+    script.onerror = () => resolve(false);
+
+    document.body.appendChild(script);
+  });
+};
+
   // 1. Fetch Dynamic Data from your new feeRoutes.ts
   const fetchFees = async () => {
     try {
@@ -73,68 +93,76 @@ const FeesSection: React.FC = () => {
   }, []);
 
   const handlePayment = async (enrollmentId: number, amount: string) => {
-    try {
-      setProcessingId(enrollmentId);
+  try {
+    setProcessingId(enrollmentId);
 
-      // 1. You've already got this part working!
-      const response = await api.post("/api/student/create-order", {
-        amount: Number(amount),
-      });
-      const orderData = response.data.order;
-      console.log(
-        "Razorpay Key being used:",
-        import.meta.env.VITE_RAZORPAY_KEY_ID,
-      );
-      // 2. This is the part that "calls" Razorpay to show the UI
-      const options = {
-        key: import.meta.env.VITE_RAZORPAY_KEY_ID, // Your Test Key ID
-        amount: orderData.amount, // 1245000 (paise)
-        currency: orderData.currency,
-        name: "Modern College Portal",
-        description: "Course Fee Payment",
-        order_id: orderData.id, // This is order_SYBr3808eCjsHm from your screenshot
-        handler: async (response: RazorpayPaymentResponse) => {
-          // This runs after student pays successfully
-          try {
-            console.log("Razorpay Response:", response); // Look at this in Browser Console
+    // ✅ LOAD SCRIPT ONLY WHEN USER CLICKS
+    const isLoaded = await loadRazorpayScript();
 
-            const verifyRes = await api.post("/api/student/verify-payment", {
-              razorpay_order_id: response.razorpay_order_id,
-              razorpay_payment_id: response.razorpay_payment_id,
-              razorpay_signature: response.razorpay_signature,
-              enrollmentId: enrollmentId,
-              amount: amount,
-            });
-
-            if (verifyRes.data.success) {
-              toast.success("Payment successful! Enrollment Locked.");
-              fetchFees(); // Refresh your table
-            }
-          } catch (err) {
-            console.error("Payment verification failed:", err);
-            toast.error("Signature verification failed.");
-          }
-        },
-        prefill: {
-          name: "Pankaj Narwade", // Use dynamic data from your auth state
-          email: "pankaj@mail.com",
-        },
-        theme: { color: "#4f46e5" },
-      };
-
-      const rzp = new (
-        window as {
-          Razorpay: new (options: RazorpayOptions) => { open: () => void };
-        }
-      ).Razorpay(options as RazorpayOptions);
-      rzp.open(); // This command actually opens the modal
-    } catch (error) {
-      console.error("Payment setup failed:", error);
-      toast.error("Initialization failed.");
-    } finally {
-      setProcessingId(null);
+    if (!isLoaded) {
+      toast.error("Payment gateway failed to load");
+      return;
     }
-  };
+
+    // ✅ CREATE ORDER FROM BACKEND
+    const response = await api.post("/api/student/create-order", {
+      amount: Number(amount),
+    });
+
+    const orderData = response.data.order;
+
+    const options: RazorpayOptions = {
+      key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+      amount: orderData.amount,
+      currency: orderData.currency,
+      name: "Modern College Portal",
+      description: "Course Fee Payment",
+      order_id: orderData.id,
+
+      handler: async (response: RazorpayPaymentResponse) => {
+        try {
+          const verifyRes = await api.post("/api/student/verify-payment", {
+            razorpay_order_id: response.razorpay_order_id,
+            razorpay_payment_id: response.razorpay_payment_id,
+            razorpay_signature: response.razorpay_signature,
+            enrollmentId,
+            amount,
+          });
+
+          if (verifyRes.data.success) {
+            toast.success("Payment successful!");
+            fetchFees();
+          }
+        } catch (err) {
+          console.error(err);
+          toast.error("Verification failed");
+        }
+      },
+
+      prefill: {
+        name: "Pankaj Narwade",
+        email: "pankaj@mail.com",
+      },
+
+      theme: { color: "#00796b" },
+
+      modal: {
+        ondismiss: () => {
+          toast("Payment cancelled");
+        },
+      },
+    };
+
+    const rzp = new window.Razorpay(options);
+    rzp.open();
+
+  } catch (error) {
+    console.error("Payment setup failed:", error);
+    toast.error("Initialization failed");
+  } finally {
+    setProcessingId(null);
+  }
+};
 
   const handleDownloadReceipt = async (paymentId: string) => {
   if (!paymentId) {
