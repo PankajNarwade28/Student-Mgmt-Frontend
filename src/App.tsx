@@ -38,7 +38,8 @@ import {Attendance} from "./pages/Components/Dashboard/Attendence/Attendence";
 import ManageSchedule from "./pages/Components/Dashboard/Admin/Schedule/Schedule";
 import MySchedule from "./pages/Components/Dashboard/Schedule/Schedule"; 
 import AdminQuizAnalytics from "./pages/Components/Dashboard/Admin/Quiz/Quiz"; 
-import QuizPage from "./pages/Components/Dashboard/Quiz/Quiz";
+import QuizPage from "./pages/Components/Dashboard/Quiz/Quiz";  
+import AttemptQuiz from "./pages/Components/Dashboard/Quiz/StudentQuiz/AttemptQuiz";
 function App() {
   return (
     <BrowserRouter>
@@ -132,6 +133,7 @@ function App() {
             <Route path="profile" element={<Profile onClose={() => {}} />} />
             <Route path="schedule" element={<MySchedule />} />
             <Route path="quiz" element={<QuizPage />} />
+            <Route path="quiz/attempt/:id" element={<AttemptQuiz />} />
             <Route path="results" element={<Results />} />
             <Route path="attendance" element={<Attendance />} />
           </Route>

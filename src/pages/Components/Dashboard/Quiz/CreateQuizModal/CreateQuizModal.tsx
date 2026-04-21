@@ -115,9 +115,8 @@ const CreateQuizModal = ({
         questions,
       };
 
-      await api.post("/api/quiz/full-create", payload);
-
-      toast.success("Quiz created ✅"); 
+      await api.post("/api/quiz/full-create", payload); 
+      toast.success("Quiz created ✅");  
       onClose();
     } catch (err) {
       console.error(err);
