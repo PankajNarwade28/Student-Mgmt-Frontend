@@ -34,7 +34,7 @@ import TransactionHistory from "./pages/Components/Dashboard/Admin/Fees/Transact
 import ScholarshipsDiscounts from "./pages/Components/Dashboard/Admin/Fees/ScholarshipsDiscounts";
 import FeesSection from "./pages/Components/Dashboard/Student/FeesSection"; 
 import { Results } from "./pages/Components/Dashboard/Results/Results";
-import {Attendance} from "./pages/Components/Dashboard/Attendence/Attendence";  
+import Attendance from "./pages/Components/Dashboard/Attendence/Attendence";
 import ManageSchedule from "./pages/Components/Dashboard/Admin/Schedule/Schedule";
 import MySchedule from "./pages/Components/Dashboard/Schedule/Schedule"; 
 import AdminQuizAnalytics from "./pages/Components/Dashboard/Admin/Quiz/Quiz"; 
