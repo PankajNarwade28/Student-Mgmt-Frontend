@@ -43,8 +43,6 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
     navigate("/login");
   };
 
-
-
   const [loading, setLoading] = useState(false);
   const [logs, setLogs] = useState<AuditLog[]>([]);
   const [hasUnread, setHasUnread] = useState(false);
@@ -72,6 +70,7 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
   }, []);
 
   const getProfile = async () => {
+    setLoading(true);
     try {
       const res = await api.get("/api/user/profile");
       if (res.data.profile) {
@@ -89,8 +88,6 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
   useEffect(() => {
     fetchTopLogs();
   }, [fetchTopLogs]);
-
- 
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -113,28 +110,42 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
     DELETE: "bg-red-50 text-red-600 border border-red-200",
   };
 
-useEffect(() => {
-  // Only run the check if both values are present to avoid false triggers during initial loading
-  if (profile?.role && userRole) {
-    
-    if (profile.role !== userRole) {
-      console.warn(`Security Alert: Role mismatch. DB: ${profile.role}, Local: ${userRole}`);
-      
-      // 1. Show a message to the user
-      toast.error("Security mismatch detected. Logging out...");
+  useEffect(() => {
+    // Only run the check if both values are present to avoid false triggers during initial loading
+    if (profile?.role && userRole) {
+      if (profile.role !== userRole) {
+        console.warn(
+          `Security Alert: Role mismatch. DB: ${profile.role}, Local: ${userRole}`,
+        );
 
-      // 2. Perform Logout Logic
-      // Wrap in a small timeout if you want the user to see the toast message first
-      setTimeout(() => {
-        handleLogout(); 
-        
-        // 3. Clear storage and redirect
-        localStorage.clear();
-        globalThis.location.href = '/login';
-      }, 1000);
+        // 1. Show a message to the user
+        toast.error("Security mismatch detected. Logging out...");
+
+        // 2. Perform Logout Logic
+        // Wrap in a small timeout if you want the user to see the toast message first
+        setTimeout(() => {
+          handleLogout();
+
+          // 3. Clear storage and redirect
+          localStorage.clear();
+          globalThis.location.href = "/login";
+        }, 1000);
+      }
     }
+  }, [profile, userRole, handleLogout]);
+  if(loading) {
+    return (
+      <div className="flex items-center justify-center h-16 w-full bg-white border-b border-slate-200">
+        <div className="text-center">
+          <div
+            className="mx-auto h-5 w-5 rounded-full border-2 border-t-transparent animate-spin"
+            style={{ borderColor: "#00a896", borderTopColor: "transparent" }}
+          />
+        </div>
+      </div>
+    );
   }
-}, [profile, userRole, handleLogout]);
+  
   return (
     <nav
       className="sticky top-0 z-50 flex h-16 w-full items-center justify-between bg-white px-5 md:px-8"
@@ -329,7 +340,9 @@ useEffect(() => {
                 />
                 <div className="hidden sm:flex flex-col items-start leading-tight">
                   <span className="text-[9px] font-black uppercase tracking-widest text-slate-400">
-                    {profile?.role === "Admin" ? "Organization admin" : profile?.role || "User"}
+                    {profile?.role === "Admin"
+                      ? "Organization admin"
+                      : profile?.role || "User"}
                   </span>
                   <span
                     className="text-xs font-bold"

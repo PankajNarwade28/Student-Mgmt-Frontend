@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
@@ -16,14 +16,92 @@ import {
   HiOutlineBell,
   HiOutlineRefresh, 
 } from "react-icons/hi";
+import api from "../../../api/axiosInstance";
+import axios from "axios"; 
+import { toast } from "react-hot-toast";
 
 const Main: React.FC = () => {
   const navigate = useNavigate();
-  const [role] = useState<string | null>(() =>
-    localStorage.getItem("userRole"),
-  );
+  
+  // 1. Core States
+  const [, setProfile] = useState<{ role: string } | null>(null);
+  const [loading, setLoading] = useState(true); 
   const [activeTab, setActiveTab] = useState("overview");
- 
+
+  // Get initial values from storage
+  const token = localStorage.getItem("token");
+  const userRole = localStorage.getItem("userRole");
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("userRole");
+    localStorage.clear();
+    navigate("/login");
+  };
+
+  const getProfile = async () => {
+    setLoading(true);
+    try {
+      // If we have no token, don't even try the API
+      if (!token) {
+        navigate("/login", { replace: true });
+        return;
+      }
+
+      const res = await api.get("/api/user/profile");
+      if (res.data.profile) {
+        setProfile(res.data.profile);
+        
+        // Security check: Local Role vs DB Role
+        if (userRole && res.data.profile.role !== userRole) {
+          toast.error("Security mismatch. Session terminated.");
+          handleLogout();
+        }
+      }
+    } catch (err: unknown) {
+      if (axios.isAxiosError(err)) {
+        toast.error("Session invalid. Please login again.");
+        handleLogout();
+      }
+    } finally {
+      // Only stop loading once everything is verified
+      setLoading(false);
+    }
+  };
+
+  // 2. Lifecycle: Immediate Auth Guard
+  useEffect(() => {
+    if (!token) {
+      navigate("/login", { replace: true });
+    } else {
+      getProfile();
+    }
+  }, [token]);
+
+  // 3. Loading Screen (Triggered if checking storage or fetching API)
+  if (loading || !token) {
+    return (
+      <div className="flex flex-col items-center justify-center h-screen bg-[#f8fafc]">
+        {/* Tech-styled loader to match your UI */}
+        <div className="relative flex items-center justify-center">
+          <div className="w-16 h-16 border-4 border-teal-100 rounded-full"></div>
+          <div className="absolute w-16 h-16 border-4 border-t-[#00796b] rounded-full animate-spin"></div>
+          <HiOutlineShieldCheck className="absolute text-[#00796b] text-xl animate-pulse" />
+        </div>
+        <div className="mt-6 text-center">
+          <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.4em] mb-1">
+            Verifying Encrypted Session
+          </p>
+          <div className="flex gap-1 justify-center">
+            <span className="w-1 h-1 bg-teal-500 rounded-full animate-bounce [animation-delay:-0.3s]"></span>
+            <span className="w-1 h-1 bg-teal-500 rounded-full animate-bounce [animation-delay:-0.15s]"></span>
+            <span className="w-1 h-1 bg-teal-500 rounded-full animate-bounce"></span>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
   <div className="dashboard-container p-4 md:p-6 bg-[#f8fafc] min-h-screen relative overflow-hidden font-sans">
   
@@ -46,7 +124,7 @@ const Main: React.FC = () => {
           <nav className="text-[8px] font-black text-[#00796b] uppercase tracking-[0.4em] leading-none">System Live</nav>
         </div>
         <h1 className="text-xl font-black text-slate-800 tracking-tighter leading-tight">
-          ID: {role || "User"}_NODE_01
+          ID: {userRole || "User"}_NODE_01
         </h1>
       </div>
     </div>
@@ -73,7 +151,7 @@ const Main: React.FC = () => {
     <div className="flex items-center border-b border-slate-50 bg-slate-50/30 px-4">
       {[
         { id: "overview", label: "Overview", icon: <HiOutlineHome /> },
-        { id: "classes", label: "Roster", icon: <HiOutlineAcademicCap />, hide: role !== "Teacher" }
+        { id: "classes", label: "Roster", icon: <HiOutlineAcademicCap />, hide: userRole !== "Teacher" }
       ].map((tab) => !tab.hide && (
         <button
           key={tab.id}
@@ -120,7 +198,7 @@ const Main: React.FC = () => {
           </div>
 
           {/* INTUITIVE ACTION TILES */}
-          {role === "Admin" && (
+          {userRole === "Admin" && (
             <div className="space-y-4">
               <div className="flex items-center gap-3">
                 <h3 className="text-[9px] font-black text-[#00796b] uppercase tracking-[0.3em]">Quick Directives</h3>
@@ -182,7 +260,7 @@ const Main: React.FC = () => {
           <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest">SSL Encrypted</span>
         </div>
         <div className="h-3 w-[1px] bg-slate-200"></div>
-        <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest">User: {role}</span>
+        <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest">User: {userRole}</span>
       </div>
       <div className="text-[8px] font-black text-slate-300 uppercase tracking-widest tabular-nums">
         {new Date().toLocaleDateString()} • v4.2.0-STABLE
