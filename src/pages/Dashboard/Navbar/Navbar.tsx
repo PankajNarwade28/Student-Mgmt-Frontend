@@ -129,7 +129,7 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
           // 3. Clear storage and redirect
           localStorage.clear();
           globalThis.location.href = "/login";
-        }, 1000);
+        }, 500);
       }
     }
   }, [profile, userRole, handleLogout]);

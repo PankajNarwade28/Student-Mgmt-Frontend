@@ -142,6 +142,7 @@ const HeroCarousel = () => {
   );
 };
 
+// features section with 3 columns of feature cards, each with an icon, title, and description, styled with Tailwind CSS and including some decorative elements for a modern look
 const Features = () => {
   const feats = [
     { title: "Course Management", desc: "Technical tracking of Unit-wise syllabi including AngularJS, React, and DMBI protocols.", icon: <HiOutlineAcademicCap /> },
@@ -179,6 +180,7 @@ const Features = () => {
   );
 };
 
+// testimonial section with a quote, author name, and title, styled with Tailwind CSS and including some decorative elements for a modern look
 const Reviews = () => (
   <section id="reviews" className="py-32 bg-slate-900 text-white overflow-hidden relative">
     {/* Decorative Tech Grid */}
@@ -210,6 +212,7 @@ const Reviews = () => (
   </section>
 );
 
+// footer component with 4 columns of links and a copyright notice, styled with Tailwind CSS and including some decorative elements for a modern look
 const Footer = () => (
   <footer className="bg-white border-t border-slate-100 py-24">
     <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-20">
@@ -261,6 +264,7 @@ const Footer = () => (
   </footer>
 );
 
+// Main Landing Page Component
 const Main: React.FC = () => {
   return (
     <div className="min-h-screen bg-white selection:bg-teal-100 selection:text-[#00796b] antialiased">
